@@ -1,0 +1,40 @@
+Tablas:
+	Tabla usuario:
+		id: Clave primaria (Identificador único del usuario).
+		nombre: Nombre del usuario.
+		email: Dirección de correo electrónico del usuario.
+		url_imagen: URL que lleva a la imagen del usuario.
+		contraseña: Contraseña del usuario.
+		es_admin: Booleano que indica si el usuario es administrador (True/False).
+
+	Tabla tarea:
+		id: Clave primaria (Identificador único de la tarea).
+		título: Título de la tarea.
+		descripción: Descripción de la tarea.
+		fecha_actividad: Fecha para realizar la tarea.
+		categoría: Categoría de la tarea (por ejemplo, trabajo, personal, etc.).
+		completada: Booleano que indica si la tarea ha sido completada (True/False).
+		id_usuario: Clave foránea que hace referencia al id de la tabla usuario. Esto establece que un usuario puede tener varias tareas, pero cada tarea está asignada a un solo usuario.
+
+	Tabla tipo:
+		id: Clave primaria (Identificador único del tipo).
+		nombre: Nombre del tipo (por ejemplo, "Urgente", "Personal").
+		color: Color asociado al tipo.
+		id_tarea: Clave foránea que hace referencia al id de la tabla tarea. Esto establece que un tipo pertenece a una tarea, y cada tarea puede tener varios tipos asociados.
+
+	Tabla diario:
+		id: Clave primaria (Identificador único del diario).
+		descripción: Descripción del diario.
+		fecha: Fecha en la que se creó el diario.
+		id_usuario: Clave foránea que hace referencia al id de la tabla usuario. Esto establece que un usuario puede tener varios diarios, pero un diario solo puede pertenecer a un único usuario.
+		fecha_actividad: Fecha en la que se crea el diario del usuario.
+
+
+Relaciones:
+	Usuario - Tarea: Un usuario puede tener varias tareas (relación de 1 a N). Cada tarea pertenece a un solo usuario.
+
+	Usuario - Diario: Un usuario puede tener varios diarios (relación de 1 a N). Cada diario pertenece a un solo usuario.
+
+	Usuario - Usuario (supervisor): Un usuario puede supervisar a otro usuario (relación autorreferencial). No todos los usuarios deben tener un supervisor, por lo que esta relación es opcional.
+
+	Tarea - Tipo: Una tarea puede tener varios tipos, pero cada tipo pertenece a una única tarea (relación de 1 a N).
