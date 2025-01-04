@@ -1,0 +1,227 @@
+R1: Que el usuario pueda iniciar sesión 
+    o R1F1: Hacer que el usuario inicie sesión. 
+        ▪ R1F1T1: Crear UI de Inicio de Sesión 
+            • R1F1T1P1: Comprobar que aparece un mensaje de error si se ingresa un correo electrónico contraseña incorrectos. 
+        ▪ R1F1T2: Importar funciones para iniciar sesión de Firebase 
+            • R1F1T2P1: Validar que al ingresar credenciales correctas se accede al área correspondiente dentro de la aplicación con Authentication de Firebase. 
+    o R1F2: Cambiar de pantalla a la de Registro 
+        ▪ R1F2T1: Crear botón para cambiar de pantalla de Registro 
+        
+• R2: Registro de usuario: 
+    o R2F1: Hacer que el usuario pueda registrarse 
+        ▪ R2F1T1: Crear UI de Registro 
+            • R2F1T1P1: Comprobar que aparece un mensaje de error si se ingresa un correo electrónico contraseña incorrectos. 
+        ▪ R2F1T2: Importar funciones para registrarse de Firebase 
+            • R2F1T2P1: Validar que al ingresar credenciales correctas se accede al área correspondiente dentro de la aplicación con Authentication de Firebase. 
+        ▪ R2F1T3: Crear validaciones de contraseña
+            • R2F1T3P1: Ver que no se guarda el usuario con las validaciones 
+    o R2F2: Cambiar de pantalla a la de Iniciar Sesión 
+        ▪ R2F2T1: Crear botón para cambiar de pantalla 
+
+• R3: Gestión de Diarios: 
+    o R3F1: Conexión a base de datos 
+        ▪ R3F1T1: Crear modelo de Diario 
+        ▪ R3F1T2: Crear conexión con la Base de Datos de la tabla Diario 
+        ▪ R3F1T3: Crear controlador de Diario 
+        ▪ R3F1T4: Crear validaciones de Diario 
+        ▪ R3F1T5: Crear las rutas para la conexión (GET, POST, PUT, DELETE) de Diario 
+        ▪ R3F1T6: Implementar el modelo, el controlador, las validaciones y las rutas de Diario en el servidor 
+            • R3F1T6P1: Ver que funciona el GET 
+            • R3F1T6P2: Ver que funciona el POST
+            • R3F1T6P2: Ver que funciona el PUT 
+            • R3F1T6P4: Ver que funciona el DELETE 
+    o R3F2: Tener una lista de diarios 
+        ▪ R3F2T1: Cargar diarios desde la base de datos 
+            • R3F2T1P1: Comprobar que se carguen los datos en la pantalla 
+        ▪ R3F2T2: Mostrar la fecha del diario y título 
+        ▪ R3F2T3: Devolver mensaje si no cargan los diarios 
+        ▪ R3F2T4: Mostrar mensaje de que el usuario no tiene diarios 
+    o R3F3: Al pulsar el diario, que te lleve a su contenido 
+        ▪ R3F3T1: Crear botón de editar diario
+        ▪ R3F3T2: Crear botón de eliminar diario 
+    o R3F4: Editar el diario 
+        ▪ R3F4T1: Hacer validaciones antes de editar el diario 
+        ▪ R3F4T2: Permitir que se edite al mostrar el contenido 
+            • R3F4T2P2: Mirar si se ha cambiado en la vista de la lista de diarios 
+        ▪ R3F4T3: Hacer un PUT del diario en el servidor 
+            • R3F4T2P1: Mirar si la base de datos ha cambiado 
+    o R3F5: Eliminar el diario 
+        ▪ R3F5T1: Permitir que el botón de eliminar borre al mostrar el contenido del diario 
+            • R4F5T1P2: Mirar si se ha cambiado en la vista de la lista de tareas 
+        ▪ R3F5T2: Hacer un DELETE del diario en el servidor 
+        • R3F5T1P1: Mirar si la base de datos ha cambiado 
+    o R3F6: Añadir diario 
+        ▪ R4F6T1: Hacer validaciones antes de añadir el diario 
+        ▪ R4F6T2: Añadir el diario en la lista de diarios 
+            • R4F6T2P1: Mirar si se ha cambiado en la vista de la lista de diarios 
+        ▪ R4F6T3: Hacer un POST del diario en el servidor 
+            • R4F6T3P3: Mirar si la base de datos ha cambiado 
+    
+• R4: Gestión de Tareas 
+    o R4F1: Conexión a base de datos Tareas
+        ▪ R4F1T1: Crear modelo de Tarea
+        ▪ R4F1T2: Crear conexión con la Base de Datos de la tabla Tareas 
+        ▪ R4F1T3: Crear controlador de Tarea 
+        ▪ R4F1T4: Crear validaciones de Tarea 
+        ▪ R4F1T5: Crear las rutas para la conexión (GET, POST, PUT, DELETE) de Tarea 
+        ▪ R4F1T6: Implementar el modelo, el controlador, las validaciones y las rutas de Tarea en el servidor 
+            • R4F1T6P1: Ver que funciona el GET 
+            • R4F1T6P2: Ver que funciona el POST 
+            • R4F1T6P3: Ver que funciona el PUT 
+            • R4F1T6P4: Ver que funciona el DELETE 
+    o R4F2: Tener una lista de tareas 
+        ▪ R4F2T1: Cargar tareas desde la base de datos 
+            • R4F2T1P1: Comprobar que se carguen los datos a la pantalla 
+        ▪ R4F2T2: Hacer que las tareas muestren el título, la fecha y la categoría 
+        ▪ R4F2T3: Devolver mensaje si no cargan las tareas 
+        ▪ R4F2T4: Mostrar que el usuario no tiene tareas 
+    o R4F3: Hacer calendario con tareas 
+        ▪ R4F3T1: Cargar tareas desde la base de datos al calendario 
+            • R4F3T1P1: Comprobar que se carguen los datos a la pantalla 
+    o R4F4: Al pulsar la tarea te muestre los detalles y te cambie de pantalla 
+        ▪ R4F4T1: Mostrar los detalles de la tarea desde la lista de tareas 
+        ▪ R4F4T2: Hacer botón de editar en los detalles
+        ▪ R4F4T3: Hacer botón de eliminar en los detalles
+        ▪ R4F4T4: Mostrar los detalles de la tarea desde el calendario 
+    o R4F5: Editar la tarea en detalles 
+        ▪ R4F5T1: Hacer validaciones antes de editar la tarea 
+        ▪ R4F5T2: Hacer un PUT en el servidor de la tarea 
+            • R4F5T2P1: Mirar si la base de datos ha cambiado 
+        ▪ R4F5T3: Hacer que se cambie la vista de la lista de tareas al editar 
+            • R4F5T2P1: Mirar si se ha cambiado en la vista de la lista de tareas 
+        ▪ R4F5T4: Hacer que se cambie la vista del calendario al editar la tarea 
+            • R4F5T4P1: Mirar si se ha cambiado en la vista del calendario 
+    o R4F6: Eliminar la tarea en los detalles 
+        ▪ R4F6T1: Hacer un DELETE en el servidor de la tarea 
+        ▪ R4F6T2: Hacer que se cambie la vista de la lista de tareas al eliminar 
+            • R4F6T2P1: Mirar si se ha cambiado en la vista de la lista de tareas 
+        ▪ R4F6T3: Hacer que se cambie la vista del calendario al eliminar la tarea 
+            • R4F6T3P1: Mirar si se ha cambiado en la vista del calendario 
+    o R4F7: Asegurar que el botón ‘AÑADIR TAREA’ inicia el proceso de agregar una nueva tarea. 
+        ▪ R4F7T1: Hacer botón de Añadir Tarea 
+        ▪ R4F7T2: Hacer validaciones antes de añadir la tarea 
+        ▪ R4F7T3: Añadir la tarea en la lista de tareas:
+            • R4F7T3P1: Mirar si se ha cambiado en la vista de la lista de tareas 
+            ▪ R4F7T4: Hacer un POST de la tarea al servidor 
+            • R4F7T4P1: Mirar si la base de datos ha cambiado 
+        ▪ R4F7T4: Añadir tarea en el calendario 
+            • R4F7T4P1: Mirar si se ha cambiado en la vista del calendario 
+    o R4F8: Conexión a base de datos Tareas Compartidas
+        ▪ R4F8T1: Crear modelo de Tareas Compartidas
+        ▪ R4F8T2: Crear conexión con la Base de Datos de la tabla Tareas Compartidas 
+        ▪ R4F8T3: Crear controlador de Tareas Compartidas
+        ▪ R4F8T4: Crear validaciones de Tareas Compartidas
+        ▪ R4F8T5: Crear las rutas para la conexión (GET, POST, PUT, DELETE) de Tareas Compartidas 
+        ▪ R4F8T6: Implementar el modelo, el controlador, las validaciones y las rutas de Tareas Compartidas en el servidor 
+            • R4F8T6P1: Ver que funciona el GET 
+            • R4F8T6P2: Ver que funciona el POST 
+            • R4F8T6P3: Ver que funciona el PUT 
+            • R4F8T6P4: Ver que funciona el DELETE 
+    o R4F9: Poder compartir una tarea a amigos
+        ▪ R4F9T1: Hacer botón de Compartir Tarea 
+            • R4F9T3P1: Comprobar si funciona el botón 
+        ▪ R4F9T4: Cambiar esa tarea a compartida en la base de datos
+            • R4F9T4P1: Mirar si se ha cambiado en la base de datos
+    o R4F10: Poder eliminar amigo de una tarea
+        ▪ R4F10T1: Hacer botón de Elimnar Amigo Tarea 
+            • R4F10T3P1: Comprobar si funciona el botón 
+        ▪ R4F10T4: Eliminar ese amigo en la tarea en la base de datos
+            • R4F10T4P1: Mirar si se ha cambiado en la base de datos
+    
+• R5: Gestión de usuario 
+    o R5F1: Conexión a base de datos
+        ▪ R5F1T1: Crear modelo de Usuario
+        ▪ R5F1T2: Crear conexión con la Base de Datos de la tabla Usuarios 
+        ▪ R5F1T3: Crear controlador de Usuario 
+        ▪ R5F1T4: Crear validaciones de Usuario 
+        ▪ R5F1T5 Crear las rutas para la conexión (GET, POST, PUT, DELETE) de Usuario 
+        ▪ R5F1T6: Implementar el modelo, el controlador, las validaciones y las rutas de Usuario en el servidor
+            • R5F1T6P1: Ver que funciona el GET
+            • R5F1T6P2: Ver que funciona el POST
+            • R5F1T6P3: Ver que funciona el PUT
+            • R5F1T6P4: Ver que funciona el DELETE 
+    o R5F2: El usuario pueda cambiar su nombre 
+        ▪ R5F2T1: Crear la función para cambiar el nombre 
+            • R5F2T1P1: Ver si se ha cambiado el nombre del usuario en la Base de Datos
+        ▪ R5F2T2: Crear la interfaz y el proceso para cambiar el nombre
+            • R5F2T2P1: Comprobar si funciona correctamente la interfaz de cambiar el nombre de usuario
+    o R5F3: El usuario puede cambiar su contraseña 
+        ▪ R5F3T1: Crear la función para cambiar la contraseña 
+            • R5F3T1P1: Ver si se ha cambiado la contraseña 
+        ▪ R5F3T2: Crear la interfaz y el proceso para cambiar la contraseña 
+            • R5F3T2P1: Ver si la interfaz para cambiar la contraseña funciona correctamente
+    o R5F4: El usuario puede cambiar su foto de perfil 
+        ▪ R5F4T1: Crear un formulario para cambiar o escoger una imagen desde los archivos del ordenador
+            • R5F4T1P1: Comprobar que el formulario funciona
+        ▪ R5F4T2: Crear la funcionalidad para subir la imagen en el Servidor
+            • R5F4T2P1: Ver si se ha subido la imagen en el Servidor 
+        ▪ R5F4T3: Establecer la imagen que quiere subir el usuario como su foto de perfil
+            • R5F4T3P1: Comprobar si se ha establecido la URL de la imagen en el Servidor como su foto de perfil
+    o R5F5: Los datos del usuario se persisten en la app 
+        ▪ R5F5T1: Crear las funciones para la persistencia de datos 
+            • R5F5T1P1: Comprobar si la persistencia de datos funciona
+    o R5F6: El usuario puede cambiar su email
+        ▪ R5F6T1: Crear UI para cambiar el email 
+            • R5F6T1P1: Ver que la UI para cambiar el email funciona correctamente 
+        ▪ R5F6T2: Crear funciones para cambiar el email. 
+            • R5F6T2P1: Ver que el email del usuario se ha cambiado 
+    o R5F7: El usuario puede cerrar sesión 
+        ▪ R5F7T1: Crear botón 'CERRAR SESIÓN'
+            • R5F7T1P1: Comprobar que el botón 'CERRAR SESIÓN' funciona correctamente 
+        ▪ R5F7T2: Crear función para cerrar sesión
+            • R5F7T2P1: Ver que el usuario ha cerrado sesión 
+    o R5F8: El usuario puede eliminar su cuenta
+        ▪ R5F8T1: Crear botón y UI para eliminar cuenta 
+            • R5F8T1P1: Comprobar que el botón 'ELIMINAR CUENTA' funciona correctamente 
+        ▪ R5F8T2: Crear función para eliminar la cuenta 
+            • R5F8T2P1: Ver que el usuario ha sido eliminado 
+
+• R6: La aplicación de ser web 
+    • R6F1: Interfaz responsive 
+        o R6F1T1: Diseño y desarrollo de interfaz adaptable. 
+            ▪ R6F1T1P1: Verificar visualización y funcionalidad en diferentes tamaños de pantalla. 
+
+• R7: Seguridad 
+    • R7F1: Políticas de seguridad de datos 
+        o R7F1T1: Definición y aplicación de roles de acceso. 
+        o R7F1T2: Configuración de medidas de seguridad a nivel de red.
+
+• R8: Gestion de Amigos 
+   o R8F1: Conexión a base de datos
+        ▪ R8F1T1: Crear modelo Amigo
+        ▪ R8F1T2: Crear conexión con la Base de Datos de la tabla Amigos
+        ▪ R8F1T3: Crear controlador de Amigo 
+        ▪ R8F1T4: Crear validaciones de Amigo 
+        ▪ R8F1T5 Crear las rutas para la conexión (GET, POST, PUT, DELETE) de Amigos 
+        ▪ R8F1T6: Implementar el modelo, el controlador, las validaciones y las rutas de Amigos en el servidor
+            • R8F1T6P1: Ver que funciona el GET
+            • R8F1T6P2: Ver que funciona el POST
+            • R8F1T6P3: Ver que funciona el PUT
+            • R8F1T6P4: Ver que funciona el DELETE 
+    o R8F2: Tener una lista de amigos 
+        ▪ R8F2T1: Crear UI de lista de amigos
+            • R8F2T1P1: Comprobar que funciona correctamente la lista de amigos
+        ▪ R8F2T2: Cargar amigos desde la base de datos 
+            • R8F2T2P1: Comprobar que se carguen los datos a la pantalla 
+        ▪ R8F2T4: Poder eliminar un amigo
+            • R8F2T4P1: Comprobar que el botón funcione
+            • R8F2T4P2: Comprobar que se haya eliminado ese amigo en la base de datos
+        ▪ R8F2T5: Poder añadir un amigo
+            • R8F2T5P1: Comprobar que el botón funcione
+            • R8F2T5P1: Comprobar que se haya añadido ese amigo en la base de datos
+    o R8F3: Tener una lista de solicitudes
+        ▪ R8F3T1: Crear Menu de filtrado de Solicitudes
+            • R8F3T1P1: Comprobar que funciona correctamente el Menu
+        ▪ R8F3T2: Crear UI de solicitudes de Amigos
+            • R8F3T2P1: Comprobar que funciona correctamente la UI solicitudes de Amigos
+        ▪ R8F3T3: Crear UI de solicitudes de Tareas
+            • R8F3T3P1: Comprobar que funciona correctamente la UI solicitudes de Tareas
+        ▪ R8F3T4: Crear UI de solicitudes de Todos
+            • R8F3T4P1: Comprobar que funciona correctamente la UI solicitudes de Todos
+        ▪ R8F3T5: Poder eliminar una solicitud
+            • R8F3T5P1: Comprobar que el botón funcione
+            • R8F3T5P2: Comprobar que se haya eliminado esa solicitud en la base de datos
+        ▪ R8F3T6: Poder aceptar una solicitud
+            • R8F3T6P1: Comprobar que el botón funcione
+            • R8F3T6P1: Comprobar que se haya aceptado esa solicitud en la base de datos
+
