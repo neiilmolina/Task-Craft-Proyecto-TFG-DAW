@@ -2,10 +2,14 @@ Tablas:
 	Tabla usuario:
 		id: Clave primaria (Identificador único del usuario).
 		nombre: Nombre del usuario.
-		email: Dirección de correo electrónico del usuario.
-		url_imagen: URL que lleva a la imagen del usuario.
+		email: Dirección de correo electrónico del usuario. Atributo único.
+		url_imagen: URL que lleva a la imagen del usuario. Atributo único.
 		contraseña: Contraseña del usuario.
 		es_admin: Booleano que indica si el usuario es administrador (True/False).
+
+	Tabla rol:
+		id: Clave primaria (Identificador único del rol).
+		rol: Nombre del rol.
 
 	Tabla tarea:
 		id: Clave primaria (Identificador único de la tarea).
@@ -13,14 +17,19 @@ Tablas:
 		descripción: Descripción de la tarea.
 		fecha_actividad: Fecha para realizar la tarea.
 		categoría: Categoría de la tarea (por ejemplo, trabajo, personal, etc.).
-		completada: Booleano que indica si la tarea ha sido completada (True/False).
+		id_estado: Clave foránea que hace referencia al id de la tabla estado. Esto establece que un estado puede tener varias tareas, pero cada tarea está asignada a un solo estado.
+		id_tipo: Clave foránea que hace referencia al id de la tabla tipo. Esto establece que un tipo puede tener varias tareas, pero cada tarea está asignada a un solo tipo.
 		id_usuario: Clave foránea que hace referencia al id de la tabla usuario. Esto establece que un usuario puede tener varias tareas, pero cada tarea está asignada a un solo usuario.
 
 	Tabla tipo:
 		id: Clave primaria (Identificador único del tipo).
 		nombre: Nombre del tipo (por ejemplo, "Urgente", "Personal").
 		color: Color asociado al tipo.
-		id_tarea: Clave foránea que hace referencia al id de la tabla tarea. Esto establece que un tipo pertenece a una tarea, y cada tarea puede tener varios tipos asociados.
+		id_usuario: Clave foránea que hace referencia al id de la tabla usuario. Esto establece que un tipo puede ser creado por un usuario, y cada usuario puede crear varios tipos.
+
+	Tabla estado:
+		id: Clave primaria (Identificador único del estado).
+		estado: Nombre del tipo (por ejemplo, "Completo", "Incompleto").
 
 	Tabla diario:
 		id: Clave primaria (Identificador único del diario).
@@ -35,6 +44,33 @@ Relaciones:
 
 	Usuario - Diario: Un usuario puede tener varios diarios (relación de 1 a N). Cada diario pertenece a un solo usuario.
 
-	Usuario - Usuario (supervisor): Un usuario puede supervisar a otro usuario (relación autorreferencial). No todos los usuarios deben tener un supervisor, por lo que esta relación es opcional.
+	Usuario - Usuario (supervisor): Un usuario puede hacer amigos (otros usuarios) (relación autorreferencial). No todos los usuarios pueden tener amigos, por lo que esta relación es opcional.
 
-	Tarea - Tipo: Una tarea puede tener varios tipos, pero cada tipo pertenece a una única tarea (relación de 1 a N).
+	Usuario - Tipo: Un usuario puede crear varios tipos (relación de 1 a N). Cada tipo pertenece a un solo usuario.
+
+	Rol - Usuario: Un rol puede asignar a varios usuarios (relación de 1 a N). Cada usuario pertenece a un solo rol.
+
+	Tipo - Tarea: Un tipo puede estar clasificada por varias tareas (relación de 1 a N). Cada tarea pertenece a un solo tipo.
+
+	Estado - Tarea: Un estado puede estar clasificada por varias tareas (relación de 1 a N). Cada tarea pertenece a un solo tipo.
+
+Indices: 
+
+	1. Claves primarias
+		Tabla usuario: Índice en id.
+		Tabla tarea: Índice en id.
+		Tabla tipo: Índice en id.
+		Tabla estado: Índice en id.
+		Tabla diario: Índice en id.
+
+	2. Claves foráneas
+		Tabla usuario: 
+			Índice en id_rol (relación con rol).
+		Tabla tarea:
+			Índice en id_usuario (relación con usuario).
+			Índice en id_estado (relación con estado).
+			Índice en id_tipo (relación con tipo).
+		Tabla tipo:
+			Índice en id_usuario (relación con usuario).
+		Tabla diario:
+			Índice en id_usuario (relación con usuario).
