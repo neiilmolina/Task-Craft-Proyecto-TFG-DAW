@@ -1,4 +1,4 @@
-R1: Que el usuario pueda iniciar sesión 
+• R1: Que el usuario pueda iniciar sesión 
     o R1F1: Hacer que el usuario inicie sesión. 
         ▪ R1F1T1: Crear UI de Inicio de Sesión 
             • R1F1T1P1: Comprobar que aparece un mensaje de error si se ingresa un correo electrónico contraseña incorrectos. 
