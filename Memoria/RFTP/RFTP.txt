@@ -2,8 +2,8 @@
     o R1F1: Hacer que el usuario inicie sesión. 
         ▪ R1F1T1: Crear UI de Inicio de Sesión 
             • R1F1T1P1: Comprobar que aparece un mensaje de error si se ingresa un correo electrónico contraseña incorrectos. 
-        ▪ R1F1T2: Importar funciones para iniciar sesión de Firebase 
-            • R1F1T2P1: Validar que al ingresar credenciales correctas se accede al área correspondiente dentro de la aplicación con Authentication de Firebase. 
+        ▪ R1F1T2: Crear funciones para iniciar sesión 
+            • R1F1T2P1: Validar que al ingresar credenciales en la base de datos. 
     o R1F2: Cambiar de pantalla a la de Registro 
         ▪ R1F2T1: Crear botón para cambiar de pantalla de Registro 
         
@@ -11,8 +11,8 @@
     o R2F1: Hacer que el usuario pueda registrarse 
         ▪ R2F1T1: Crear UI de Registro 
             • R2F1T1P1: Comprobar que aparece un mensaje de error si se ingresa un correo electrónico contraseña incorrectos. 
-        ▪ R2F1T2: Importar funciones para registrarse de Firebase 
-            • R2F1T2P1: Validar que al ingresar credenciales correctas se accede al área correspondiente dentro de la aplicación con Authentication de Firebase. 
+        ▪ R2F1T2: Crear funciones para registrarse
+            • R2F1T2P1: Validar que al ingresar credenciales en la base de datos.  
         ▪ R2F1T3: Crear validaciones de contraseña
             • R2F1T3P1: Ver que no se guarda el usuario con las validaciones 
     o R2F2: Cambiar de pantalla a la de Iniciar Sesión 
@@ -102,7 +102,7 @@
         ▪ R4F7T2: Hacer validaciones antes de añadir la tarea 
         ▪ R4F7T3: Añadir la tarea en la lista de tareas:
             • R4F7T3P1: Mirar si se ha cambiado en la vista de la lista de tareas 
-            ▪ R4F7T4: Hacer un POST de la tarea al servidor 
+        ▪ R4F7T4: Hacer un POST de la tarea al servidor 
             • R4F7T4P1: Mirar si la base de datos ha cambiado 
         ▪ R4F7T4: Añadir tarea en el calendario 
             • R4F7T4P1: Mirar si se ha cambiado en la vista del calendario 
@@ -177,12 +177,12 @@
             • R5F8T2P1: Ver que el usuario ha sido eliminado 
 
 • R6: La aplicación de ser web 
-    • R6F1: Interfaz responsive 
-        o R6F1T1: Diseño y desarrollo de interfaz adaptable. 
-            ▪ R6F1T1P1: Verificar visualización y funcionalidad en diferentes tamaños de pantalla. 
+    o R6F1: Interfaz responsive 
+        ▪ R6F1T1: Diseño y desarrollo de interfaz adaptable. 
+            • R6F1T1P1: Verificar visualización y funcionalidad en diferentes tamaños de pantalla. 
 
 • R7: Seguridad 
-    • R7F1: Políticas de seguridad de datos 
+    o R7F1: Políticas de seguridad de datos 
         o R7F1T1: Definición y aplicación de roles de acceso. 
         o R7F1T2: Configuración de medidas de seguridad a nivel de red.
 
@@ -203,25 +203,32 @@
             • R8F2T1P1: Comprobar que funciona correctamente la lista de amigos
         ▪ R8F2T2: Cargar amigos desde la base de datos 
             • R8F2T2P1: Comprobar que se carguen los datos a la pantalla 
-        ▪ R8F2T4: Poder eliminar un amigo
-            • R8F2T4P1: Comprobar que el botón funcione
-            • R8F2T4P2: Comprobar que se haya eliminado ese amigo en la base de datos
-        ▪ R8F2T5: Poder añadir un amigo
-            • R8F2T5P1: Comprobar que el botón funcione
-            • R8F2T5P1: Comprobar que se haya añadido ese amigo en la base de datos
-    o R8F3: Tener una lista de solicitudes
-        ▪ R8F3T1: Crear Menu de filtrado de Solicitudes
-            • R8F3T1P1: Comprobar que funciona correctamente el Menu
-        ▪ R8F3T2: Crear UI de solicitudes de Amigos
-            • R8F3T2P1: Comprobar que funciona correctamente la UI solicitudes de Amigos
-        ▪ R8F3T3: Crear UI de solicitudes de Tareas
-            • R8F3T3P1: Comprobar que funciona correctamente la UI solicitudes de Tareas
-        ▪ R8F3T4: Crear UI de solicitudes de Todos
-            • R8F3T4P1: Comprobar que funciona correctamente la UI solicitudes de Todos
-        ▪ R8F3T5: Poder eliminar una solicitud
-            • R8F3T5P1: Comprobar que el botón funcione
-            • R8F3T5P2: Comprobar que se haya eliminado esa solicitud en la base de datos
-        ▪ R8F3T6: Poder aceptar una solicitud
-            • R8F3T6P1: Comprobar que el botón funcione
-            • R8F3T6P1: Comprobar que se haya aceptado esa solicitud en la base de datos
+    o R8F3: Poder eliminar un amigo
+        ▪ R8F3T1: Crear UI para eliminar amigo
+            • R8F3T1P1: Comprobar que el botón funcione
+        ▪ R8F3T2: Conectarlo a base de datos
+            • R8F2T2P2: Comprobar que se haya eliminado ese amigo en la base de datos
+    o R8F4: Poder añadir un amigo
+        ▪ R8F4T1: Crear UI para añadir amigo
+            • R8F4T1P1: Comprobar que el botón funcione
+        ▪ R8F4T2: Crear UI para añadir amigo
+            • R8F4T2P1: Comprobar que se haya añadido ese amigo en la base de datos
+    o R8F5: Tener una lista de solicitudes
+        ▪ R8F5T1: Crear Menu de filtrado de Solicitudes
+            • R8F5T1P1: Comprobar que funciona correctamente el Menu
+        ▪ R8F5T2: Crear UI de solicitudes de Amigos
+            • R8F5T2P1: Comprobar que funciona correctamente la UI solicitudes de Amigos
+        ▪ R8F5T3: Crear UI de solicitudes de Tareas
+            • R8F5T3P1: Comprobar que funciona correctamente la UI solicitudes de Tareas
+        ▪ R8F5T4: Crear UI de solicitudes de Todos
+            • R8F5T4P1: Comprobar que funciona correctamente la UI solicitudes de Todos
+    o R8F6: Poder eliminar una solicitud
+        ▪ R8F6T1: Crear botón para eliminar solicitud de Amigos
+            • R8F4T1P1: Comprobar que el botón funcione
+        ▪ R8F6T2: Eliminar solicitud de Amigos en base de datos
+            • R8F6T2P1: Comprobar si la solicitud se ha eliminado en la base de datos
+        ▪ R8F6T3: Crear botón para eliminar solicitud de Tareas
+            • R8F6T3P1: Comprobar que el botón funcione
+        ▪ R8F6T4: Comprobar si la solicitud se ha eliminado en la base de datos
+            • R8F6T4P1: Comprobar que el botón funcione
 
