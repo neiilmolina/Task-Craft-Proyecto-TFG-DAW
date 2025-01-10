@@ -106,25 +106,71 @@ SELECT * FROM estados;
 
 -- Crear tareas
 CREATE TABLE IF NOT EXISTS tareas(
-	idTarea CHAR(36) PRIMARY KEY,
-    titulo varchar(45),
-    descripcion varchar(45),
+    idTarea CHAR(36) PRIMARY KEY,
+    titulo VARCHAR(45),
+    descripcion VARCHAR(255),
     fechaActividad TIMESTAMP,
     idEstado INT,
     idTipo INT,
     idUsuario CHAR(36),
     CONSTRAINT idEstadoTarea FOREIGN KEY (idEstado) REFERENCES estados(idEstado),
     CONSTRAINT idTipoTarea FOREIGN KEY (idTipo) REFERENCES tipos(idTipo),
-    CONSTRAINT idUsuarioTarea FOREIGN KEY (idUsuario) REFERENCES usuario(idUsuario)
+    CONSTRAINT idUsuarioTarea FOREIGN KEY (idUsuario) REFERENCES usuarios(idUsuario) -- Corregido el nombre de la tabla 'usuario' a 'usuarios'
 );
+
 
 -- Insertar tareas
 INSERT INTO tareas (idTarea, titulo, descripcion, fechaActividad, idEstado, idTipo, idUsuario)
 VALUES
-    (UUID(), 'Reunión de trabajo', 'Reunión con el equipo para revisar el progreso del proyecto.', NOW(), 1, 'b6acb1ec-cea8-11ef-a47b-a85e45600cdd', 'b6acb1ec-cea8-11ef-a47b-a85e45600cdd'),  -- Completado
-    (UUID(), 'Planificación de objetivos', 'Definir los objetivos del siguiente trimestre.', NOW(), 2, 'b6acb1ec-cea8-11ef-a47b-a85e45600cdd', 'b6acb358-cea8-11ef-a47b-a85e45600cdd'),  -- Incompleto
-    (UUID(), 'Estudio de mercado', 'Estudio para identificar tendencias del mercado en el sector.', NOW(), 3, 'b6acb1ec-cea8-11ef-a47b-a85e45600cdd', 'b6acb3f8-cea8-11ef-a47b-a85e45600cdd'),  -- En proceso
-    (UUID(), 'Evento de lanzamiento', 'Preparación del evento de lanzamiento del producto.', NOW(), 1, 'b6acb1ec-cea8-11ef-a47b-a85e45600cdd', 'b6acb358-cea8-11ef-a47b-a85e45600cdd');  -- Completado
+    ('a9893b08-cf6f-11ef-9f16-a85e45600cdd', 'Reunión de trabajo', 'Reunión con el equipo para revisar el progreso del proyecto.', NOW(), 1, 1, 'b6acb1ec-cea8-11ef-a47b-a85e45600cdd'),  -- Completado
+    ('a98e63bf-cf6f-11ef-9f16-a85e45600cdd', 'Planificación de objetivos', 'Definir los objetivos del siguiente trimestre.', NOW(), 2, 2, 'b6acb358-cea8-11ef-a47b-a85e45600cdd'),  -- Incompleto
+    ('a98e64d8-cf6f-11ef-9f16-a85e45600cdd', 'Estudio de mercado', 'Estudio para identificar tendencias del mercado en el sector.', NOW(), 3, 3, 'b6acb3f8-cea8-11ef-a47b-a85e45600cdd'),  -- En proceso
+    ('a992981e-cf6f-11ef-9f16-a85e45600cdd', 'Evento de lanzamiento', 'Preparación del evento de lanzamiento del producto.', NOW(), 1, 1, 'b6acb358-cea8-11ef-a47b-a85e45600cdd');  -- Completado
 
 -- Verificar los datos insertados
-SELECT * FROM tareas;
+SELECT 
+ta.idTarea,
+ta.titulo,
+ta.descripcion,
+ta.fechaActividad,
+e.estado,
+ti.tipo,
+u.nombreUsuario
+FROM tareas ta
+INNER JOIN estados e
+ON ta.idEstado = e.idEstado
+INNER JOIN tipos ti
+ON ta.idTipo = ti.idTipo
+INNER JOIN usuarios u 
+ON ta.idUsuario = u.idUsuario
+WHERE e.estado = 'Completado';
+
+-- Crear tabla amigos
+CREATE TABLE IF NOT EXISTS amigos(
+	idSolicitador CHAR(36),
+    idSolicitado CHAR(36),
+    solicitudAmigoAceptada BOOLEAN,
+    
+    CONSTRAINT idSolicitadorAmigo FOREIGN KEY (idSolicitador) REFERENCES usuarios(idUsuario),
+    CONSTRAINT idSegundorUsuarioAmigo FOREIGN KEY (idSolicitado) REFERENCES usuarios(idUsuario)
+);
+
+INSERT INTO amigos (idSolicitador, idSolicitado, solicitudAmigoAceptada)
+VALUES
+    ('b6acb1ec-cea8-11ef-a47b-a85e45600cdd', 'b6acb358-cea8-11ef-a47b-a85e45600cdd', TRUE), -- admin y neil son amigos
+    ('b6acb1ec-cea8-11ef-a47b-a85e45600cdd', 'b6acb3f8-cea8-11ef-a47b-a85e45600cdd', FALSE), -- admin envió solicitud a pepe, no aceptada aún
+    ('b6acb358-cea8-11ef-a47b-a85e45600cdd', 'b6acb3f8-cea8-11ef-a47b-a85e45600cdd', TRUE); -- neil y pepe son amigos
+    
+-- Select de amigos
+SELECT 
+a.idSolicitador,
+u1.nombreUsuario,
+a.idSolicitado,
+u2.nombreUsuario,
+a.solicitudAmigoAceptada
+FROM amigos a
+INNER JOIN usuarios u1
+ON a.idSolicitador = u1.idUsuario
+INNER JOIN usuarios u2
+ON a.idSolicitado = u2.idUsuario;
+

@@ -127,6 +127,9 @@
             • R4F10T3P1: Comprobar si funciona el botón 
         ▪ R4F10T4: Eliminar ese amigo en la tarea en la base de datos
             • R4F10T4P1: Mirar si se ha cambiado en la base de datos
+    o R4F11: Filtrar en el menu el tipo de tarea
+        ▪ R4F11T1: Crear apartado de tipos de tarea
+            • R4F11T1P1: Comprobar si el filtrado funciona
     
 • R5: Gestión de usuario 
     o R5F1: Conexión a base de datos
