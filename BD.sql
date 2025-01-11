@@ -122,10 +122,10 @@ CREATE TABLE IF NOT EXISTS tareas(
 -- Insertar tareas
 INSERT INTO tareas (idTarea, titulo, descripcion, fechaActividad, idEstado, idTipo, idUsuario)
 VALUES
-    ('a9893b08-cf6f-11ef-9f16-a85e45600cdd', 'Reunión de trabajo', 'Reunión con el equipo para revisar el progreso del proyecto.', NOW(), 1, 1, 'b6acb1ec-cea8-11ef-a47b-a85e45600cdd'),  -- Completado
+    ('a9893b08-cf6f-11ef-9f16-a85e45600cdd', 'Reunión de trabajo', 'Reunión con el equipo para revisar el progreso del proyecto.', NOW(), 2, 1, 'b6acb1ec-cea8-11ef-a47b-a85e45600cdd'),  -- Completado
     ('a98e63bf-cf6f-11ef-9f16-a85e45600cdd', 'Planificación de objetivos', 'Definir los objetivos del siguiente trimestre.', NOW(), 2, 2, 'b6acb358-cea8-11ef-a47b-a85e45600cdd'),  -- Incompleto
     ('a98e64d8-cf6f-11ef-9f16-a85e45600cdd', 'Estudio de mercado', 'Estudio para identificar tendencias del mercado en el sector.', NOW(), 3, 3, 'b6acb3f8-cea8-11ef-a47b-a85e45600cdd'),  -- En proceso
-    ('a992981e-cf6f-11ef-9f16-a85e45600cdd', 'Evento de lanzamiento', 'Preparación del evento de lanzamiento del producto.', NOW(), 1, 1, 'b6acb358-cea8-11ef-a47b-a85e45600cdd');  -- Completado
+    ('a992981e-cf6f-11ef-9f16-a85e45600cdd', 'Evento de lanzamiento', 'Preparación del evento de lanzamiento del producto.', NOW(), 2, 1, 'b6acb358-cea8-11ef-a47b-a85e45600cdd');  -- Completado
 
 -- Verificar los datos insertados
 SELECT 
@@ -133,6 +133,7 @@ ta.idTarea,
 ta.titulo,
 ta.descripcion,
 ta.fechaActividad,
+e.idEstado,
 e.estado,
 ti.tipo,
 u.nombreUsuario
@@ -142,35 +143,79 @@ ON ta.idEstado = e.idEstado
 INNER JOIN tipos ti
 ON ta.idTipo = ti.idTipo
 INNER JOIN usuarios u 
-ON ta.idUsuario = u.idUsuario
-WHERE e.estado = 'Completado';
+ON ta.idUsuario = u.idUsuario;
 
 -- Crear tabla amigos
 CREATE TABLE IF NOT EXISTS amigos(
-	idSolicitador CHAR(36),
-    idSolicitado CHAR(36),
+	idPrimerUsuario CHAR(36),
+    idSegundoUsuario CHAR(36),
     solicitudAmigoAceptada BOOLEAN,
     
-    CONSTRAINT idSolicitadorAmigo FOREIGN KEY (idSolicitador) REFERENCES usuarios(idUsuario),
-    CONSTRAINT idSegundorUsuarioAmigo FOREIGN KEY (idSolicitado) REFERENCES usuarios(idUsuario)
+    CONSTRAINT idPrimerUsuarioAmigo FOREIGN KEY (idPrimerUsuario) REFERENCES usuarios(idUsuario),
+    CONSTRAINT idSegundorUsuarioAmigo FOREIGN KEY (idSegundoUsuario) REFERENCES usuarios(idUsuario)
 );
 
-INSERT INTO amigos (idSolicitador, idSolicitado, solicitudAmigoAceptada)
+INSERT INTO amigos (idPrimerUsuario, idSegundoUsuario, solicitudAmigoAceptada)
 VALUES
     ('b6acb1ec-cea8-11ef-a47b-a85e45600cdd', 'b6acb358-cea8-11ef-a47b-a85e45600cdd', TRUE), -- admin y neil son amigos
     ('b6acb1ec-cea8-11ef-a47b-a85e45600cdd', 'b6acb3f8-cea8-11ef-a47b-a85e45600cdd', FALSE), -- admin envió solicitud a pepe, no aceptada aún
     ('b6acb358-cea8-11ef-a47b-a85e45600cdd', 'b6acb3f8-cea8-11ef-a47b-a85e45600cdd', TRUE); -- neil y pepe son amigos
     
--- Select de amigos
 SELECT 
-a.idSolicitador,
+a.idPrimerUsuario,
 u1.nombreUsuario,
-a.idSolicitado,
+a.idSegundoUsuario,
 u2.nombreUsuario,
 a.solicitudAmigoAceptada
 FROM amigos a
 INNER JOIN usuarios u1
-ON a.idSolicitador = u1.idUsuario
+ON a.idPrimerUsuario = u1.idUsuario
 INNER JOIN usuarios u2
-ON a.idSolicitado = u2.idUsuario;
+ON a.idSegundoUsuario = u2.idUsuario;
 
+-- Crear tabla amigos
+CREATE TABLE IF NOT EXISTS amigos_has_tareas(
+	idPrimerUsuario CHAR(36),
+    idSegundoUsuario CHAR(36),
+    idTarea CHAR(36),
+    solicitudTareaAceptada BOOLEAN,
+    
+    CONSTRAINT idPrimerUsuarioTarea FOREIGN KEY (idPrimerUsuario) REFERENCES usuarios(idUsuario),
+    CONSTRAINT idSegundorUsuarioTarea FOREIGN KEY (idSegundoUsuario) REFERENCES usuarios(idUsuario),
+    CONSTRAINT idTareaTarea FOREIGN KEY (idTarea) REFERENCES tareas(idTarea)
+);
+
+INSERT INTO amigos_has_tareas (idPrimerUsuario, idSegundoUsuario, idTarea, solicitudTareaAceptada)
+VALUES
+    ('b6acb1ec-cea8-11ef-a47b-a85e45600cdd', 'b6acb358-cea8-11ef-a47b-a85e45600cdd', 'a9893b08-cf6f-11ef-9f16-a85e45600cdd', TRUE), -- admin y neil comparten Reunión de Trabajo
+    ('b6acb358-cea8-11ef-a47b-a85e45600cdd', 'b6acb3f8-cea8-11ef-a47b-a85e45600cdd', 'a992981e-cf6f-11ef-9f16-a85e45600cdd', TRUE); -- neil y pepe comparten Evento de lanzamiento.
+    
+SELECT 
+aht.idPrimerUsuario as nombrePrimerUsuario,
+u1.nombreUsuario,
+aht.idSegundoUsuario,
+u2.nombreUsuario as nombreSegundoUsuario,
+aht.solicitudTareaAceptada,
+ta.idTarea,
+u3.nombreUsuario as creador,
+ta.titulo,
+ta.descripcion,
+ta.fechaActividad,
+e.estado,
+ti.tipo
+FROM 
+amigos_has_tareas aht
+
+INNER JOIN usuarios u1
+ON aht.idPrimerUsuario = u1.idUsuario
+INNER JOIN usuarios u2
+ON aht.idSegundoUsuario = u2.idUsuario
+
+INNER JOIN tareas ta
+ON aht.idTarea = ta.idTarea
+INNER JOIN estados e
+ON ta.idEstado = e.idEstado
+INNER JOIN tipos ti
+ON ta.idTipo = ti.idTipo
+INNER JOIN usuarios u3 
+ON ta.idUsuario = u3.idUsuario;
