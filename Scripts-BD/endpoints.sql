@@ -13,17 +13,20 @@
     UPDATE roles SET rol = 'pepe' WHERE idRol = 3;
 
 -- CONSULTAS DE USUARIOS
-	-- SELECT DE TODOS LOS USUARIOS
+	-- SELECT DE TODOS LOS USUARIOS (get/)
     SELECT * FROM usuarios;
-    -- SELECT DE USUARIO POR ID
-    SELECT * FROM usuarios WHERE idUsuario = 'b6acb1ec-cea8-11ef-a47b-a85e45600cdd';
-    -- SELECT DE USUARIOS POR IDROL
-    SELECT * FROM usuarios u INNER JOIN roles r ON u.idRol = r.idRol WHERE u.idRol = 2;
-    -- SELECT DE USUARIO POR ROL
-    SELECT * FROM usuarios u INNER JOIN roles r ON u.idRol = r.idRol WHERE r.rol = 'admin';
-    -- SELECT DE USUARIOS POR NOMBRE
-    SELECT * FROM usuarios WHERE nombreUsuario = 'admin';
-    -- SELECT DE USUARIOS POR EMAIL
-    SELECT * FROM usuarios WHERE email = 'admin@example.com';
+    -- SELECT DE USUARIO POR ID (get/:idUsuario)
+    SELECT u.idUsuario, u.nombreUsuario, u.email, u.password, u.urLImagen, r.idRol, r.rol FROM usuarios u INNER JOIN roles r ON u.idRol = r.idRol WHERE idUsuario = 'b6acb1ec-cea8-11ef-a47b-a85e45600cdd';
+    -- SELECT DE USUARIOS POR IDROL (get/:idRol)
+    SELECT u.idUsuario, u.nombreUsuario, u.email, u.password, u.urLImagen, r.idRol, r.rol FROM usuarios u INNER JOIN roles r ON u.idRol = r.idRol WHERE u.idRol = 2;
+    -- SELECT DE USUARIO POR ROL (get/:rol)
+    SELECT u.idUsuario, u.nombreUsuario, u.email, u.password, u.urLImagen, r.idRol, r.rol FROM usuarios u INNER JOIN roles r ON u.idRol = r.idRol WHERE r.rol = 'admin';
+    -- SELECT DE USUARIOS POR NOMBRE (get/:nombreUsuario)
+    SELECT u.idUsuario, u.nombreUsuario, u.email, u.password, u.urLImagen, r.idRol, r.rol FROM usuarios u INNER JOIN roles r ON u.idRol = r.idRol WHERE nombreUsuario = 'admin';
+    -- SELECT DE USUARIOS POR EMAIL (get/:email)
+    SELECT u.idUsuario, u.nombreUsuario, u.email, u.password, u.urLImagen, r.idRol, r.rol FROM usuarios u INNER JOIN roles r ON u.idRol = r.idRol WHERE email = 'admin@example.com';
+    -- 
     
+-- CONSULTAS DE DIARIOS
+	
     

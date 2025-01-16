@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
     email varchar(100) unique,
     password varchar(256),
     urlImagen varchar(255) unique,	
-    idRol INT,
+    idRol INT DEFAULT 1,
     CONSTRAINT idRol foreign key (idRol) REFERENCES roles(idRol)
 );
 
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS diarios(
 	idDiario CHAR(36) NOT NULL PRIMARY KEY,
     titulo varchar(45),
     descripcion TEXT,
-    fechaActividad TIMESTAMP,
+    fechaActividad TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     idUsuario CHAR(36),
     CONSTRAINT idUsuarioDiario FOREIGN KEY (idUsuario) REFERENCES usuarios(idUsuario)
 );
@@ -109,7 +109,7 @@ CREATE TABLE IF NOT EXISTS tareas(
     idTarea CHAR(36) PRIMARY KEY,
     titulo VARCHAR(45),
     descripcion VARCHAR(255),
-    fechaActividad TIMESTAMP,
+    fechaActividad TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     idEstado INT,
     idTipo INT,
     idUsuario CHAR(36),
@@ -149,7 +149,7 @@ ON ta.idUsuario = u.idUsuario;
 CREATE TABLE IF NOT EXISTS amigos(
 	idPrimerUsuario CHAR(36),
     idSegundoUsuario CHAR(36),
-    solicitudAmigoAceptada BOOLEAN,
+    solicitudAmigoAceptada BOOLEAN DEFAULT FALSE,
     
     CONSTRAINT idPrimerUsuarioAmigo FOREIGN KEY (idPrimerUsuario) REFERENCES usuarios(idUsuario),
     CONSTRAINT idSegundorUsuarioAmigo FOREIGN KEY (idSegundoUsuario) REFERENCES usuarios(idUsuario)
@@ -178,7 +178,7 @@ CREATE TABLE IF NOT EXISTS amigos_has_tareas(
 	idPrimerUsuario CHAR(36),
     idSegundoUsuario CHAR(36),
     idTarea CHAR(36),
-    solicitudTareaAceptada BOOLEAN,
+    solicitudTareaAceptada BOOLEAN DEFAULT FALSE,
     
     CONSTRAINT idPrimerUsuarioTarea FOREIGN KEY (idPrimerUsuario) REFERENCES usuarios(idUsuario),
     CONSTRAINT idSegundorUsuarioTarea FOREIGN KEY (idSegundoUsuario) REFERENCES usuarios(idUsuario),
