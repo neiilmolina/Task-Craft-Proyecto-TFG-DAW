@@ -1,0 +1,36 @@
+# Node.js
+node_modules/
+package-lock.json
+
+# TypeScript
+dist/
+*.tsbuildinfo
+
+# Configuración del entorno
+.env
+.env.local
+.env.development
+.env.production
+
+# Archivos de logs y errores
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+debug.log
+error.log
+
+# Configuración de IDEs (VSCode, JetBrains, Eclipse, etc.)
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archivos temporales del sistema
+.DS_Store
+Thumbs.db
+
+# Test coverage y reports
+coverage/
+jest/
+*.log
