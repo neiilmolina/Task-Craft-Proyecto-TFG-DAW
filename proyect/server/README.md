@@ -77,4 +77,4 @@ La estructura básica de los archivos es la siguiente:
 Este proyecto utiliza el archivo .env para manejar las variables de entorno. Asegúrate de definir las siguientes variables en tu archivo .env:
 
 - **`SUPABASE_URL`**: URL de tu instancia de Supabase.
-- **`SUPABASE_KEY`**: Clave de tu instancia de Supabase.q
+- **`SUPABASE_KEY`**: Clave de tu instancia de Supabase.
