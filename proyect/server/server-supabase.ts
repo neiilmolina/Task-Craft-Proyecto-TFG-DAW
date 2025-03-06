@@ -1,4 +1,3 @@
 import createApp from "@/src/app";
-import { EstadosModel } from "./src/estados/dao/EstadosSupabaseDAO";
-
+import EstadosModel from "@/src/estados/EstadosModel";
 createApp(EstadosModel);

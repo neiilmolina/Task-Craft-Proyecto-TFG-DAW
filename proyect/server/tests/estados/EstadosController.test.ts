@@ -3,7 +3,6 @@ import { Request, Response } from "express";
 import EstadosController from "@/src/estados/EstadosController";
 import EstadosModel from "@/src/estados/EstadosModel";
 import { Estado, EstadoNoId } from "@/src/estados/interfacesEstados";
-import * as schemas from "@/src/estados/schemasEstados";
 
 // At the top of your test file
 const originalConsoleError = console.error;
@@ -68,7 +67,7 @@ describe("EstadosController", () => {
       await estadosController.getEstados(
         mockRequest as Request,
         mockResponse as Response,
-        mockNext as jest.Mock,
+        mockNext as jest.Mock
       );
 
       // Assert
@@ -86,7 +85,7 @@ describe("EstadosController", () => {
       await estadosController.getEstados(
         mockRequest as Request,
         mockResponse as Response,
-        mockNext as jest.Mock,
+        mockNext as jest.Mock
       );
 
       // Assert
@@ -112,7 +111,7 @@ describe("EstadosController", () => {
       await estadosController.getEstadoById(
         mockRequest as Request,
         mockResponse as Response,
-        mockNext as jest.Mock,
+        mockNext as jest.Mock
       );
 
       // Assert
@@ -130,7 +129,7 @@ describe("EstadosController", () => {
       await estadosController.getEstadoById(
         mockRequest as Request,
         mockResponse as Response,
-        mockNext as jest.Mock,
+        mockNext as jest.Mock
       );
 
       // Assert
@@ -154,7 +153,7 @@ describe("EstadosController", () => {
       await estadosController.createEstado(
         mockRequest as Request,
         mockResponse as Response,
-        mockNext as jest.Mock,
+        mockNext as jest.Mock
       );
 
       // Assert
@@ -179,7 +178,7 @@ describe("EstadosController", () => {
       await estadosController.createEstado(
         mockRequest as Request,
         mockResponse as Response,
-        mockNext as jest.Mock,
+        mockNext as jest.Mock
       );
 
       // Assert
@@ -200,7 +199,7 @@ describe("EstadosController", () => {
       await estadosController.deleteEstado(
         mockRequest as Request,
         mockResponse as Response,
-        mockNext as jest.Mock,
+        mockNext as jest.Mock
       );
 
       // Assert
@@ -220,7 +219,7 @@ describe("EstadosController", () => {
       await estadosController.deleteEstado(
         mockRequest as Request,
         mockResponse as Response,
-        mockNext as jest.Mock,
+        mockNext as jest.Mock
       );
 
       // Assert
@@ -272,7 +271,7 @@ describe("EstadosController", () => {
       await estadosController.updateEstado(
         mockRequest as Request,
         mockResponse as Response,
-        mockNext as jest.Mock,
+        mockNext as jest.Mock
       );
 
       // Assert
@@ -303,7 +302,7 @@ describe("EstadosController", () => {
       await estadosController.updateEstado(
         mockRequest as Request,
         mockResponse as Response,
-        mockNext as jest.Mock,
+        mockNext as jest.Mock
       );
 
       // Assert
