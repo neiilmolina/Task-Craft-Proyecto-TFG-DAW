@@ -1,33 +1,27 @@
-// src/estados/modelEstados.ts - Use the DAO in your model
-import { Estado, EstadoNoId } from "@/src/estados/interfacesEstados";
-import IEstadosDAO  from "./dao/IEstadosDAO";
-import  EstadosSupabaseDAO from "@/src/estados/dao/EstadosSupabaseDAO";
+// src/estados/EstadosModel.ts
+import { Estado, EstadoNoId } from "./interfacesEstados";
+import IEstadosDAO from "./dao/IEstadosDAO";
 
 export default class EstadosModel {
-  private dao: IEstadosDAO;
-  
-  constructor(dao?: IEstadosDAO) {
-    // Allow dependency injection for testing
-    this.dao = dao || new EstadosSupabaseDAO();
+  constructor(private estadosDAO: IEstadosDAO) {}
+
+  async getAll(): Promise<Estado[]> {
+    return this.estadosDAO.getAll();
   }
 
-  async getAll() {
-    return await this.dao.getAll();
+  async getById(id: number): Promise<Estado | null> {
+    return this.estadosDAO.getById(id);
   }
 
-  async getById(id: number) {
-    return await this.dao.getById(id);
+  async create(estado: EstadoNoId): Promise<Estado | null> {
+    return this.estadosDAO.create(estado);
   }
 
-  async create(estado: EstadoNoId) {
-    return await this.dao.create(estado);
+  async update(id: number, estado: EstadoNoId): Promise<Estado | null> {
+    return this.estadosDAO.update(id, estado);
   }
-  
-  async update(id: number, estadoData: EstadoNoId) {
-    return await this.dao.update(id, estadoData);
-  }
-  
-  async delete(id: number) {
-    return await this.dao.delete(id);
+
+  async delete(id: number): Promise<boolean> {
+    return this.estadosDAO.delete(id);
   }
 }

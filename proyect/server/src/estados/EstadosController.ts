@@ -1,15 +1,14 @@
 // src/estados/EstadosController.ts
-import { Request, Response } from "express";
+import { Request, Response, NextFunction, RequestHandler } from "express";
 import { validateEstadoNoId } from "@/src/estados/schemasEstados";
 import EstadosModel from "./EstadosModel";
 import { EstadoNoId } from "./interfacesEstados";
 
 export default class EstadosController {
-  constructor(private estadosModel: EstadosModel) {
-    this.estadosModel = estadosModel;
-  }
+  constructor(private estadosModel: EstadosModel) {}
 
-  getEstados = async (_: Request, res: Response) => {
+  // Define methods as RequestHandler types
+  getEstados: RequestHandler = async (req, res) => {
     try {
       const estados = await this.estadosModel.getAll();
       res.status(200).json(estados);
@@ -19,7 +18,7 @@ export default class EstadosController {
     }
   };
 
-  getEstadoById = async (req: Request, res: Response) => {
+  getEstadoById: RequestHandler = async (req, res) => {
     try {
       const idEstado = parseInt(req.params.idEstado);
       const estado = await this.estadosModel.getById(idEstado);
@@ -35,12 +34,15 @@ export default class EstadosController {
     }
   };
 
-  createEstado = async (req: Request, res: Response) => {
+  createEstado: RequestHandler = async (req, res) => {
     try {
       const { estado } = req.body;
       
       const result = validateEstadoNoId({ estado });
-      if (!result.success) return res.status(400).json({ error: result.error });
+      if (!result.success) {
+        res.status(400).json({ error: result.error });
+        return;
+      }
 
       const nuevoEstado: EstadoNoId = { estado };
       const newEstado = await this.estadosModel.create(nuevoEstado);
@@ -52,29 +54,16 @@ export default class EstadosController {
     }
   };
 
-  deleteEstado = async (req: Request, res: Response) => {
-    try {
-      const idEstado = parseInt(req.params.idEstado);
-      const result = await this.estadosModel.delete(idEstado);
-      
-      if (result) {
-        res.status(200).json({ message: "Estado eliminado correctamente" });
-      } else {
-        res.status(404).json({ message: "Estado no encontrado" });
-      }
-    } catch (error) {
-      console.error("Error al eliminar el estado:", error);
-      res.status(500).json({ error: "Error interno del servidor" });
-    }
-  };
-
-  updateEstado = async (req: Request, res: Response) => {
+  updateEstado: RequestHandler = async (req, res) => {
     try {
       const idEstado = parseInt(req.params.idEstado);
       const { estado } = req.body;
       
       const result = validateEstadoNoId({ estado });
-      if (!result.success) return res.status(400).json({ error: result.error });
+      if (!result.success) {
+        res.status(400).json({ error: result.error });
+        return;
+      }
 
       const datosActualizados: EstadoNoId = { estado };
       const updatedEstado = await this.estadosModel.update(idEstado, datosActualizados);
@@ -86,6 +75,22 @@ export default class EstadosController {
       }
     } catch (error) {
       console.error("Error al actualizar el estado:", error);
+      res.status(500).json({ error: "Error interno del servidor" });
+    }
+  };
+
+  deleteEstado: RequestHandler = async (req, res) => {
+    try {
+      const idEstado = parseInt(req.params.idEstado);
+      const result = await this.estadosModel.delete(idEstado);
+      
+      if (result) {
+        res.status(200).json({ message: "Estado eliminado correctamente" });
+      } else {
+        res.status(404).json({ message: "Estado no encontrado" });
+      }
+    } catch (error) {
+      console.error("Error al eliminar el estado:", error);
       res.status(500).json({ error: "Error interno del servidor" });
     }
   };
