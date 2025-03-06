@@ -1,7 +1,8 @@
 import { Router } from "express";
 import EstadosController  from "@/src/estados/EstadosController";
+import EstadosModel from "./EstadosModel";
 
-export const createEstadosRoute = (estadosModel: any) => {
+export const createEstadosRoute = (estadosModel: EstadosModel) => {
   const router = Router();
   const estadosController = new EstadosController(estadosModel);
   router.get('/estados', estadosController.getEstados);
