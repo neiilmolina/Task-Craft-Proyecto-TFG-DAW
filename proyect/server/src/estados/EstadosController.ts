@@ -1,4 +1,4 @@
-import { validateEstado } from "@/src/estados/schemas";
+import { validateEstado } from "@/src/estados/schemasEstados";
 
 export default class EstadosController {
   constructor(private estadosModel: any) {

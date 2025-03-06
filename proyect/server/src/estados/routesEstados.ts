@@ -1,5 +1,5 @@
 import { Router } from "express";
-import EstadosController  from "@/src/estados/controller";
+import EstadosController  from "@/src/estados/EstadosController";
 
 export const createEstadosRoute = (estadosModel: any) => {
   const router = Router();
@@ -9,6 +9,8 @@ export const createEstadosRoute = (estadosModel: any) => {
   router.post('/estados', estadosController.createEstado);
   router.put('/estados/:id', estadosController.updateEstado);
   router.delete('/estados/:id', estadosController.deleteEstado);
+
+  return router;
 };
 
 export default createEstadosRoute;

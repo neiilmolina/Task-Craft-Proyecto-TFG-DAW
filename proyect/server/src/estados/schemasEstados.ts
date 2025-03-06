@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Estado } from "@/src/estados/interfaces";
+import { Estado } from "@/src/estados/interfacesEstados";
 
 const estadoSchema = z.object({
   id: z.number(),
