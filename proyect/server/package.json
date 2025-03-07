@@ -4,8 +4,11 @@
   "main": "index.js",
   "scripts": {
     "build": "npx tsc",
-    "start": "ts-node -r tsconfig-paths/register src/index.ts",
-    "dev": "nodemon -r tsconfig-paths/register src/index.ts"
+    "start": "ts-node -r tsconfig-paths/register ./server-supabase.ts",
+    "dev": "nodemon -r tsconfig-paths/register ./server-supabase.ts",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "keywords": [],
   "author": "",
@@ -20,12 +23,15 @@
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
+    "@types/jest": "^29.5.14",
     "@types/node": "^22.13.0",
+    "@types/supertest": "^6.0.2",
     "concurrently": "^9.1.2",
     "jest": "^29.7.0",
     "jest-environment-node": "^29.7.0",
     "nodemon": "^3.1.9",
     "supertest": "^7.0.0",
+    "ts-jest": "^29.2.6",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.3"
