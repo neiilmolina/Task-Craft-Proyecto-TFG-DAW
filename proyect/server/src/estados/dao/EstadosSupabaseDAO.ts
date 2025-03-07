@@ -1,16 +1,17 @@
 import supabase from "@/config/supabase";
 import { Estado, EstadoNoId } from "@/src/estados/interfacesEstados";
-import IEstadosDAO  from "./IEstadosDAO";
+import IEstadosDAO from "./IEstadosDAO";
 
 export default class EstadosSupabaseDAO implements IEstadosDAO {
   async getAll(): Promise<Estado[]> {
     const { data, error } = await supabase.from("estados").select("*");
-    
+
     if (error) {
       console.error("Error al obtener estados:", error);
       return [];
     }
-    
+
+    console.log("Retrieved estados:", data);
     return data as Estado[];
   }
 
@@ -25,7 +26,7 @@ export default class EstadosSupabaseDAO implements IEstadosDAO {
       console.error("Error al obtener estado por id:", error);
       return null;
     }
-    
+
     return data as Estado;
   }
 
@@ -40,8 +41,8 @@ export default class EstadosSupabaseDAO implements IEstadosDAO {
       console.error("Error al insertar estado:", error);
       return null;
     }
-    
-    return data?.[0] as Estado || null;
+
+    return (data?.[0] as Estado) || null;
   }
 
   async update(id: number, estadoData: EstadoNoId): Promise<Estado | null> {
@@ -55,8 +56,8 @@ export default class EstadosSupabaseDAO implements IEstadosDAO {
       console.error("Error al actualizar estado:", error);
       return null;
     }
-    
-    return data?.[0] as Estado || null;
+
+    return (data?.[0] as Estado) || null;
   }
 
   async delete(id: number): Promise<boolean> {
@@ -70,7 +71,7 @@ export default class EstadosSupabaseDAO implements IEstadosDAO {
       console.error("Error al eliminar estado:", error);
       return false;
     }
-    
+
     // If we got data back, it means the deletion was successful
     return data && data.length > 0;
   }

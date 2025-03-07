@@ -1,6 +1,6 @@
 import "dotenv/config";
 import createEstadosRoute from "@/src/estados/routesEstados";
-import express, { json } from "express";
+import express, { json, NextFunction } from "express";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -22,7 +22,13 @@ const createApp = (estadosModel: any) => {
   app.listen(port, () => {
     console.log(`[server]: Server is running at http://localhost:${port}`);
   });
-  
+
+  // In your app.ts
+  app.use((err, res) => {
+    console.error("Error:", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  });
+
   return app; // Asegúrate de devolver la app para que pueda ser utilizada
 };
 

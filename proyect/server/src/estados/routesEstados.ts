@@ -7,11 +7,11 @@ export const createEstadosRoute = (estadosModel: EstadosModel) => {
   const router = Router();
   const estadosController = new EstadosController(estadosModel);
   
-  router.get('/estados', estadosController.getEstados);
-  router.get('/estados/:idEstado', estadosController.getEstadoById);
-  router.post('/estados', estadosController.createEstado);
-  router.put('/estados/:idEstado', estadosController.updateEstado);
-  router.delete('/estados/:idEstado', estadosController.deleteEstado);
+  router.get('/', estadosController.getEstados);
+  router.get('/:idEstado', estadosController.getEstadoById);
+  router.post('/', estadosController.createEstado);
+  router.put('/:idEstado', estadosController.updateEstado);
+  router.delete('/:idEstado', estadosController.deleteEstado);
 
   return router;
 };
