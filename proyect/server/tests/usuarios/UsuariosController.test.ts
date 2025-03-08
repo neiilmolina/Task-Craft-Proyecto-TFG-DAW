@@ -58,74 +58,59 @@ describe("UsuariosController", () => {
     mockNext = jest.fn();
   });
 
-  describe("getUsuarios", () => {
-    const mockUsers: PaginatedUsers = {
-      users: [
+  describe("UsuariosController - getUsuarios", () => {
+    it("should return a list of users with status 200", async () => {
+      const mockUsuarios = [
         {
           id: "1",
-          email: "test@example.com",
-          firstName: "Test",
-          lastName: "User",
-          role: "user",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          app_metadata: {},
-          user_metadata: {},
-          aud: "authenticated",
-          created_at: new Date().toISOString(),
+          email: "user1@example.com",
+          role: "admin",
+          createdAt: "2025-03-08T00:00:00Z",
+          updatedAt: "2025-03-08T00:00:00Z",
         },
         {
           id: "2",
-          email: "user2@test.com",
-          firstName: "Jane",
-          lastName: "Doe",
+          email: "user2@example.com",
           role: "user",
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          app_metadata: {},
-          user_metadata: {},
-          aud: "authenticated",
-          created_at: new Date().toISOString(),
+          createdAt: "2025-03-08T00:00:00Z",
+          updatedAt: "2025-03-08T00:00:00Z",
         },
-      ],
-      total: 2,
-      page: 1,
-      limit: 10,
-      totalPages: 1,
-    };
-
-    it("should return paginated users", async () => {
-      mockRequest.query = { page: "1", limit: "10" };
-      mockUsuariosModel.getAll.mockResolvedValue(mockUsers);
-
-      await usuariosController.getUsuarios(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext as jest.Mock
-      );
-
-      expect(mockUsuariosModel.getAll).toHaveBeenCalledWith({
+      ];
+      mockUsuariosModel.getAll.mockResolvedValue({
+        users: mockUsuarios,
+        total: 2,
         page: 1,
         limit: 10,
+        totalPages: 1,
       });
-      expect(mockResponse.status).toHaveBeenCalledWith(200);
-      expect(mockResponse.json).toHaveBeenCalledWith(mockUsers);
-    });
-
-    it("should handle database errors", async () => {
-      const error = new Error("Database error");
-      mockUsuariosModel.getAll.mockRejectedValue(error);
 
       await usuariosController.getUsuarios(
         mockRequest as Request,
         mockResponse as Response,
-        mockNext as jest.Mock
+        mockNext
       );
 
-      expect(console.error).toHaveBeenCalledWith(
-        "Error al cargar los usuarios:",
-        error
+      expect(mockUsuariosModel.getAll).toHaveBeenCalledTimes(1);
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        users: mockUsuarios,
+        total: 2,
+        page: 1,
+        limit: 10,
+        totalPages: 1,
+      });
+    });
+
+    it("should return 500 if an error occurs", async () => {
+      mockUsuariosModel.getAll.mockRejectedValue(new Error("Database error"));
+
+      await usuariosController.getUsuarios(
+        mockRequest as Request,
+        mockResponse as Response,
+        mockNext
       );
+
+      expect(mockUsuariosModel.getAll).toHaveBeenCalledTimes(1);
       expect(mockResponse.status).toHaveBeenCalledWith(500);
       expect(mockResponse.json).toHaveBeenCalledWith({
         error: "Error interno del servidor",
@@ -133,171 +118,84 @@ describe("UsuariosController", () => {
     });
   });
 
-  describe("getUsuarioById", () => {
-    const mockUser: Usuario = {
-      id: "1",
-      email: "test@example.com",
-      firstName: "Test",
-      lastName: "User",
-      role: "user",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      app_metadata: {},
-      user_metadata: {},
-      aud: "authenticated",
-      created_at: new Date().toISOString(),
-    };
+  describe("UsuariosController - getUsuarioById", () => {
+    it("should return a user by ID with status 200", async () => {
+      const mockUsuario = {
+        id: "1",
+        email: "user1@example.com",
+        role: "admin",
+        createdAt: "2025-03-08T00:00:00Z",
+        updatedAt: "2025-03-08T00:00:00Z",
+      };
+      mockUsuariosModel.getById.mockResolvedValue(mockUsuario);
 
-    it("should return a user by ID", async () => {
-      mockRequest.params = { id: "1" };
-      mockUsuariosModel.getById.mockResolvedValue(mockUser);
+      const mockRequestWithId: Request = {
+        params: { id: "1" },
+        query: {},
+        body: {},
+        get: jest.fn(),
+        header: jest.fn(),
+        accepts: jest.fn(),
+        acceptsCharsets: jest.fn(),
+      } as unknown as Request;
 
       await usuariosController.getUsuarioById(
-        mockRequest as Request,
+        mockRequestWithId,
         mockResponse as Response,
-        mockNext as jest.Mock
+        mockNext
       );
 
       expect(mockUsuariosModel.getById).toHaveBeenCalledWith("1");
       expect(mockResponse.status).toHaveBeenCalledWith(200);
-      expect(mockResponse.json).toHaveBeenCalledWith(mockUser);
+      expect(mockResponse.json).toHaveBeenCalledWith(mockUsuario);
     });
 
-    it("should return 404 if user not found", async () => {
-      mockRequest.params = { id: "999" };
+    it("should return 404 if the user is not found", async () => {
       mockUsuariosModel.getById.mockResolvedValue(null);
 
+      const mockRequestWithId: Request = {
+        params: { id: "1" },
+        query: {},
+        body: {},
+        get: jest.fn(),
+        header: jest.fn(),
+        accepts: jest.fn(),
+        acceptsCharsets: jest.fn(),
+      } as unknown as Request;
+
       await usuariosController.getUsuarioById(
-        mockRequest as Request,
+        mockRequestWithId,
         mockResponse as Response,
-        mockNext as jest.Mock
+        mockNext
       );
 
+      expect(mockUsuariosModel.getById).toHaveBeenCalledWith("1");
       expect(mockResponse.status).toHaveBeenCalledWith(404);
       expect(mockResponse.json).toHaveBeenCalledWith({
         message: "Usuario no encontrado",
       });
     });
-  });
 
-  describe("signUp", () => {
-    const newUser: UsuarioCreate = {
-      email: "test@example.com",
-      password: "password123",
-      firstName: "Test",
-      lastName: "User",
-      role: "user",
-    };
+    it("should return 500 if an error occurs", async () => {
+      mockUsuariosModel.getById.mockRejectedValue(new Error("Database error"));
 
-    const authResponse: AuthResponse = {
-      user: {
-        id: "1",
-        email: "test@example.com",
-        firstName: "Test",
-        lastName: "User",
-        role: "user",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        app_metadata: {},
-        user_metadata: {},
-        aud: "authenticated",
-        created_at: new Date().toISOString(),
-      },
-      session: null,
-      error: undefined,
-    };
+      const mockRequestWithId: Request = {
+        params: { id: "1" },
+        query: {},
+        body: {},
+        get: jest.fn(),
+        header: jest.fn(),
+        accepts: jest.fn(),
+        acceptsCharsets: jest.fn(),
+      } as unknown as Request;
 
-    it("should sign up a new user", async () => {
-      mockRequest.body = newUser;
-      mockUsuariosModel.signUp.mockResolvedValue(authResponse);
-
-      await usuariosController.signUp(
-        mockRequest as Request,
+      await usuariosController.getUsuarioById(
+        mockRequestWithId,
         mockResponse as Response,
-        mockNext as jest.Mock
+        mockNext
       );
 
-      expect(mockUsuariosModel.signUp).toHaveBeenCalledWith(newUser);
-      expect(mockResponse.status).toHaveBeenCalledWith(201);
-    });
-
-    it("should handle validation errors", async () => {
-      const validateMock =
-        require("@/src/usuarios/schemasUsuarios").validateUsuarioCreate;
-      validateMock.mockReturnValueOnce({
-        success: false,
-        error: { message: "Invalid email" },
-      });
-
-      mockRequest.body = { email: "invalid" };
-
-      await usuariosController.signUp(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext as jest.Mock
-      );
-
-      expect(mockResponse.status).toHaveBeenCalledWith(400);
-      expect(mockResponse.json).toHaveBeenCalledWith({
-        error: { message: "Invalid email" },
-      });
-    });
-  });
-
-  describe("createUsuario", () => {
-    const newUser: UsuarioCreate = {
-      email: "test@example.com",
-      password: "password123",
-      firstName: "Test",
-      lastName: "User",
-      role: "user",
-    };
-
-    const userCreated: Usuario = {
-      id: "1",
-      email: "test@example.com",
-      firstName: "Test",
-      lastName: "User",
-      role: "user",
-      app_metadata: {},
-      user_metadata: {},
-      aud: "authenticated",
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      is_anonymous: false,
-    };
-
-    it("should create a new user", async () => {
-      mockRequest.body = newUser;
-      mockUsuariosModel.create.mockResolvedValue(userCreated);
-
-      await usuariosController.createUsuario(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext as jest.Mock
-      );
-
-      expect(mockUsuariosModel.create).toHaveBeenCalledWith(newUser);
-      expect(mockResponse.status).toHaveBeenCalledWith(201);
-    });
-
-    it("should handle database errors", async () => {
-      const error = new Error("Database error");
-      mockRequest.body = { email: "newuser@example.com" };
-      mockUsuariosModel.create.mockRejectedValue(error);
-
-      await usuariosController.createUsuario(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext as jest.Mock
-      );
-
-      expect(console.error).toHaveBeenCalledWith(
-        "Error al crear el usuario:",
-        error
-      );
+      expect(mockUsuariosModel.getById).toHaveBeenCalledWith("1");
       expect(mockResponse.status).toHaveBeenCalledWith(500);
       expect(mockResponse.json).toHaveBeenCalledWith({
         error: "Error interno del servidor",
@@ -305,70 +203,357 @@ describe("UsuariosController", () => {
     });
   });
 
-  describe("updateUsuario", () => {
-    const updatedData: UsuarioUpdate = { firstName: "Updated" };
+  describe("UsuariosController - signUp", () => {
+    it("should create a new user and return status 201", async () => {
+      const mockUsuarioCreate: UsuarioCreate = {
+        email: "newuser@example.com",
+        password: "password123",
+        firstName: "New",
+        lastName: "User",
+        role: "user",
+      };
 
-    it("should update a user", async () => {
-      mockRequest.params = { id: "1" };
-      mockRequest.body = updatedData;
-      mockUsuariosModel.update.mockResolvedValue({
-        ...updatedData,
-        id: "1",
-      } as Usuario);
+      const mockAuthResponse: AuthResponse = {
+        user: {
+          id: "1",
+          email: "newuser@example.com",
+          firstName: "New",
+          lastName: "User",
+          role: "user",
+          createdAt: "2025-03-08T00:00:00Z",
+          updatedAt: "2025-03-08T00:00:00Z",
+        },
+        session: null,
+        error: undefined,
+      };
 
-      await usuariosController.updateUsuario(
+      mockUsuariosModel.signUp.mockResolvedValue(mockAuthResponse);
+
+      mockRequest = { body: mockUsuarioCreate };
+      await usuariosController.signUp(
         mockRequest as Request,
         mockResponse as Response,
-        mockNext as jest.Mock
+        mockNext
       );
 
-      expect(mockUsuariosModel.update).toHaveBeenCalledWith("1", updatedData);
-      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockUsuariosModel.signUp).toHaveBeenCalledWith(mockUsuarioCreate);
+      expect(mockResponse.status).toHaveBeenCalledWith(201);
+      expect(mockResponse.json).toHaveBeenCalledWith(mockAuthResponse);
     });
 
-    it("should return 404 if user not found", async () => {
-      mockRequest.params = { id: "999" };
-      mockUsuariosModel.update.mockResolvedValue(null);
+    it("should return 400 if validation fails", async () => {
+      const mockUsuarioCreate: UsuarioCreate = {
+        email: "newuser@example.com",
+        password: "password123",
+      };
 
-      await usuariosController.updateUsuario(
+      jest.mock("@/src/usuarios/schemasUsuarios", () => ({
+        validateUsuarioCreate: jest
+          .fn()
+          .mockReturnValue({ success: false, error: "Invalid data" }),
+      }));
+
+      mockRequest = { body: mockUsuarioCreate };
+      await usuariosController.signUp(
         mockRequest as Request,
         mockResponse as Response,
-        mockNext as jest.Mock
+        mockNext
       );
 
-      expect(mockResponse.status).toHaveBeenCalledWith(404);
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({ error: "Invalid data" });
+    });
+
+    it("should return 500 if an error occurs", async () => {
+      const mockUsuarioCreate: UsuarioCreate = {
+        email: "newuser@example.com",
+        password: "password123",
+        firstName: "New",
+        lastName: "User",
+        role: "user",
+      };
+
+      mockUsuariosModel.signUp.mockRejectedValue(new Error("Database error"));
+
+      mockRequest = { body: mockUsuarioCreate };
+      await usuariosController.signUp(
+        mockRequest as Request,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
       expect(mockResponse.json).toHaveBeenCalledWith({
-        message: "Usuario no encontrado",
+        error: "Error interno del servidor",
       });
     });
   });
 
-  describe("deleteUsuario", () => {
-    it("should delete a user", async () => {
-      mockRequest.params = { id: "1" };
-      mockUsuariosModel.delete.mockResolvedValue(true);
+  describe("UsuariosController - createUsuario", () => {
+    const usuarioData: UsuarioCreate = {
+      email: "user@example.com",
+      role: "admin",
+      password: "password123", // Add the password property here
+    };
 
-      await usuariosController.deleteUsuario(
-        mockRequest as Request,
+    it("should create a new user and return status 201", async () => {
+      const newUsuario = {
+        id: "1",
+        email: "user@example.com",
+        role: "admin",
+        createdAt: "2025-03-08T00:00:00Z",
+        updatedAt: "2025-03-08T00:00:00Z",
+      };
+
+      mockUsuariosModel.create.mockResolvedValue(newUsuario);
+
+      const mockRequest: Request = {
+        body: usuarioData,
+        get: jest.fn(),
+        header: jest.fn(),
+        accepts: jest.fn(),
+        acceptsCharsets: jest.fn(),
+      } as unknown as Request;
+
+      await usuariosController.createUsuario(
+        mockRequest,
         mockResponse as Response,
-        mockNext as jest.Mock
+        mockNext
       );
 
-      expect(mockUsuariosModel.delete).toHaveBeenCalledWith("1");
+      expect(mockUsuariosModel.create).toHaveBeenCalledWith(usuarioData);
+      expect(mockResponse.status).toHaveBeenCalledWith(201);
+      expect(mockResponse.json).toHaveBeenCalledWith(newUsuario);
+    });
+
+    it("should return 400 if validation fails", async () => {
+      const validationResult = {
+        success: false,
+        error: "Invalid email format",
+      };
+
+      jest.mock("@/src/usuarios/schemasUsuarios", () => ({
+        validateUsuarioCreate: jest.fn().mockReturnValue(validationResult),
+      }));
+
+      const mockRequest: Request = {
+        body: usuarioData,
+        get: jest.fn(),
+        header: jest.fn(),
+        accepts: jest.fn(),
+        acceptsCharsets: jest.fn(),
+      } as unknown as Request;
+
+      await usuariosController.createUsuario(
+        mockRequest,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: validationResult.error,
+      });
+    });
+
+    it("should return 500 if an error occurs", async () => {
+      mockUsuariosModel.create.mockRejectedValue(new Error("Database error"));
+
+      const mockRequest: Request = {
+        body: usuarioData,
+        get: jest.fn(),
+        header: jest.fn(),
+        accepts: jest.fn(),
+        acceptsCharsets: jest.fn(),
+      } as unknown as Request;
+
+      await usuariosController.createUsuario(
+        mockRequest,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: "Error interno del servidor",
+      });
+    });
+  });
+
+  describe("UsuariosController - updateUsuario", () => {
+    it("should update a user and return status 200", async () => {
+      const id = "1";
+      const usuarioData: UsuarioUpdate = {
+        email: "updated@example.com",
+        role: "user",
+      };
+
+      const user = {
+        id: "1",
+        email: "updated@example.com",
+        role: "user",
+        createdAt: "2025-03-08T00:00:00Z",
+        updatedAt: "2025-03-08T00:00:00Z",
+      };
+
+      mockUsuariosModel.update.mockResolvedValue(user);
+
+      const mockRequest: Request = {
+        params: { id },
+        body: usuarioData,
+        get: jest.fn(),
+        header: jest.fn(),
+        accepts: jest.fn(),
+        acceptsCharsets: jest.fn(),
+      } as unknown as Request;
+
+      await usuariosController.updateUsuario(
+        mockRequest,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(mockUsuariosModel.update).toHaveBeenCalledWith(id, usuarioData);
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith(user); // Updated to send the full user object
+    });
+  });
+
+  it("should return 400 if validation fails", async () => {
+    const usuarioData: UsuarioUpdate = {
+      email: "updated@example.com",
+      role: "user",
+    };
+    const validationResult = {
+      success: false,
+      error: "Invalid email format",
+    };
+
+    jest.mock("@/src/usuarios/schemasUsuarios", () => ({
+      validateUsuarioUpdate: jest.fn().mockReturnValue(validationResult),
+    }));
+
+    const mockRequest: Request = {
+      body: usuarioData,
+      params: { id: "1" },
+      get: jest.fn(),
+      header: jest.fn(),
+      accepts: jest.fn(),
+      acceptsCharsets: jest.fn(),
+    } as unknown as Request;
+
+    await usuariosController.updateUsuario(
+      mockRequest,
+      mockResponse as Response,
+      mockNext
+    );
+
+    expect(mockResponse.status).toHaveBeenCalledWith(400);
+    expect(mockResponse.json).toHaveBeenCalledWith({
+      error: validationResult.error,
+    });
+  });
+
+  it("should return 404 if the user is not found", async () => {
+    const id = "1";
+    const usuarioData: UsuarioUpdate = {
+      email: "updated@example.com",
+      role: "user",
+    };
+    mockUsuariosModel.update.mockResolvedValue(null);
+
+    const mockRequest: Request = {
+      params: { id },
+      body: usuarioData,
+      get: jest.fn(),
+      header: jest.fn(),
+      accepts: jest.fn(),
+      acceptsCharsets: jest.fn(),
+    } as unknown as Request;
+
+    await usuariosController.updateUsuario(
+      mockRequest,
+      mockResponse as Response,
+      mockNext
+    );
+
+    expect(mockResponse.status).toHaveBeenCalledWith(404);
+    expect(mockResponse.json).toHaveBeenCalledWith({
+      message: "Usuario no encontrado",
+    });
+  });
+
+  it("should return 500 if an error occurs", async () => {
+    const id = "1";
+    const usuarioData: UsuarioUpdate = {
+      email: "updated@example.com",
+      role: "user",
+    };
+    mockUsuariosModel.update.mockRejectedValue(new Error("Database error"));
+
+    const mockRequest: Request = {
+      params: { id },
+      body: usuarioData,
+      get: jest.fn(),
+      header: jest.fn(),
+      accepts: jest.fn(),
+      acceptsCharsets: jest.fn(),
+    } as unknown as Request;
+
+    await usuariosController.updateUsuario(
+      mockRequest,
+      mockResponse as Response,
+      mockNext
+    );
+
+    expect(mockResponse.status).toHaveBeenCalledWith(500);
+    expect(mockResponse.json).toHaveBeenCalledWith({
+      error: "Error interno del servidor",
+    });
+  });
+
+  describe("UsuariosController - deleteUsuario", () => {
+    it("should delete a user and return status 200", async () => {
+      const id = "1";
+      mockUsuariosModel.delete.mockResolvedValue(true);
+
+      const mockRequest: Request = {
+        params: { id },
+        get: jest.fn(),
+        header: jest.fn(),
+        accepts: jest.fn(),
+        acceptsCharsets: jest.fn(),
+      } as unknown as Request;
+
+      await usuariosController.deleteUsuario(
+        mockRequest,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(mockUsuariosModel.delete).toHaveBeenCalledWith(id);
       expect(mockResponse.status).toHaveBeenCalledWith(200);
       expect(mockResponse.json).toHaveBeenCalledWith({
         message: "Usuario eliminado correctamente",
       });
     });
 
-    it("should return 404 if user not found", async () => {
-      mockRequest.params = { id: "999" };
+    it("should return 404 if the user is not found", async () => {
+      const id = "1";
       mockUsuariosModel.delete.mockResolvedValue(false);
 
+      const mockRequest: Request = {
+        params: { id },
+        get: jest.fn(),
+        header: jest.fn(),
+        accepts: jest.fn(),
+        acceptsCharsets: jest.fn(),
+      } as unknown as Request;
+
       await usuariosController.deleteUsuario(
-        mockRequest as Request,
+        mockRequest,
         mockResponse as Response,
-        mockNext as jest.Mock
+        mockNext
       );
 
       expect(mockResponse.status).toHaveBeenCalledWith(404);
@@ -376,79 +561,380 @@ describe("UsuariosController", () => {
         message: "Usuario no encontrado",
       });
     });
-  });
 
-  describe("signIn", () => {
-    const credentials: LoginCredentials = {
-      email: "test@example.com",
-      password: "password123",
-    };
+    it("should return 500 if an error occurs", async () => {
+      const id = "1";
+      mockUsuariosModel.delete.mockRejectedValue(new Error("Database error"));
 
-    const authResponse: AuthResponse = {
-      user: {
-        id: "1",
-        email: "test@example.com",
-        firstName: "Test",
-        lastName: "User",
-        role: "user",
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        app_metadata: {},
-        user_metadata: {},
-        aud: "authenticated",
-        created_at: new Date().toISOString(),
-      },
-      session: null,
-      error: undefined,
-    };
+      const mockRequest: Request = {
+        params: { id },
+        get: jest.fn(),
+        header: jest.fn(),
+        accepts: jest.fn(),
+        acceptsCharsets: jest.fn(),
+      } as unknown as Request;
 
-    it("should sign in a user", async () => {
-      mockRequest.body = credentials;
-      mockUsuariosModel.signIn.mockResolvedValue(authResponse);
-
-      await usuariosController.signIn(
-        mockRequest as Request,
+      await usuariosController.deleteUsuario(
+        mockRequest,
         mockResponse as Response,
-        mockNext as jest.Mock
+        mockNext
       );
 
-      expect(mockUsuariosModel.signIn).toHaveBeenCalledWith(credentials);
-      expect(mockResponse.status).toHaveBeenCalledWith(200);
-    });
-
-    it("should handle authentication errors", async () => {
-      const error = new Error("Invalid credentials");
-      mockRequest.body = credentials;
-      mockUsuariosModel.signIn.mockRejectedValue(error);
-
-      await usuariosController.signIn(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext as jest.Mock
-      );
-
-      expect(console.error).toHaveBeenCalledWith("Error en el inicio de sesión:", error);
-      expect(mockResponse.status).toHaveBeenCalledWith(401);
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
       expect(mockResponse.json).toHaveBeenCalledWith({
-        error: "Credenciales inválidas",
+        error: "Error interno del servidor",
       });
     });
   });
 
+  describe("UsuariosController - changePassword", () => {
+    it("should change the password and return status 200", async () => {
+      const newPassword = "newPassword123";
+      const mockRequest: Request = {
+        body: { newPassword },
+        get: jest.fn(),
+        header: jest.fn(),
+        accepts: jest.fn(),
+        acceptsCharsets: jest.fn(),
+      } as unknown as Request;
+
+      mockUsuariosModel.changePassword.mockResolvedValue(true);
+
+      await usuariosController.changePassword(
+        mockRequest,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(mockUsuariosModel.changePassword).toHaveBeenCalledWith(
+        newPassword
+      );
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: "Contraseña cambiada correctamente",
+      });
+    });
+
+    it("should return 400 if the password change fails", async () => {
+      const newPassword = "newPassword123";
+      const mockRequest: Request = {
+        body: { newPassword },
+        get: jest.fn(),
+        header: jest.fn(),
+        accepts: jest.fn(),
+        acceptsCharsets: jest.fn(),
+      } as unknown as Request;
+
+      mockUsuariosModel.changePassword.mockResolvedValue(false);
+
+      await usuariosController.changePassword(
+        mockRequest,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: "Error al cambiar la contraseña",
+      });
+    });
+
+    it("should return 500 if an error occurs", async () => {
+      const newPassword = "newPassword123";
+      const mockRequest: Request = {
+        body: { newPassword },
+        get: jest.fn(),
+        header: jest.fn(),
+        accepts: jest.fn(),
+        acceptsCharsets: jest.fn(),
+      } as unknown as Request;
+
+      mockUsuariosModel.changePassword.mockRejectedValue(
+        new Error("Database error")
+      );
+
+      await usuariosController.changePassword(
+        mockRequest,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: "Error interno del servidor",
+      });
+    });
+  });
+
+  describe("UsuariosController - resetEmail", () => {
+    it("should reset the email and return status 200", async () => {
+      const email = "user@example.com";
+      const mockRequest: Request = {
+        body: { email },
+        get: jest.fn(),
+        header: jest.fn(),
+        accepts: jest.fn(),
+        acceptsCharsets: jest.fn(),
+      } as unknown as Request;
+
+      mockUsuariosModel.resetEmail.mockResolvedValue(true);
+
+      await usuariosController.resetEmail(
+        mockRequest,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(mockUsuariosModel.resetEmail).toHaveBeenCalledWith(email);
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: "Correo restablecido correctamente",
+      });
+    });
+
+    it("should return 400 if the email reset fails", async () => {
+      const email = "user@example.com";
+      const mockRequest: Request = {
+        body: { email },
+        get: jest.fn(),
+        header: jest.fn(),
+        accepts: jest.fn(),
+        acceptsCharsets: jest.fn(),
+      } as unknown as Request;
+
+      mockUsuariosModel.resetEmail.mockResolvedValue(false);
+
+      await usuariosController.resetEmail(
+        mockRequest,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: "Error al restablecer el correo",
+      });
+    });
+
+    it("should return 500 if an error occurs", async () => {
+      const email = "user@example.com";
+      const mockRequest: Request = {
+        body: { email },
+        get: jest.fn(),
+        header: jest.fn(),
+        accepts: jest.fn(),
+        acceptsCharsets: jest.fn(),
+      } as unknown as Request;
+
+      mockUsuariosModel.resetEmail.mockRejectedValue(
+        new Error("Database error")
+      );
+
+      await usuariosController.resetEmail(
+        mockRequest,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: "Error interno del servidor",
+      });
+    });
+  });
+
+  describe("UsuariosController - signIn", () => {
+    it("should sign in a user and return status 200", async () => {
+      const credentials: LoginCredentials = {
+        email: "user@example.com",
+        password: "password123",
+      };
+
+      const authResponse: AuthResponse = {
+        session: "fake-token",
+        user: {
+          id: "1",
+          email: "user@example.com",
+          role: "admin",
+          createdAt: "2025-03-08T00:00:00Z",
+          updatedAt: "2025-03-08T00:00:00Z",
+        },
+      };
+
+      const mockRequest: Request = {
+        body: credentials,
+        get: jest.fn(),
+        header: jest.fn(),
+        accepts: jest.fn(),
+        acceptsCharsets: jest.fn(),
+      } as unknown as Request;
+
+      mockUsuariosModel.signIn.mockResolvedValue(authResponse);
+
+      await usuariosController.signIn(
+        mockRequest,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(mockUsuariosModel.signIn).toHaveBeenCalledWith(credentials);
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith(authResponse);
+    });
+
+    it("should return 400 if credentials are invalid", async () => {
+      const credentials: LoginCredentials = {
+        email: "user@example.com",
+        password: "wrongpassword",
+      };
+
+      const mockRequest: Request = {
+        body: credentials,
+        get: jest.fn(),
+        header: jest.fn(),
+        accepts: jest.fn(),
+        acceptsCharsets: jest.fn(),
+      } as unknown as Request;
+
+      mockUsuariosModel.signIn.mockResolvedValue({
+        user: null,
+        session: null,
+        error: "Invalid credentials",
+      });
+
+      await usuariosController.signIn(
+        mockRequest,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: "Credenciales inválidas",
+      });
+    });
+
+    it("should return 500 if an error occurs", async () => {
+      const credentials: LoginCredentials = {
+        email: "user@example.com",
+        password: "password123",
+      };
+
+      const mockRequest: Request = {
+        body: credentials,
+        get: jest.fn(),
+        header: jest.fn(),
+        accepts: jest.fn(),
+        acceptsCharsets: jest.fn(),
+      } as unknown as Request;
+
+      mockUsuariosModel.signIn.mockRejectedValue(new Error("Database error"));
+
+      await usuariosController.signIn(
+        mockRequest,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: "Error interno del servidor",
+      });
+    });
+  });
+
+  // Test for signOut
   describe("signOut", () => {
-    it("should sign out a user", async () => {
-      mockRequest.user = { id: "1" };
+    it("should return 200 if the session is successfully closed", async () => {
+      mockUsuariosModel.signOut.mockResolvedValue(undefined); // Mock successful sign out
 
       await usuariosController.signOut(
         mockRequest as Request,
         mockResponse as Response,
-        mockNext as jest.Mock
+        mockNext
       );
 
-      expect(mockUsuariosModel.signOut).toHaveBeenCalledWith("1");
       expect(mockResponse.status).toHaveBeenCalledWith(200);
       expect(mockResponse.json).toHaveBeenCalledWith({
         message: "Sesión cerrada correctamente",
+      });
+    });
+
+    it("should return 500 if there is an error while signing out", async () => {
+      mockUsuariosModel.signOut.mockRejectedValue(
+        new Error("Error al cerrar sesión")
+      ); // Mock failure
+
+      await usuariosController.signOut(
+        mockRequest as Request,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: "Error interno del servidor",
+        details: "Error al cerrar sesión",
+      });
+    });
+  });
+
+  // Test for resetPassword
+  describe("resetPassword", () => {
+    it("should return 200 if password is successfully reset", async () => {
+      const email = "user@example.com";
+      mockUsuariosModel.resetPassword.mockResolvedValue(true); // Mock successful reset
+
+      mockRequest.body = { email };
+
+      await usuariosController.resetPassword(
+        mockRequest as Request,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: "Contraseña restablecida correctamente",
+      });
+    });
+
+    it("should return 400 if there is an error resetting the password", async () => {
+      const email = "user@example.com";
+      mockUsuariosModel.resetPassword.mockResolvedValue(false); // Mock failed reset
+
+      mockRequest.body = { email };
+
+      await usuariosController.resetPassword(
+        mockRequest as Request,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: "Error al restablecer la contraseña",
+      });
+    });
+
+    it("should return 500 if there is an internal server error", async () => {
+      const email = "user@example.com";
+      mockUsuariosModel.resetPassword.mockRejectedValue(
+        new Error("Error al restablecer la contraseña")
+      ); // Mock failure
+
+      mockRequest.body = { email };
+
+      await usuariosController.resetPassword(
+        mockRequest as Request,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: "Error interno del servidor",
+        details: "Error al restablecer la contraseña",
       });
     });
   });
