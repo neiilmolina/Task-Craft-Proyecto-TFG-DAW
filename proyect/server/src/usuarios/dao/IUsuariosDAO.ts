@@ -19,11 +19,12 @@ export default interface IUsuariosDAO {
     // Métodos de gestión de usuarios
     getAll(filters?: UserFilters): Promise<PaginatedUsers>;
     getById(id: string): Promise<Usuario | null>;
+    create(userData: UsuarioCreate): Promise<Usuario | null>;
     update(id: string, usuario: UsuarioUpdate): Promise<Usuario | null>;
     delete(id: string): Promise<boolean>;
     
     // Gestión de perfil
-    changePassword(id: string, oldPassword: string, newPassword: string): Promise<boolean>;
+    changePassword(newPassword: string): Promise<boolean>;
     
     // Nuevo método para resetear el email
     resetEmail(email: string): Promise<boolean>;

@@ -47,18 +47,19 @@ export default class UsuariosModel {
     return this.usuariosDAO.delete(id);
   }
 
+  // Crear un usuario
+  async create(usuario: UsuarioCreate): Promise<Usuario | null> {
+    return this.usuariosDAO.create(usuario);
+  }
+
   // Actualizar un usuario
   async update(id: string, usuario: UsuarioUpdate): Promise<Usuario | null> {
     return this.usuariosDAO.update(id, usuario);
   }
 
   // Cambiar la contraseña del usuario
-  async changePassword(
-    id: string,
-    oldPassword: string,
-    newPassword: string
-  ): Promise<boolean> {
-    return this.usuariosDAO.changePassword(id, oldPassword, newPassword);
+  async changePassword(newPassword: string): Promise<boolean> {
+    return this.usuariosDAO.changePassword(newPassword);
   }
 
   // Restablecer el correo del usuario

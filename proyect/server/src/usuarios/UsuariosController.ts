@@ -62,6 +62,25 @@ export default class UsuariosController {
     }
   };
 
+  createUsuario: RequestHandler = async (req, res) => {
+    try {
+      const usuarioData: UsuarioCreate = req.body;
+
+      // Validación del cuerpo de la solicitud
+      const result = validateUsuarioCreate(usuarioData);
+      if (!result.success) {
+        res.status(400).json({ error: result.error });
+        return;
+      }
+
+      const newUsuario = await this.usuariosModel.create(usuarioData);
+      res.status(201).json(newUsuario);
+    } catch (error) {
+      console.error("Error al crear el usuario:", error);
+      res.status(500).json({ error: "Error interno del servidor" });
+    }
+  };
+
   // Actualizar un usuario
   updateUsuario: RequestHandler = async (req, res) => {
     try {
@@ -108,14 +127,8 @@ export default class UsuariosController {
   // Cambiar la contraseña de un usuario
   changePassword: RequestHandler = async (req, res) => {
     try {
-      const { oldPassword, newPassword } = req.body;
-      const id = req.params.id;
-
-      const result = await this.usuariosModel.changePassword(
-        id,
-        oldPassword,
-        newPassword
-      );
+      const { newPassword } = req.body;
+      const result = await this.usuariosModel.changePassword(newPassword);
 
       if (result) {
         res.status(200).json({ message: "Contraseña cambiada correctamente" });
@@ -180,7 +193,9 @@ export default class UsuariosController {
       const result = await this.usuariosModel.resetPassword(email);
 
       if (result) {
-        res.status(200).json({ message: "Contraseña restablecida correctamente" });
+        res
+          .status(200)
+          .json({ message: "Contraseña restablecida correctamente" });
       } else {
         res.status(400).json({ message: "Error al restablecer la contraseña" });
       }

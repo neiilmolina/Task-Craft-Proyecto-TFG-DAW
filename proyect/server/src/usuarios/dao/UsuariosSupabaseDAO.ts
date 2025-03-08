@@ -175,6 +175,29 @@ export default class UsuariosSupabaseDAO implements IUsuariosDAO {
     }
   }
 
+  async create(userData: UsuarioCreate): Promise<Usuario | null> {
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: userData.email,
+        password: userData.password,
+        options: {
+          data: {
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            role: userData.role || "user",
+          },
+        },
+      });
+
+      if (error) throw error;
+
+      return data.user as Usuario;
+    } catch (error: any) {
+      console.error("Error in signUp:", error);
+      return null;
+    }
+  }
+
   // Actualizar un usuario
   async update(id: string, usuario: UsuarioUpdate): Promise<Usuario | null> {
     try {
@@ -191,12 +214,7 @@ export default class UsuariosSupabaseDAO implements IUsuariosDAO {
     }
   }
 
-  // Cambiar la contraseña del usuario
-  async changePassword(
-    id: string,
-    oldPassword: string,
-    newPassword: string
-  ): Promise<boolean> {
+  async changePassword(newPassword: string): Promise<boolean> {
     try {
       const { error } = await supabase.auth.updateUser({
         password: newPassword,

@@ -1,5 +1,6 @@
 import UsuariosModel from "@/src/usuarios/UsuariosModel";
 import {
+  Usuario,
   UsuarioCreate,
   UsuarioUpdate,
   AuthResponse,
@@ -22,6 +23,7 @@ const usuariosDAOMock: IUsuariosDAO = {
   getAll: jest.fn(),
   getById: jest.fn(),
   delete: jest.fn(),
+  create: jest.fn(),
   update: jest.fn(),
   changePassword: jest.fn(),
   resetEmail: jest.fn(),
@@ -169,6 +171,39 @@ describe("UsuariosModel", () => {
 
     expect(usuariosDAOMock.getById).toHaveBeenCalledWith("1");
     expect(result).toEqual(user);
+  });
+
+  it("should create a new user", async () => {
+    const newUser: UsuarioCreate = {
+      email: "test@example.com",
+      password: "password123",
+      firstName: "Test",
+      lastName: "User",
+      role: "user",
+    };
+
+    const userCreated: Usuario = {
+      id: "1",
+      email: "test@example.com",
+      firstName: "Test",
+      lastName: "User",
+      role: "user",
+      app_metadata: {},
+      user_metadata: {},
+      aud: "authenticated",
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      is_anonymous: false,
+    };
+
+    (usuariosDAOMock.create as jest.Mock).mockResolvedValue(userCreated);
+
+    const result = await usuariosModel.create(newUser);
+
+    expect(usuariosDAOMock.create).toHaveBeenCalledWith(newUser);
+    expect(result).toEqual(userCreated);
   });
 
   it("should update a user", async () => {
