@@ -3,11 +3,9 @@ import { Request, Response } from "express";
 import UsuariosController from "@/src/usuarios/UsuariosController";
 import UsuariosModel from "@/src/usuarios/UsuariosModel";
 import {
-  Usuario,
   UsuarioCreate,
   UsuarioUpdate,
   LoginCredentials,
-  PaginatedUsers,
   AuthResponse,
 } from "@/src/usuarios/interfacesUsuarios";
 
@@ -22,7 +20,9 @@ afterAll(() => {
 
 // Mock validation schemas
 jest.mock("@/src/usuarios/schemasUsuarios", () => ({
-  validateUsuarioCreate: jest.fn().mockReturnValue({ success: true }),
+  validateUsuarioCreate: jest
+    .fn()
+    .mockReturnValue({ success: false, error: "Invalid data" }),
   validateUsuarioUpdate: jest.fn().mockReturnValue({ success: true }),
 }));
 
@@ -65,17 +65,38 @@ describe("UsuariosController", () => {
           id: "1",
           email: "user1@example.com",
           role: "admin",
-          createdAt: "2025-03-08T00:00:00Z",
-          updatedAt: "2025-03-08T00:00:00Z",
+          created_at: "2025-03-08T00:00:00Z",
+          updated_at: "2025-03-08T00:00:00Z",
+          app_metadata: {
+            provider: "email",
+            providers: ["email"],
+          },
+          user_metadata: {
+            first_name: "Admin User",
+            last_name: "Admin Last Name",
+            avatar_url: "https://example.com/admin-avatar.jpg",
+          },
+          aud: "authenticated",
         },
         {
           id: "2",
           email: "user2@example.com",
           role: "user",
-          createdAt: "2025-03-08T00:00:00Z",
-          updatedAt: "2025-03-08T00:00:00Z",
+          created_at: "2025-03-08T00:00:00Z",
+          updated_at: "2025-03-08T00:00:00Z",
+          app_metadata: {
+            provider: "email",
+            providers: ["email"],
+          },
+          user_metadata: {
+            first_name: "Regular User",
+            last_name: "User Last Name",
+            avatar_url: "https://example.com/user-avatar.jpg",
+          },
+          aud: "authenticated",
         },
       ];
+
       mockUsuariosModel.getAll.mockResolvedValue({
         users: mockUsuarios,
         total: 2,
@@ -124,9 +145,20 @@ describe("UsuariosController", () => {
         id: "1",
         email: "user1@example.com",
         role: "admin",
-        createdAt: "2025-03-08T00:00:00Z",
-        updatedAt: "2025-03-08T00:00:00Z",
+        created_at: "2025-03-08T00:00:00Z",
+        updated_at: "2025-03-08T00:00:00Z",
+        app_metadata: {
+          provider: "email",
+          providers: ["email"],
+        },
+        user_metadata: {
+          first_name: "Admin User", // Nombre del usuario en user_metadata
+          last_name: "Admin Last Name", // Apellido del usuario
+          avatar_url: "https://example.com/admin-avatar.jpg", // URL del avatar
+        },
+        aud: "authenticated", // Audiencia para el usuario autenticado
       };
+
       mockUsuariosModel.getById.mockResolvedValue(mockUsuario);
 
       const mockRequestWithId: Request = {
@@ -208,8 +240,10 @@ describe("UsuariosController", () => {
       const mockUsuarioCreate: UsuarioCreate = {
         email: "newuser@example.com",
         password: "password123",
-        firstName: "New",
-        lastName: "User",
+        userMetadata: {
+          first_name: "New",
+          last_name: "User",
+        },
         role: "user",
       };
 
@@ -217,25 +251,34 @@ describe("UsuariosController", () => {
         user: {
           id: "1",
           email: "newuser@example.com",
-          firstName: "New",
-          lastName: "User",
           role: "user",
-          createdAt: "2025-03-08T00:00:00Z",
-          updatedAt: "2025-03-08T00:00:00Z",
+          created_at: "2025-03-08T00:00:00Z",
+          updated_at: "2025-03-08T00:00:00Z",
+          app_metadata: {
+            provider: "email",
+            providers: ["email"],
+          },
+          user_metadata: {
+            first_name: "New",
+            last_name: "User",
+          },
+          aud: "authenticated",
         },
         session: null,
         error: undefined,
       };
 
       mockUsuariosModel.signUp.mockResolvedValue(mockAuthResponse);
-
       mockRequest = { body: mockUsuarioCreate };
+
+      console.log("Mock Request Body:", mockRequest.body); // Verifica que el cuerpo es correcto
       await usuariosController.signUp(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
       );
 
+      // Verifica que la función signUp se haya llamado con el objeto correcto
       expect(mockUsuariosModel.signUp).toHaveBeenCalledWith(mockUsuarioCreate);
       expect(mockResponse.status).toHaveBeenCalledWith(201);
       expect(mockResponse.json).toHaveBeenCalledWith(mockAuthResponse);
@@ -248,12 +291,14 @@ describe("UsuariosController", () => {
       };
 
       jest.mock("@/src/usuarios/schemasUsuarios", () => ({
-        validateUsuarioCreate: jest
-          .fn()
-          .mockReturnValue({ success: false, error: "Invalid data" }),
+        validateUsuarioCreate: jest.fn().mockReturnValue({
+          success: false,
+          error: "Invalid data",
+        }),
       }));
 
       mockRequest = { body: mockUsuarioCreate };
+
       await usuariosController.signUp(
         mockRequest as Request,
         mockResponse as Response,
@@ -268,14 +313,17 @@ describe("UsuariosController", () => {
       const mockUsuarioCreate: UsuarioCreate = {
         email: "newuser@example.com",
         password: "password123",
-        firstName: "New",
-        lastName: "User",
+        userMetadata: {
+          first_name: "New",
+          last_name: "User",
+        },
         role: "user",
       };
 
       mockUsuariosModel.signUp.mockRejectedValue(new Error("Database error"));
 
       mockRequest = { body: mockUsuarioCreate };
+
       await usuariosController.signUp(
         mockRequest as Request,
         mockResponse as Response,
@@ -294,6 +342,10 @@ describe("UsuariosController", () => {
       email: "user@example.com",
       role: "admin",
       password: "password123", // Add the password property here
+      userMetadata: {
+        first_name: "User",
+        last_name: "Example",
+      },
     };
 
     it("should create a new user and return status 201", async () => {
@@ -301,8 +353,17 @@ describe("UsuariosController", () => {
         id: "1",
         email: "user@example.com",
         role: "admin",
-        createdAt: "2025-03-08T00:00:00Z",
-        updatedAt: "2025-03-08T00:00:00Z",
+        created_at: "2025-03-08T00:00:00Z",
+        updated_at: "2025-03-08T00:00:00Z",
+        app_metadata: {
+          provider: "email",
+          providers: ["email"],
+        },
+        user_metadata: {
+          first_name: "User",
+          last_name: "Example",
+        },
+        aud: "authenticated",
       };
 
       mockUsuariosModel.create.mockResolvedValue(newUsuario);
@@ -386,14 +447,27 @@ describe("UsuariosController", () => {
       const usuarioData: UsuarioUpdate = {
         email: "updated@example.com",
         role: "user",
+        user_metadata: {
+          first_name: "Updated",
+          last_name: "Example",
+        },
       };
 
       const user = {
         id: "1",
         email: "updated@example.com",
         role: "user",
-        createdAt: "2025-03-08T00:00:00Z",
-        updatedAt: "2025-03-08T00:00:00Z",
+        created_at: "2025-03-08T00:00:00Z",
+        updated_at: "2025-03-08T00:00:00Z",
+        app_metadata: {
+          provider: "email",
+          providers: ["email"],
+        },
+        user_metadata: {
+          first_name: "Updated",
+          last_name: "Example",
+        },
+        aud: "authenticated",
       };
 
       mockUsuariosModel.update.mockResolvedValue(user);
@@ -756,8 +830,17 @@ describe("UsuariosController", () => {
           id: "1",
           email: "user@example.com",
           role: "admin",
-          createdAt: "2025-03-08T00:00:00Z",
-          updatedAt: "2025-03-08T00:00:00Z",
+          created_at: "2025-03-08T00:00:00Z",
+          updated_at: "2025-03-08T00:00:00Z",
+          app_metadata: {
+            provider: "email",
+            providers: ["email"],
+          },
+          user_metadata: {
+            first_name: "User",
+            last_name: "Example",
+          },
+          aud: "authenticated",
         },
       };
 
@@ -782,7 +865,7 @@ describe("UsuariosController", () => {
       expect(mockResponse.json).toHaveBeenCalledWith(authResponse);
     });
 
-    it.only("should return 400 if credentials are invalid", async () => {
+    it("should return 400 if credentials are invalid", async () => {
       const credentials: LoginCredentials = {
         email: "user@example.com",
         password: "wrongpassword", // Contraseña incorrecta
@@ -849,7 +932,6 @@ describe("UsuariosController", () => {
     });
   });
 
-  // Test for signOut
   describe("signOut", () => {
     it("should return 200 if the session is successfully closed", async () => {
       mockUsuariosModel.signOut.mockResolvedValue(undefined); // Mock successful sign out
@@ -923,7 +1005,7 @@ describe("UsuariosController", () => {
       });
     });
 
-    it("should return 500 if there is an internal server error", async () => {
+    it.only("should return 500 if there is an internal server error", async () => {
       const email = "user@example.com";
       mockUsuariosModel.resetPassword.mockRejectedValue(
         new Error("Error al restablecer la contraseña")

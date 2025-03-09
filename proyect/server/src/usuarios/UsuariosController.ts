@@ -47,14 +47,18 @@ export default class UsuariosController {
     try {
       const usuarioData: UsuarioCreate = req.body;
 
+      console.log("Request Body:", usuarioData); // Verifica el contenido del cuerpo de la solicitud
+
       // Validación del cuerpo de la solicitud
       const result = validateUsuarioCreate(usuarioData);
       if (!result.success) {
         res.status(400).json({ error: result.error });
-        return;
+        return; // Si la validación falla, termina aquí
       }
 
-      const newUsuario = await this.usuariosModel.signUp(usuarioData);
+      console.log("Calling signUp model with", usuarioData); // Verifica que el modelo se está llamando
+
+      const newUsuario = await this.usuariosModel.signUp(usuarioData); // Aquí debería llamarse
       res.status(201).json(newUsuario);
     } catch (error) {
       console.error("Error al crear el usuario:", error);
@@ -62,7 +66,7 @@ export default class UsuariosController {
     }
   };
 
-  createUsuario: RequestHandler = async (req, res) => {
+  createUsuario: RequestHandler = async (req: Request, res: Response) => {
     try {
       const usuarioData: UsuarioCreate = req.body;
 
@@ -70,9 +74,10 @@ export default class UsuariosController {
       const result = validateUsuarioCreate(usuarioData);
       if (!result.success) {
         res.status(400).json({ error: result.error });
-        return;
+        return; // No es necesario retornar un valor explícito aquí
       }
 
+      // Si la validación es correcta, crear el usuario
       const newUsuario = await this.usuariosModel.create(usuarioData);
       res.status(201).json(newUsuario);
     } catch (error) {
@@ -164,7 +169,7 @@ export default class UsuariosController {
       const credentials: LoginCredentials = req.body;
       const authResponse = await this.usuariosModel.signIn(credentials);
 
-      if (authResponse) {
+      if (authResponse && authResponse.user) {
         res.status(200).json(authResponse);
       } else {
         res.status(400).json({ message: "Credenciales inválidas" });
@@ -180,9 +185,12 @@ export default class UsuariosController {
     try {
       await this.usuariosModel.signOut();
       res.status(200).json({ message: "Sesión cerrada correctamente" });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error al cerrar sesión:", error);
-      res.status(500).json({ error: "Error interno del servidor" });
+      res.status(500).json({
+        error: "Error interno del servidor",
+        details: error.message, // Añadir detalles del error
+      });
     }
   };
 
@@ -199,9 +207,12 @@ export default class UsuariosController {
       } else {
         res.status(400).json({ message: "Error al restablecer la contraseña" });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error al restablecer la contraseña:", error);
-      res.status(500).json({ error: "Error interno del servidor" });
+      res.status(500).json({
+        error: "Error interno del servidor",
+        details: error.message, // Añadir detalles del error
+      });
     }
   };
 }

@@ -17,7 +17,7 @@ export interface UsuarioCreate {
 
 // Interface for updating user information (all fields optional)
 export interface UsuarioUpdate {
-  userMetadata?: user_metadata;
+  user_metadata?: user_metadata;
   role?: string;
   email?: string;
 }

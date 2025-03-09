@@ -101,13 +101,21 @@ export default class UsuariosSupabaseDAO implements IUsuariosDAO {
       }
 
       // Filtrar por término de búsqueda en email, nombre y apellido
-      // Filtrar por término de búsqueda en email, nombre y apellido
       if (filters?.searchTerm) {
         const searchTermLower = filters.searchTerm.toLowerCase();
 
-        users = users.filter((user) =>
-          user.email?.toLowerCase().includes(searchTermLower)
-        );
+        users = users.filter((user) => {
+          // Filtrar por email, first_name y last_name
+          return (
+            user.email?.toLowerCase().includes(searchTermLower) ||
+            user.user_metadata?.first_name
+              .toLowerCase()
+              .includes(searchTermLower) ||
+            user.user_metadata?.last_name
+              .toLowerCase()
+              .includes(searchTermLower)
+          );
+        });
       }
 
       // Ordenar los usuarios por un campo y orden (si se especifica)
@@ -122,6 +130,7 @@ export default class UsuariosSupabaseDAO implements IUsuariosDAO {
           }
         });
       }
+
       // Paginación: calcular los usuarios a mostrar según la página y el límite
       const page = filters?.page ?? 1; // Usamos 1 como valor predeterminado si no está definido
       const limit = filters?.limit ?? 10; // Usamos 10 como valor predeterminado si no está definido
@@ -200,8 +209,8 @@ export default class UsuariosSupabaseDAO implements IUsuariosDAO {
       const updateData: any = { ...usuario };
 
       // Si user_metadata está presente, propagamos sus valores
-      if (usuario.userMetadata) {
-        updateData.data = { ...usuario.userMetadata };
+      if (usuario.user_metadata) {
+        updateData.data = { ...usuario.user_metadata };
       }
 
       // Realizamos la actualización del usuario

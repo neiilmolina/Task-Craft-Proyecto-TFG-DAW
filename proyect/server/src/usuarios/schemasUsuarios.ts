@@ -1,61 +1,36 @@
 // src/usuarios/schemasUsuarios.ts
 import { z } from "zod";
 import {
-  Usuario,
   UsuarioCreate,
   UsuarioUpdate,
   UserFilters,
-} from "@/src/usuarios/interfacesUsuarios";
+} from "@/src/usuarios/interfacesUsuarios"; // Ajustar la importación
 
-// Definir atributos comunes
-const id = z.string().uuid().optional();
-const email = z.string().email("El email debe ser válido");
-const firstName = z
-  .string()
-  .min(2, "El nombre debe tener al menos 2 caracteres")
-  .optional();
-const lastName = z
-  .string()
-  .min(2, "El apellido debe tener al menos 2 caracteres")
-  .optional();
-const role = z.string().min(1, "El rol es requerido");
-const createdAt = z.string().optional();
-const updatedAt = z.string().optional();
-const password = z
-  .string()
-  .min(6, "La contraseña debe tener al menos 6 caracteres");
-
-// Esquema para un Usuario completo
-const usuarioSchema = z.object({
-  id,
-  email,
-  firstName,
-  lastName,
-  role: role, // Rol requerido en este caso
-  createdAt,
-  updatedAt,
+// Esquema para user_metadata (esto se aplica en las interfaces)
+const userMetadataSchema = z.object({
+  first_name: z.string().optional(),
+  last_name: z.string().optional(),
+  avatar_url: z.string().optional(),
 });
 
 // Esquema para la creación de un usuario
 const usuarioCreateSchema = z.object({
-  email,
-  password,
-  firstName,
-  lastName,
-  role: role.optional(),
+  email: z.string().email("El email debe ser válido"),
+  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+  user_metadata: userMetadataSchema.optional(),
+  role: z.string().min(1).optional(),
 });
 
 // Esquema para actualizar la información de un usuario
 const usuarioUpdateSchema = z.object({
-  firstName,
-  lastName,
-  role: role.optional(),
-  email,
+  user_metadata: userMetadataSchema.optional(),
+  role: z.string().min(1).optional(),
+  email: z.string().email("El email debe ser válido").optional(),
 });
 
 // Esquema para filtros de usuarios
 const userFiltersSchema = z.object({
-  role: role.optional(),
+  role: z.string().optional(),
   searchTerm: z.string().optional(),
   sortBy: z.enum(["createdAt", "email", "role"]).optional(),
   sortOrder: z.enum(["asc", "desc"]).optional(),
@@ -63,14 +38,12 @@ const userFiltersSchema = z.object({
   limit: z.number().min(1).max(100).optional(),
 });
 
-// Validación para un Usuario completo
-export function validateUsuario(input: Partial<Usuario>) {
-  return usuarioSchema.safeParse(input);
-}
-
-// Validación para la creación de un usuario
 export function validateUsuarioCreate(input: UsuarioCreate) {
-  return usuarioCreateSchema.safeParse(input);
+  const result = usuarioCreateSchema.safeParse(input);
+  if (!result.success) {
+    return { success: false, error: result.error.errors[0].message }; // Mensaje del primer error
+  }
+  return { success: true };
 }
 
 // Validación para la actualización de un usuario
