@@ -26,10 +26,10 @@ describe("Estados Routes", () => {
 
     app = express();
     app.use(express.json());
-    app.use("/api", createEstadosRoute(mockEstadosModel));
+    app.use("/estados", createEstadosRoute(mockEstadosModel));
   });
 
-  describe("GET /api/estados", () => {
+  describe("GET /estados", () => {
     it("debería devolver todos los estados", async () => {
       const mockEstados = [
         { idEstado: 1, estado: "Activo" },
@@ -37,7 +37,7 @@ describe("Estados Routes", () => {
       ];
       mockEstadosModel.getAll.mockResolvedValue(mockEstados);
 
-      const response = await request(app).get("/api/estados");
+      const response = await request(app).get("/estados");
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual(mockEstados);
@@ -49,19 +49,19 @@ describe("Estados Routes", () => {
         new Error("Error al obtener estados")
       );
 
-      const response = await request(app).get("/api/estados");
+      const response = await request(app).get("/estados");
 
       expect(response.status).toBe(500);
       expect(response.body).toHaveProperty("error");
     });
   });
 
-  describe("GET /api/estados/:idEstado", () => {
+  describe("GET /estados/:idEstado", () => {
     it("debería devolver un estado por ID", async () => {
       const mockEstado = { idEstado: 1, estado: "Activo" };
       mockEstadosModel.getById.mockResolvedValue(mockEstado);
 
-      const response = await request(app).get("/api/estados/1");
+      const response = await request(app).get("/estados/1");
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual(mockEstado);
@@ -71,7 +71,7 @@ describe("Estados Routes", () => {
     it("debería devolver 404 si el estado no existe", async () => {
       mockEstadosModel.getById.mockResolvedValue(null);
 
-      const response = await request(app).get("/api/estados/999");
+      const response = await request(app).get("/estados/999");
 
       expect(response.status).toBe(404);
       expect(response.body).toHaveProperty("message", "Estado no encontrado");
@@ -82,21 +82,21 @@ describe("Estados Routes", () => {
         new Error("Error al obtener estado")
       );
 
-      const response = await request(app).get("/api/estados/1");
+      const response = await request(app).get("/estados/1");
 
       expect(response.status).toBe(500);
       expect(response.body).toHaveProperty("error");
     });
   });
 
-  describe("POST /api/estados", () => {
+  describe("POST /estados", () => {
     it("debería crear un nuevo estado correctamente", async () => {
       const nuevoEstado = { estado: "En proceso" };
       const estadoCreado = { idEstado: 3, estado: "En proceso" };
       mockEstadosModel.create.mockResolvedValue(estadoCreado);
 
       const response = await request(app)
-        .post("/api/estados")
+        .post("/estados")
         .send(nuevoEstado)
         .set("Content-Type", "application/json");
 
@@ -112,7 +112,7 @@ describe("Estados Routes", () => {
       );
 
       const response = await request(app)
-        .post("/api/estados")
+        .post("/estados")
         .send(nuevoEstado)
         .set("Content-Type", "application/json");
 
@@ -131,7 +131,7 @@ describe("Estados Routes", () => {
       }));
 
       const response = await request(app)
-        .post("/api/estados")
+        .post("/estados")
         .send(estadoInvalido)
         .set("Content-Type", "application/json");
 
@@ -140,14 +140,14 @@ describe("Estados Routes", () => {
     });
   });
 
-  describe("PUT /api/estados/:idEstado", () => {
+  describe("PUT /estados/:idEstado", () => {
     it("debería actualizar un estado correctamente", async () => {
       const estadoActualizado = { estado: "Completado" };
       const resultadoActualizado = { idEstado: 1, estado: "Completado" };
       mockEstadosModel.update.mockResolvedValue(resultadoActualizado);
 
       const response = await request(app)
-        .put("/api/estados/1")
+        .put("/estados/1")
         .send(estadoActualizado)
         .set("Content-Type", "application/json");
 
@@ -164,7 +164,7 @@ describe("Estados Routes", () => {
       mockEstadosModel.update.mockResolvedValue(null);
 
       const response = await request(app)
-        .put("/api/estados/999")
+        .put("/estados/999")
         .send(estadoActualizado)
         .set("Content-Type", "application/json");
 
@@ -179,7 +179,7 @@ describe("Estados Routes", () => {
       );
 
       const response = await request(app)
-        .put("/api/estados/1")
+        .put("/estados/1")
         .send(estadoActualizado)
         .set("Content-Type", "application/json");
 
@@ -188,11 +188,11 @@ describe("Estados Routes", () => {
     });
   });
 
-  describe("DELETE /api/estados/:idEstado", () => {
+  describe("DELETE /estados/:idEstado", () => {
     it("debería eliminar un estado correctamente", async () => {
       mockEstadosModel.delete.mockResolvedValue(true);
 
-      const response = await request(app).delete("/api/estados/1");
+      const response = await request(app).delete("/estados/1");
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty(
@@ -205,7 +205,7 @@ describe("Estados Routes", () => {
     it("debería devolver 404 si el estado a eliminar no existe", async () => {
       mockEstadosModel.delete.mockResolvedValue(false);
 
-      const response = await request(app).delete("/api/estados/999");
+      const response = await request(app).delete("/estados/999");
 
       expect(response.status).toBe(404);
       expect(response.body).toHaveProperty("message", "Estado no encontrado");
@@ -216,7 +216,7 @@ describe("Estados Routes", () => {
         new Error("Error al eliminar estado")
       );
 
-      const response = await request(app).delete("/api/estados/1");
+      const response = await request(app).delete("/estados/1");
 
       expect(response.status).toBe(500);
       expect(response.body).toHaveProperty("error");
