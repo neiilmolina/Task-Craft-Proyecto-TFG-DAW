@@ -441,7 +441,7 @@ describe("UsuariosController", () => {
     });
   });
 
-  describe("UsuariosController - updateUsuario", () => {
+  describe.only("UsuariosController - updateUsuario", () => {
     it("should update a user and return status 200", async () => {
       const id = "1";
       const usuarioData: UsuarioUpdate = {
@@ -491,98 +491,111 @@ describe("UsuariosController", () => {
       expect(mockResponse.status).toHaveBeenCalledWith(200);
       expect(mockResponse.json).toHaveBeenCalledWith(user); // Updated to send the full user object
     });
-  });
 
-  it("should return 400 if validation fails", async () => {
-    const usuarioData: UsuarioUpdate = {
-      email: "updated@example.com",
-      role: "user",
-    };
-    const validationResult = {
-      success: false,
-      error: "Invalid email format",
-    };
+    it("should return 400 if validation fails", async () => {
+      const usuarioData: UsuarioUpdate = {
+        email: "invalid-email", // Un email inválido para forzar el error de validación
+        role: "user",
+      };
 
-    jest.mock("@/src/usuarios/schemasUsuarios", () => ({
-      validateUsuarioUpdate: jest.fn().mockReturnValue(validationResult),
-    }));
+      // Mock de la validación para simular que falla la validación debido al email incorrecto
+      jest.mock("@/src/usuarios/schemasUsuarios", () => ({
+        validateUsuarioUpdate: jest.fn().mockReturnValue({
+          success: false,
+          error: {
+            issues: [
+              {
+                message: "El email debe ser válido", // Mensaje de error que esperamos
+              },
+            ],
+          },
+        }),
+      }));
 
-    const mockRequest: Request = {
-      body: usuarioData,
-      params: { id: "1" },
-      get: jest.fn(),
-      header: jest.fn(),
-      accepts: jest.fn(),
-      acceptsCharsets: jest.fn(),
-    } as unknown as Request;
+      const mockResponse = {
+        status: jest.fn().mockReturnThis(),
+        json: jest.fn().mockReturnThis(),
+      } as unknown as Response;
 
-    await usuariosController.updateUsuario(
-      mockRequest,
-      mockResponse as Response,
-      mockNext
-    );
+      const mockRequest: Request = {
+        body: usuarioData,
+        params: { id: "1" }, // El ID no importa aquí porque la validación falla antes
+        get: jest.fn(),
+        header: jest.fn(),
+        accepts: jest.fn(),
+        acceptsCharsets: jest.fn(),
+      } as unknown as Request;
 
-    expect(mockResponse.status).toHaveBeenCalledWith(400);
-    expect(mockResponse.json).toHaveBeenCalledWith({
-      error: validationResult.error,
+      // Llamada al controlador con los mocks
+      await usuariosController.updateUsuario(
+        mockRequest,
+        mockResponse,
+        mockNext
+      );
+
+      // Verifica que el estado sea 400 debido a la validación fallida
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: "El email debe ser válido", // Aquí esperamos el mensaje de validación
+      });
     });
-  });
 
-  it("should return 404 if the user is not found", async () => {
-    const id = "1";
-    const usuarioData: UsuarioUpdate = {
-      email: "updated@example.com",
-      role: "user",
-    };
-    mockUsuariosModel.update.mockResolvedValue(null);
+    it("should return 404 if the user is not found", async () => {
+      const id = "1";
+      const usuarioData: UsuarioUpdate = {
+        email: "updated@example.com",
+        role: "user",
+      };
+      mockUsuariosModel.update.mockResolvedValue(null);
 
-    const mockRequest: Request = {
-      params: { id },
-      body: usuarioData,
-      get: jest.fn(),
-      header: jest.fn(),
-      accepts: jest.fn(),
-      acceptsCharsets: jest.fn(),
-    } as unknown as Request;
+      const mockRequest: Request = {
+        params: { id },
+        body: usuarioData,
+        get: jest.fn(),
+        header: jest.fn(),
+        accepts: jest.fn(),
+        acceptsCharsets: jest.fn(),
+      } as unknown as Request;
 
-    await usuariosController.updateUsuario(
-      mockRequest,
-      mockResponse as Response,
-      mockNext
-    );
+      await usuariosController.updateUsuario(
+        mockRequest,
+        mockResponse as Response,
+        mockNext
+      );
 
-    expect(mockResponse.status).toHaveBeenCalledWith(404);
-    expect(mockResponse.json).toHaveBeenCalledWith({
-      message: "Usuario no encontrado",
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: "Usuario no encontrado",
+      });
     });
-  });
 
-  it("should return 500 if an error occurs", async () => {
-    const id = "1";
-    const usuarioData: UsuarioUpdate = {
-      email: "updated@example.com",
-      role: "user",
-    };
-    mockUsuariosModel.update.mockRejectedValue(new Error("Database error"));
+    it("should return 500 if an error occurs", async () => {
+      const id = "1";
+      const usuarioData: UsuarioUpdate = {
+        email: "updated@example.com",
+        role: "user",
+      };
+      mockUsuariosModel.update.mockRejectedValue(new Error("Database error"));
 
-    const mockRequest: Request = {
-      params: { id },
-      body: usuarioData,
-      get: jest.fn(),
-      header: jest.fn(),
-      accepts: jest.fn(),
-      acceptsCharsets: jest.fn(),
-    } as unknown as Request;
+      const mockRequest: Request = {
+        params: { id },
+        body: usuarioData,
+        get: jest.fn(),
+        header: jest.fn(),
+        accepts: jest.fn(),
+        acceptsCharsets: jest.fn(),
+      } as unknown as Request;
 
-    await usuariosController.updateUsuario(
-      mockRequest,
-      mockResponse as Response,
-      mockNext
-    );
+      await usuariosController.updateUsuario(
+        mockRequest,
+        mockResponse as Response,
+        mockNext
+      );
 
-    expect(mockResponse.status).toHaveBeenCalledWith(500);
-    expect(mockResponse.json).toHaveBeenCalledWith({
-      error: "Error interno del servidor",
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: "Error interno del servidor",
+      });
     });
   });
 
@@ -1005,7 +1018,7 @@ describe("UsuariosController", () => {
       });
     });
 
-    it.only("should return 500 if there is an internal server error", async () => {
+    it("should return 500 if there is an internal server error", async () => {
       const email = "user@example.com";
       mockUsuariosModel.resetPassword.mockRejectedValue(
         new Error("Error al restablecer la contraseña")

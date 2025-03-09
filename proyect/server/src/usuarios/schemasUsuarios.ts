@@ -25,7 +25,7 @@ const usuarioCreateSchema = z.object({
 const usuarioUpdateSchema = z.object({
   user_metadata: userMetadataSchema.optional(),
   role: z.string().min(1).optional(),
-  email: z.string().email("El email debe ser válido").optional(),
+  email: z.string().email("El email debe ser válido"),
 });
 
 // Esquema para filtros de usuarios

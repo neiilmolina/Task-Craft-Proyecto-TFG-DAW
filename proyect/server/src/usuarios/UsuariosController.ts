@@ -94,11 +94,16 @@ export default class UsuariosController {
 
       // Validación de los datos a actualizar
       const result = validateUsuarioUpdate(usuarioData);
+
       if (!result.success) {
-        res.status(400).json({ error: result.error });
-        return;
+        // Extraemos el mensaje del primer error en 'issues'
+        const errorMessage =
+          result.error.issues[0]?.message || "Error de validación";
+        res.status(400).json({ error: errorMessage });
+        return; // Detenemos la ejecución aquí si la validación falla
       }
 
+      // Si la validación pasó, intentamos actualizar el usuario
       const updatedUsuario = await this.usuariosModel.update(id, usuarioData);
 
       if (updatedUsuario) {
