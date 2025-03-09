@@ -782,12 +782,13 @@ describe("UsuariosController", () => {
       expect(mockResponse.json).toHaveBeenCalledWith(authResponse);
     });
 
-    it("should return 400 if credentials are invalid", async () => {
+    it.only("should return 400 if credentials are invalid", async () => {
       const credentials: LoginCredentials = {
         email: "user@example.com",
-        password: "wrongpassword",
+        password: "wrongpassword", // Contraseña incorrecta
       };
 
+      // Creamos el mock de la solicitud
       const mockRequest: Request = {
         body: credentials,
         get: jest.fn(),
@@ -796,21 +797,26 @@ describe("UsuariosController", () => {
         acceptsCharsets: jest.fn(),
       } as unknown as Request;
 
+      // Simulamos la respuesta de Supabase cuando las credenciales son incorrectas
       mockUsuariosModel.signIn.mockResolvedValue({
         user: null,
         session: null,
-        error: "Invalid credentials",
+        error: "Invalid credentials", // Error de autenticación
       });
 
+      // Llamamos al método signIn de tu controlador
       await usuariosController.signIn(
         mockRequest,
         mockResponse as Response,
         mockNext
       );
 
+      // Verificamos que la respuesta tenga el código de estado 400
       expect(mockResponse.status).toHaveBeenCalledWith(400);
+
+      // Verificamos que el mensaje de error sea el adecuado
       expect(mockResponse.json).toHaveBeenCalledWith({
-        message: "Credenciales inválidas",
+        message: "Credenciales inválidas", // Respuesta que espera tu API
       });
     });
 

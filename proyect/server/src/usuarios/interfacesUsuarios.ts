@@ -1,37 +1,30 @@
 // src/usuarios/interfaces/UsuarioInterfaces.ts
 import { Session, User } from "@supabase/supabase-js";
 
-// Interface for the complete Usuario with all properties
-export interface Usuario {
-  id: string;
-  email: string;
-  firstName?: string;
-  lastName?: string;
-  role: string;
-  createdAt: string;
-  updatedAt: string;
+export interface user_metadata {
+  first_name?: string;
+  last_name?: string;
+  avatar_url?: string;
 }
 
 // Interface for creating a new user (without ID and timestamps)
 export interface UsuarioCreate {
   email: string;
   password: string;
-  firstName?: string;
-  lastName?: string;
+  userMetadata?: user_metadata;
   role?: string;
 }
 
 // Interface for updating user information (all fields optional)
 export interface UsuarioUpdate {
-  firstName?: string;
-  lastName?: string;
+  userMetadata?: user_metadata;
   role?: string;
   email?: string;
 }
 
 // Interface for authentication response
 export interface AuthResponse {
-  user: Usuario | null;
+  user: User | null;
   session: Session | any | null;
   error?: string;
 }
@@ -67,7 +60,7 @@ export interface UserFilters {
 
 // Interface for pagination response
 export interface PaginatedUsers {
-  users: Usuario[];
+  users: User[];
   total: number;
   page: number;
   limit: number;

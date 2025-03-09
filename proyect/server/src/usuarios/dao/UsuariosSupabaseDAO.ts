@@ -1,7 +1,6 @@
 import supabase from "@/config/supabase";
 import IUsuariosDAO from "./IUsuariosDAO";
 import {
-  Usuario,
   UsuarioCreate,
   UsuarioUpdate,
   AuthResponse,
@@ -9,6 +8,7 @@ import {
   UserFilters,
   PaginatedUsers,
 } from "@/src/usuarios/interfacesUsuarios";
+import { User } from "@supabase/supabase-js";
 
 export default class UsuariosSupabaseDAO implements IUsuariosDAO {
   // Registro de usuario
@@ -19,9 +19,8 @@ export default class UsuariosSupabaseDAO implements IUsuariosDAO {
         password: userData.password,
         options: {
           data: {
-            firstName: userData.firstName,
-            lastName: userData.lastName,
             role: userData.role || "user",
+            ...userData.userMetadata,
           },
         },
       });
@@ -29,7 +28,7 @@ export default class UsuariosSupabaseDAO implements IUsuariosDAO {
       if (error) throw error;
 
       return {
-        user: data.user as Usuario,
+        user: data.user as User,
         session: data.session,
       };
     } catch (error: any) {
@@ -53,7 +52,7 @@ export default class UsuariosSupabaseDAO implements IUsuariosDAO {
       if (error) throw error;
 
       return {
-        user: data.user as Usuario,
+        user: data.user as User,
         session: data.session,
       };
     } catch (error: any) {
@@ -94,7 +93,7 @@ export default class UsuariosSupabaseDAO implements IUsuariosDAO {
 
       if (error) throw error;
 
-      let users = data.users as Usuario[];
+      let users = data.users as User[];
 
       // Filtrar por rol si se especifica
       if (filters?.role) {
@@ -106,19 +105,16 @@ export default class UsuariosSupabaseDAO implements IUsuariosDAO {
       if (filters?.searchTerm) {
         const searchTermLower = filters.searchTerm.toLowerCase();
 
-        users = users.filter(
-          (user) =>
-            user.email?.toLowerCase().includes(searchTermLower) ||
-            user.firstName?.toLowerCase().includes(searchTermLower) ||
-            user.lastName?.toLowerCase().includes(searchTermLower)
+        users = users.filter((user) =>
+          user.email?.toLowerCase().includes(searchTermLower)
         );
       }
 
       // Ordenar los usuarios por un campo y orden (si se especifica)
       if (filters?.sortBy) {
         users = users.sort((a, b) => {
-          const fieldA = a[filters.sortBy as keyof Usuario] as string;
-          const fieldB = b[filters.sortBy as keyof Usuario] as string;
+          const fieldA = a[filters.sortBy as keyof User] as string;
+          const fieldB = b[filters.sortBy as keyof User] as string;
           if (filters.sortOrder === "asc") {
             return fieldA.localeCompare(fieldB);
           } else {
@@ -149,12 +145,12 @@ export default class UsuariosSupabaseDAO implements IUsuariosDAO {
   }
 
   // Obtener usuario por ID
-  async getById(id: string): Promise<Usuario | null> {
+  async getById(id: string): Promise<User | null> {
     try {
       const { data, error } = await supabase.auth.getUser(id);
 
       if (error) throw error;
-      return data.user as Usuario;
+      return data.user as User;
     } catch (error) {
       console.error("Error in getById:", error);
       return null;
@@ -175,23 +171,22 @@ export default class UsuariosSupabaseDAO implements IUsuariosDAO {
     }
   }
 
-  async create(userData: UsuarioCreate): Promise<Usuario | null> {
+  async create(userData: UsuarioCreate): Promise<User | null> {
     try {
       const { data, error } = await supabase.auth.signUp({
         email: userData.email,
         password: userData.password,
         options: {
           data: {
-            firstName: userData.firstName,
-            lastName: userData.lastName,
             role: userData.role || "user",
+            ...userData.userMetadata,
           },
         },
       });
 
       if (error) throw error;
 
-      return data.user as Usuario;
+      return data.user as User;
     } catch (error: any) {
       console.error("Error in signUp:", error);
       return null;
@@ -199,15 +194,25 @@ export default class UsuariosSupabaseDAO implements IUsuariosDAO {
   }
 
   // Actualizar un usuario
-  async update(id: string, usuario: UsuarioUpdate): Promise<Usuario | null> {
+  async update(id: string, usuario: UsuarioUpdate): Promise<User | null> {
     try {
+      // Preparar los datos de usuario a actualizar
+      const updateData: any = { ...usuario };
+
+      // Si user_metadata está presente, propagamos sus valores
+      if (usuario.userMetadata) {
+        updateData.data = { ...usuario.userMetadata };
+      }
+
+      // Realizamos la actualización del usuario
       const { data, error } = await supabase.auth.admin.updateUserById(
         id,
-        usuario
+        updateData
       );
 
       if (error) throw error;
-      return data.user as Usuario;
+
+      return data.user as User;
     } catch (error) {
       console.error("Error in update:", error);
       return null;

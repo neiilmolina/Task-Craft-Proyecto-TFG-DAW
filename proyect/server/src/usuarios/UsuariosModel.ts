@@ -1,6 +1,5 @@
 import IUsuariosDAO from "@/src/usuarios/dao/IUsuariosDAO";
 import {
-  Usuario,
   UsuarioCreate,
   UsuarioUpdate,
   PaginatedUsers,
@@ -8,6 +7,7 @@ import {
   AuthResponse,
   LoginCredentials,
 } from "@/src/usuarios/interfacesUsuarios";
+import { User } from "@supabase/supabase-js";
 
 export default class UsuariosModel {
   constructor(private usuariosDAO: IUsuariosDAO) {}
@@ -38,7 +38,7 @@ export default class UsuariosModel {
   }
 
   // Obtener usuario por ID
-  async getById(id: string): Promise<Usuario | null> {
+  async getById(id: string): Promise<User | null> {
     return this.usuariosDAO.getById(id);
   }
 
@@ -48,12 +48,12 @@ export default class UsuariosModel {
   }
 
   // Crear un usuario
-  async create(usuario: UsuarioCreate): Promise<Usuario | null> {
+  async create(usuario: UsuarioCreate): Promise<User | null> {
     return this.usuariosDAO.create(usuario);
   }
 
   // Actualizar un usuario
-  async update(id: string, usuario: UsuarioUpdate): Promise<Usuario | null> {
+  async update(id: string, usuario: UsuarioUpdate): Promise<User | null> {
     return this.usuariosDAO.update(id, usuario);
   }
 

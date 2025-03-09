@@ -1,6 +1,5 @@
 import UsuariosModel from "@/src/usuarios/UsuariosModel";
 import {
-  Usuario,
   UsuarioCreate,
   UsuarioUpdate,
   AuthResponse,
@@ -10,6 +9,7 @@ import {
 } from "@/src/usuarios/interfacesUsuarios";
 import IUsuariosDAO from "@/src/usuarios/dao/IUsuariosDAO";
 import supabase from "../__mocks__/supabase";
+import { User } from "@supabase/supabase-js";
 
 jest.mock("@/config/supabase", () => ({
   __esModule: true,
@@ -43,20 +43,33 @@ describe("UsuariosModel", () => {
     const usuarioCreate: UsuarioCreate = {
       email: "test@example.com",
       password: "password123",
-      firstName: "John",
-      lastName: "Doe",
+      role: "user", // Role opcional que puedes incluir si es parte de la creación
+      userMetadata: {
+        first_name: "Nombre del Usuario", // Asumí que esta es la propiedad para el nombre
+        last_name: "Apellido del Usuario", // Asumí que esta es la propiedad para el apellido
+        avatar_url: "https://example.com/avatar.jpg", // Avatar como ejemplo
+      },
     };
 
     it("should call signUp on the DAO with the correct arguments", async () => {
-      const user: Usuario = {
+      const user: User = {
         id: "123",
         email: "test@example.com",
-        firstName: "John",
-        lastName: "Doe",
         role: "user",
-        createdAt: "2025-03-08T00:00:00Z",
-        updatedAt: "2025-03-08T00:00:00Z",
+        created_at: "2025-03-08T00:00:00Z",
+        updated_at: "2025-03-08T00:00:00Z",
+        app_metadata: {
+          provider: "email",
+          providers: ["email"],
+        },
+        user_metadata: {
+          first_name: "Nombre del Usuario", // Reemplaza con el nombre del usuario
+          last_name: "Apellido del Usuario", // Reemplaza con el apellido
+          avatar_url: "https://example.com/avatar.jpg", // Reemplaza con la URL del avatar
+        },
+        aud: "authenticated",
       };
+
       // Arrange: Mock the DAO's signUp method to return a mock response
       const mockAuthResponse: AuthResponse = {
         user: user,
@@ -108,11 +121,17 @@ describe("UsuariosModel", () => {
         user: {
           id: "123",
           email: "test@example.com",
-          firstName: "John",
-          lastName: "Doe",
           role: "user",
-          createdAt: "2025-03-08T00:00:00Z",
-          updatedAt: "2025-03-08T00:00:00Z",
+          created_at: "2025-03-08T00:00:00Z", // Cambié 'createdAt' a 'created_at'
+          updated_at: "2025-03-08T00:00:00Z", // Cambié 'updatedAt' a 'updated_at'
+          app_metadata: {
+            provider: "email", // Indica el proveedor de autenticación
+            providers: ["email"],
+          },
+          user_metadata: {
+            name: "Nombre del Usuario", // Puedes agregar el nombre del usuario aquí
+          },
+          aud: "authenticated", // Dependiendo de tu configuración, puedes usar "authenticated" o algo más
         },
         session: null,
       };
@@ -240,11 +259,17 @@ describe("UsuariosModel", () => {
           {
             id: "123",
             email: "john.doe@example.com",
-            firstName: "John",
-            lastName: "Doe",
             role: "user",
-            createdAt: "2025-03-08T00:00:00Z",
-            updatedAt: "2025-03-08T00:00:00Z",
+            created_at: "2025-03-08T00:00:00Z", // Cambié 'createdAt' a 'created_at'
+            updated_at: "2025-03-08T00:00:00Z", // Cambié 'updatedAt' a 'updated_at'
+            app_metadata: {
+              provider: "email", // Puedes ajustar esto según el proveedor
+              providers: ["email"],
+            },
+            user_metadata: {
+              name: "John Doe", // O cualquier otra información adicional
+            },
+            aud: "authenticated", // Ajusta según el tipo de audiencia
           },
         ],
         total: 1,
@@ -252,6 +277,7 @@ describe("UsuariosModel", () => {
         limit: 10,
         totalPages: 1,
       };
+
       (usuariosDAOMock.getAll as jest.Mock).mockResolvedValue(
         mockPaginatedUsers
       );
@@ -273,11 +299,17 @@ describe("UsuariosModel", () => {
           {
             id: "123",
             email: "john.doe@example.com",
-            firstName: "John",
-            lastName: "Doe",
             role: "user",
-            createdAt: "2025-03-08T00:00:00Z",
-            updatedAt: "2025-03-08T00:00:00Z",
+            created_at: "2025-03-08T00:00:00Z", // Cambié 'createdAt' a 'created_at'
+            updated_at: "2025-03-08T00:00:00Z", // Cambié 'updatedAt' a 'updated_at'
+            app_metadata: {
+              provider: "email", // Puedes ajustar esto según el proveedor
+              providers: ["email"],
+            },
+            user_metadata: {
+              name: "John Doe", // O cualquier otra información adicional
+            },
+            aud: "authenticated", // Ajusta según el tipo de audiencia
           },
         ],
         total: 1,
@@ -319,15 +351,23 @@ describe("UsuariosModel", () => {
 
     it("should call getById on the DAO with the correct id and return the user", async () => {
       // Arrange: Mock the DAO's getById method to return a user
-      const mockUser: Usuario = {
+      const mockUser: User = {
         id: "123",
         email: "john.doe@example.com",
-        firstName: "John",
-        lastName: "Doe",
         role: "user",
-        createdAt: "2025-03-08T00:00:00Z",
-        updatedAt: "2025-03-08T00:00:00Z",
+        created_at: "2025-03-08T00:00:00Z", // Cambié 'createdAt' a 'created_at'
+        updated_at: "2025-03-08T00:00:00Z", // Cambié 'updatedAt' a 'updated_at'
+        app_metadata: {
+          provider: "email", // Indica el proveedor de autenticación
+          providers: ["email"],
+        },
+        user_metadata: {
+          firstName: "John", // Almacena nombre en user_metadata
+          lastName: "Doe", // Almacena apellido en user_metadata
+        },
+        aud: "authenticated", // Tipo de audiencia del usuario
       };
+
       (usuariosDAOMock.getById as jest.Mock).mockResolvedValue(mockUser);
 
       // Act: Call the getById method
@@ -419,22 +459,25 @@ describe("UsuariosModel", () => {
     const newUser: UsuarioCreate = {
       email: "jane.doe@example.com",
       password: "password123",
-      firstName: "Jane",
-      lastName: "Doe",
       role: "user",
     };
 
     it("should call create on the DAO with the correct user and return the created user", async () => {
       // Arrange: Mock the DAO's create method to return the created user
-      const mockUser: Usuario = {
+      const mockUser: User = {
         id: "124",
-        email: newUser.email,
-        firstName: newUser.firstName,
-        lastName: newUser.lastName,
+        email: newUser.email, // Asegúrate de que newUser esté definido y tenga email
         role: "user",
-        createdAt: "2025-03-08T00:00:00Z",
-        updatedAt: "2025-03-08T00:00:00Z",
+        created_at: "2025-03-08T00:00:00Z", // Cambié 'createdAt' a 'created_at'
+        updated_at: "2025-03-08T00:00:00Z", // Cambié 'updatedAt' a 'updated_at'
+        app_metadata: {
+          provider: "email", // Si usas autenticación por email
+          providers: ["email"],
+        },
+        user_metadata: {},
+        aud: "authenticated", // Tipo de audiencia (ajusta según lo necesites)
       };
+
       (usuariosDAOMock.create as jest.Mock).mockResolvedValue(mockUser);
 
       // Act: Call the create method
@@ -479,22 +522,27 @@ describe("UsuariosModel", () => {
   describe("update", () => {
     const userId = "123";
     const updatedUser: UsuarioUpdate = {
-      firstName: "Updated Name",
-      lastName: "Updated LastName",
       role: "admin",
     };
 
     it("should call update on the DAO with the correct id and updated user data", async () => {
       // Arrange: Mock the DAO's update method to return the updated user
-      const mockUpdatedUser: Usuario = {
+      const mockUpdatedUser: User = {
         id: userId,
         email: "john.doe@example.com",
-        firstName: updatedUser.firstName,
-        lastName: updatedUser.lastName,
-        role: "admin",
-        createdAt: "2025-03-08T00:00:00Z",
-        updatedAt: "2025-03-08T00:00:00Z",
+        role: "admin", // Puedes actualizar el rol como 'admin'
+        created_at: "2025-03-08T00:00:00Z", // Cambié 'createdAt' a 'created_at'
+        updated_at: "2025-03-08T00:00:00Z", // Cambié 'updatedAt' a 'updated_at'
+        app_metadata: {
+          provider: "email", // Si usas autenticación por email
+          providers: ["email"],
+        },
+        user_metadata: {
+          name: "John Doe", // Aquí puedes almacenar el nombre completo o cualquier otra información adicional
+        },
+        aud: "authenticated", // Tipo de audiencia, ajusta según lo necesites
       };
+
       (usuariosDAOMock.update as jest.Mock).mockResolvedValue(mockUpdatedUser);
 
       // Act: Call the update method
