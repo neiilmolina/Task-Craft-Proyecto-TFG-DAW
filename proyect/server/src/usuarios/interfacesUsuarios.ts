@@ -11,7 +11,7 @@ export interface user_metadata {
 export interface UsuarioCreate {
   email: string;
   password: string;
-  userMetadata?: user_metadata;
+  user_metadata?: user_metadata;
   role?: string;
 }
 

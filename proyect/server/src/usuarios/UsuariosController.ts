@@ -47,15 +47,11 @@ export default class UsuariosController {
     try {
       const usuarioData: UsuarioCreate = req.body;
 
-      console.log("Request Body:", usuarioData);
-
       const result = validateUsuarioCreate(usuarioData);
       if (!result.success) {
         res.status(400).json({ error: result.error });
         return;
       }
-
-      console.log("Calling signUp model with", usuarioData);
 
       const newUsuario = await this.usuariosModel.signUp(usuarioData);
       res.status(201).json(newUsuario);
@@ -68,54 +64,35 @@ export default class UsuariosController {
   createUsuario: RequestHandler = async (req, res) => {
     try {
       const usuarioData: UsuarioCreate = req.body;
-
-      console.log("Request Body:", usuarioData); // Verifica el contenido del cuerpo de la solicitud
-
-      // Validación del cuerpo de la solicitud
       const result = validateUsuarioCreate(usuarioData);
       if (!result.success) {
         res.status(400).json({ error: result.error });
-        return; // Si la validación falla, termina aquí
+        return;
       }
 
-      console.log("Calling createUsuario model with", usuarioData); // Verifica que el modelo se está llamando
-
-      const newUsuario = await this.usuariosModel.create(usuarioData); // Aquí debería llamarse
-      res.status(201).json(newUsuario); // Retorna el nuevo usuario creado
+      // Llamada al modelo
+      const newUsuario = await this.usuariosModel.create(usuarioData);
+      res.status(201).json(newUsuario);
     } catch (error) {
       console.error("Error al crear el usuario:", error);
-      res.status(500).json({ error: "Error interno del servidor" }); // Si ocurre un error interno, devuelve el código 500
+      res.status(500).json({ error: "Error interno del servidor" });
     }
   };
 
   // Actualizar un usuario
-  updateUsuario: RequestHandler = async (req, res) => {
+  updateUsuario = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const id = req.params.id;
-      const usuarioData: UsuarioUpdate = req.body;
+      const { id } = req.params;
+      const updatedUser = await this.usuariosModel.update(id, req.body);
 
-      // Validación de los datos a actualizar
-      const result = validateUsuarioUpdate(usuarioData);
-
-      if (!result.success) {
-        // Extraemos el mensaje del primer error en 'issues'
-        const errorMessage =
-          result.error.issues[0]?.message || "Error de validación";
-        res.status(400).json({ error: errorMessage });
-        return; // Detenemos la ejecución aquí si la validación falla
+      if (!updatedUser) {
+        return res.status(404).json({ message: "Usuario no encontrado" });
       }
 
-      // Si la validación pasó, intentamos actualizar el usuario
-      const updatedUsuario = await this.usuariosModel.update(id, usuarioData);
-
-      if (updatedUsuario) {
-        res.status(200).json(updatedUsuario);
-      } else {
-        res.status(404).json({ message: "Usuario no encontrado" });
-      }
+      return res.status(200).json(updatedUser);
     } catch (error) {
-      console.error("Error al actualizar el usuario:", error);
-      res.status(500).json({ error: "Error interno del servidor" });
+      console.error("Error interno del servidor:", error); // Ayuda a depurar
+      return res.status(500).json({ error: "Error interno del servidor" });
     }
   };
 
