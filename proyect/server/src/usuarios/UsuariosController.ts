@@ -47,21 +47,20 @@ export default class UsuariosController {
     try {
       const usuarioData: UsuarioCreate = req.body;
 
-      console.log("Request Body:", usuarioData); // Verifica el contenido del cuerpo de la solicitud
+      console.log("Request Body:", usuarioData);
 
-      // Validación del cuerpo de la solicitud
       const result = validateUsuarioCreate(usuarioData);
       if (!result.success) {
         res.status(400).json({ error: result.error });
-        return; // Si la validación falla, termina aquí
+        return;
       }
 
-      console.log("Calling signUp model with", usuarioData); // Verifica que el modelo se está llamando
+      console.log("Calling signUp model with", usuarioData);
 
-      const newUsuario = await this.usuariosModel.signUp(usuarioData); // Aquí debería llamarse
+      const newUsuario = await this.usuariosModel.signUp(usuarioData);
       res.status(201).json(newUsuario);
     } catch (error) {
-      console.error("Error al crear el usuario:", error);
+      console.error("Error al crear el usuario:", error); // Aquí se registra cualquier error en el bloque catch
       res.status(500).json({ error: "Error interno del servidor" });
     }
   };

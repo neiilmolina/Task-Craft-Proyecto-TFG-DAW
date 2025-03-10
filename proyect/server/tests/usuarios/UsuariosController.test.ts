@@ -239,7 +239,7 @@ describe("UsuariosController", () => {
     });
   });
 
-  describe.only("UsuariosController - signUp", () => {
+  describe("UsuariosController - signUp", () => {
     it("should create a new user and return status 201", async () => {
       const mockUsuarioCreate: UsuarioCreate = {
         email: "newuser@example.com",
@@ -331,8 +331,14 @@ describe("UsuariosController", () => {
         role: "user",
       };
 
-      // Simula un error en el modelo signUp (lo que debería entrar en el bloque catch)
+      // Simulando un error en el modelo signUp (error de base de datos, por ejemplo)
       mockUsuariosModel.signUp.mockRejectedValue(new Error("Database error"));
+
+      // Simula que la validación pasa correctamente (success: true)
+      (validateUsuarioCreate as jest.Mock).mockReturnValue({
+        success: true,
+        data: mockUsuarioCreate, // Asegúrate de que se pase el objeto correctamente
+      });
 
       mockRequest = { body: mockUsuarioCreate };
 
@@ -350,7 +356,7 @@ describe("UsuariosController", () => {
     });
   });
 
-  describe("UsuariosController - createUsuario", () => {
+  describe.only("UsuariosController - createUsuario", () => {
     const usuarioData: UsuarioCreate = {
       email: "user@example.com",
       role: "admin",
@@ -404,21 +410,20 @@ describe("UsuariosController", () => {
     });
 
     it("should return 400 if validation fails", async () => {
-      const usuarioData: UsuarioCreate = {
+      const invalidUsuarioData: UsuarioCreate = {
         email: "user@example.com",
         role: "admin",
         password: "password123",
       };
+
       // Mock de la función de validación para simular que falla la validación
-      jest.mock("@/src/usuarios/schemasUsuarios", () => ({
-        validateUsuarioCreate: jest.fn().mockReturnValue({
-          success: false,
-          error: "Invalid data", // Mensaje de error que esperamos
-        }),
-      }));
+      (validateUsuarioCreate as jest.Mock).mockReturnValue({
+        success: false,
+        error: "Invalid data", // Mensaje de error que esperamos
+      });
 
       const mockRequest = {
-        body: usuarioData,
+        body: invalidUsuarioData,
       };
 
       // Llamada al controlador con los mocks
@@ -451,6 +456,7 @@ describe("UsuariosController", () => {
         mockNext
       );
 
+      // Verifica que el error se maneja con un estado 500
       expect(mockResponse.status).toHaveBeenCalledWith(500);
       expect(mockResponse.json).toHaveBeenCalledWith({
         error: "Error interno del servidor",
