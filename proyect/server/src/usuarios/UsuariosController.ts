@@ -80,19 +80,37 @@ export default class UsuariosController {
   };
 
   // Actualizar un usuario
-  updateUsuario = async (req: Request, res: Response, next: NextFunction) => {
+  updateUsuario: RequestHandler = async (req, res) => {
     try {
+      console.log("Inicio de updateUsuario");
+
+      // Validación de la entrada
+      const { success, error } = validateUsuarioUpdate(req.body);
+      if (!success) {
+        console.log("Validación fallida", error);
+        res.status(400).json({ error }); // Simplificado
+        return;
+      }
+      console.log("Validación exitosa");
+
       const { id } = req.params;
+      console.log("ID del usuario a actualizar:", id);
+
+      // Llamada al modelo para actualizar el usuario
       const updatedUser = await this.usuariosModel.update(id, req.body);
+      console.log("Resultado de la actualización del usuario:", updatedUser);
 
       if (!updatedUser) {
-        return res.status(404).json({ message: "Usuario no encontrado" });
+        console.log("Usuario no encontrado para actualizar");
+        res.status(404).json({ message: "Usuario no encontrado" });
+        return;
       }
 
-      return res.status(200).json(updatedUser);
+      console.log("Usuario actualizado con éxito");
+      res.status(200).json(updatedUser);
     } catch (error) {
-      console.error("Error interno del servidor:", error); // Ayuda a depurar
-      return res.status(500).json({ error: "Error interno del servidor" });
+      console.error("Error interno del servidor:", error);
+      res.status(500).json({ error: "Error interno del servidor" });
     }
   };
 

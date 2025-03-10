@@ -20,7 +20,7 @@ export default class UsuariosSupabaseDAO implements IUsuariosDAO {
         options: {
           data: {
             role: userData.role || "user",
-            ...userData.userMetadata,
+            ...userData.user_metadata,
           },
         },
       });
@@ -188,7 +188,7 @@ export default class UsuariosSupabaseDAO implements IUsuariosDAO {
         options: {
           data: {
             role: userData.role || "user",
-            ...userData.userMetadata,
+            ...userData.user_metadata,
           },
         },
       });
@@ -206,12 +206,11 @@ export default class UsuariosSupabaseDAO implements IUsuariosDAO {
   async update(id: string, usuario: UsuarioUpdate): Promise<User | null> {
     try {
       // Preparar los datos de usuario a actualizar
-      const updateData: any = { ...usuario };
-
-      // Si user_metadata está presente, propagamos sus valores
-      if (usuario.user_metadata) {
-        updateData.data = { ...usuario.user_metadata };
-      }
+      const updateData: any = {
+        email: usuario.email,
+        role: usuario.role,
+        user_metadata: usuario.user_metadata, // Usar 'user_metadata' en lugar de 'data'
+      };
 
       // Realizamos la actualización del usuario
       const { data, error } = await supabase.auth.admin.updateUserById(

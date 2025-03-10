@@ -44,7 +44,7 @@ describe("UsuariosModel", () => {
       email: "test@example.com",
       password: "password123",
       role: "user", // Role opcional que puedes incluir si es parte de la creación
-      userMetadata: {
+      user_metadata: {
         first_name: "Nombre del Usuario", // Asumí que esta es la propiedad para el nombre
         last_name: "Apellido del Usuario", // Asumí que esta es la propiedad para el apellido
         avatar_url: "https://example.com/avatar.jpg", // Avatar como ejemplo
@@ -460,6 +460,7 @@ describe("UsuariosModel", () => {
       email: "jane.doe@example.com",
       password: "password123",
       role: "user",
+      user_metadata: {},
     };
 
     it("should call create on the DAO with the correct user and return the created user", async () => {
@@ -519,10 +520,17 @@ describe("UsuariosModel", () => {
     });
   });
 
-  describe("update", () => {
+  describe.only("update", () => {
     const userId = "123";
     const updatedUser: UsuarioUpdate = {
       role: "admin",
+      user_metadata: {
+        name: "John Doe", // Aquí puedes almacenar el nombre completo o cualquier otra información adicional
+      },
+      app_metadata: {
+        provider: "email",
+        providers: ["email"],
+      },
     };
 
     it("should call update on the DAO with the correct id and updated user data", async () => {

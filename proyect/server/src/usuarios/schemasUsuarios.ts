@@ -48,7 +48,11 @@ export function validateUsuarioCreate(input: UsuarioCreate) {
 
 // Validación para la actualización de un usuario
 export function validateUsuarioUpdate(input: UsuarioUpdate) {
-  return usuarioUpdateSchema.safeParse(input);
+  const result = usuarioUpdateSchema.safeParse(input);
+  if (!result.success) {
+    return { success: false, error: result.error.errors[0].message }; // Devuelve el primer error
+  }
+  return { success: true };
 }
 
 // Validación para filtros de usuarios

@@ -1,7 +1,7 @@
 // src/usuarios/interfaces/UsuarioInterfaces.ts
-import { Session, User } from "@supabase/supabase-js";
+import { Session, User, UserAppMetadata, UserMetadata } from "@supabase/supabase-js";
 
-export interface user_metadata {
+export interface user_metadata extends UserMetadata{
   first_name?: string;
   last_name?: string;
   avatar_url?: string;
@@ -11,13 +11,14 @@ export interface user_metadata {
 export interface UsuarioCreate {
   email: string;
   password: string;
-  user_metadata?: user_metadata;
+  user_metadata: user_metadata;
   role?: string;
 }
 
 // Interface for updating user information (all fields optional)
 export interface UsuarioUpdate {
-  user_metadata?: user_metadata;
+  user_metadata: user_metadata;
+  app_metadata: UserAppMetadata;
   role?: string;
   email?: string;
 }
