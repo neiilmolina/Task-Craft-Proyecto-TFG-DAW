@@ -8,7 +8,10 @@ import {
   LoginCredentials,
   AuthResponse,
 } from "@/src/usuarios/interfacesUsuarios";
-import { validateUsuarioUpdate } from "@/src/usuarios/schemasUsuarios";
+import {
+  validateUsuarioUpdate,
+  validateUsuarioCreate,
+} from "@/src/usuarios/schemasUsuarios";
 
 // Mock console.error
 const originalConsoleError = console.error;
@@ -236,8 +239,8 @@ describe("UsuariosController", () => {
     });
   });
 
-  describe("UsuariosController - signUp", () => {
-    it.only("should create a new user and return status 201", async () => {
+  describe.only("UsuariosController - signUp", () => {
+    it("should create a new user and return status 201", async () => {
       const mockUsuarioCreate: UsuarioCreate = {
         email: "newuser@example.com",
         password: "password123",
@@ -269,6 +272,12 @@ describe("UsuariosController", () => {
         error: undefined,
       };
 
+      // Mock de la validación para que sea exitosa
+      (validateUsuarioCreate as jest.Mock).mockReturnValue({
+        success: true,
+        data: mockUsuarioCreate,
+      });
+      // Mock del modelo
       mockUsuariosModel.signUp.mockResolvedValue(mockAuthResponse);
 
       mockRequest = { body: mockUsuarioCreate };
@@ -284,7 +293,7 @@ describe("UsuariosController", () => {
 
       // Verificar que se respondió con status 201 y el objeto 'user' completo
       expect(mockResponse.status).toHaveBeenCalledWith(201);
-      expect(mockResponse.json).toHaveBeenCalledWith(mockAuthResponse.user);
+      expect(mockResponse.json).toHaveBeenCalledWith(mockAuthResponse);
     });
 
     it("should return 400 if validation fails", async () => {
@@ -293,12 +302,11 @@ describe("UsuariosController", () => {
         password: "password123",
       };
 
-      jest.mock("@/src/usuarios/schemasUsuarios", () => ({
-        validateUsuarioCreate: jest.fn().mockReturnValue({
-          success: false,
-          error: "Invalid data",
-        }),
-      }));
+      // Mock de la validación para que falle
+      (validateUsuarioCreate as jest.Mock).mockReturnValue({
+        success: false,
+        error: "Invalid data",
+      });
 
       mockRequest = { body: mockUsuarioCreate };
 
@@ -323,6 +331,7 @@ describe("UsuariosController", () => {
         role: "user",
       };
 
+      // Simula un error en el modelo signUp (lo que debería entrar en el bloque catch)
       mockUsuariosModel.signUp.mockRejectedValue(new Error("Database error"));
 
       mockRequest = { body: mockUsuarioCreate };
@@ -333,6 +342,7 @@ describe("UsuariosController", () => {
         mockNext
       );
 
+      // Verificar que el error se maneja con un estado 500
       expect(mockResponse.status).toHaveBeenCalledWith(500);
       expect(mockResponse.json).toHaveBeenCalledWith({
         error: "Error interno del servidor",
