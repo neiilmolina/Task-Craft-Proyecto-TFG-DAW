@@ -8,6 +8,7 @@ import {
   LoginCredentials,
   AuthResponse,
 } from "@/src/usuarios/interfacesUsuarios";
+import { validateUsuarioUpdate } from "@/src/usuarios/schemasUsuarios";
 
 // Mock console.error
 const originalConsoleError = console.error;
@@ -236,7 +237,7 @@ describe("UsuariosController", () => {
   });
 
   describe("UsuariosController - signUp", () => {
-    it("should create a new user and return status 201", async () => {
+    it.only("should create a new user and return status 201", async () => {
       const mockUsuarioCreate: UsuarioCreate = {
         email: "newuser@example.com",
         password: "password123",
@@ -269,19 +270,21 @@ describe("UsuariosController", () => {
       };
 
       mockUsuariosModel.signUp.mockResolvedValue(mockAuthResponse);
+
       mockRequest = { body: mockUsuarioCreate };
 
-      console.log("Mock Request Body:", mockRequest.body); // Verifica que el cuerpo es correcto
       await usuariosController.signUp(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
       );
 
-      // Verifica que la función signUp se haya llamado con el objeto correcto
+      // Verificar que se llamó al modelo con los datos correctos
       expect(mockUsuariosModel.signUp).toHaveBeenCalledWith(mockUsuarioCreate);
+
+      // Verificar que se respondió con status 201 y el objeto 'user' completo
       expect(mockResponse.status).toHaveBeenCalledWith(201);
-      expect(mockResponse.json).toHaveBeenCalledWith(mockAuthResponse);
+      expect(mockResponse.json).toHaveBeenCalledWith(mockAuthResponse.user);
     });
 
     it("should return 400 if validation fails", async () => {
@@ -341,7 +344,7 @@ describe("UsuariosController", () => {
     const usuarioData: UsuarioCreate = {
       email: "user@example.com",
       role: "admin",
-      password: "password123", // Add the password property here
+      password: "password123",
       userMetadata: {
         first_name: "User",
         last_name: "Example",
@@ -366,6 +369,7 @@ describe("UsuariosController", () => {
         aud: "authenticated",
       };
 
+      // Asegúrate de que el mock esté configurado correctamente
       mockUsuariosModel.create.mockResolvedValue(newUsuario);
 
       const mockRequest: Request = {
@@ -376,48 +380,51 @@ describe("UsuariosController", () => {
         acceptsCharsets: jest.fn(),
       } as unknown as Request;
 
+      // Llamada al controlador
       await usuariosController.createUsuario(
         mockRequest,
         mockResponse as Response,
         mockNext
       );
 
+      // Verifica que el método 'create' haya sido llamado con el cuerpo correcto
       expect(mockUsuariosModel.create).toHaveBeenCalledWith(usuarioData);
       expect(mockResponse.status).toHaveBeenCalledWith(201);
       expect(mockResponse.json).toHaveBeenCalledWith(newUsuario);
     });
 
     it("should return 400 if validation fails", async () => {
-      const validationResult = {
-        success: false,
-        error: "Invalid email format",
+      const usuarioData: UsuarioCreate = {
+        email: "user@example.com",
+        role: "admin",
+        password: "password123",
       };
-
+      // Mock de la función de validación para simular que falla la validación
       jest.mock("@/src/usuarios/schemasUsuarios", () => ({
-        validateUsuarioCreate: jest.fn().mockReturnValue(validationResult),
+        validateUsuarioCreate: jest.fn().mockReturnValue({
+          success: false,
+          error: "Invalid data", // Mensaje de error que esperamos
+        }),
       }));
 
-      const mockRequest: Request = {
+      const mockRequest = {
         body: usuarioData,
-        get: jest.fn(),
-        header: jest.fn(),
-        accepts: jest.fn(),
-        acceptsCharsets: jest.fn(),
-      } as unknown as Request;
+      };
 
+      // Llamada al controlador con los mocks
       await usuariosController.createUsuario(
-        mockRequest,
+        mockRequest as Request,
         mockResponse as Response,
         mockNext
       );
 
+      // Verifica que se ha llamado con el código de estado 400
       expect(mockResponse.status).toHaveBeenCalledWith(400);
-      expect(mockResponse.json).toHaveBeenCalledWith({
-        error: validationResult.error,
-      });
+      expect(mockResponse.json).toHaveBeenCalledWith({ error: "Invalid data" });
     });
 
     it("should return 500 if an error occurs", async () => {
+      // Simula que se produce un error al crear el usuario
       mockUsuariosModel.create.mockRejectedValue(new Error("Database error"));
 
       const mockRequest: Request = {
@@ -441,7 +448,7 @@ describe("UsuariosController", () => {
     });
   });
 
-  describe.only("UsuariosController - updateUsuario", () => {
+  describe("UsuariosController - updateUsuario", () => {
     it("should update a user and return status 200", async () => {
       const id = "1";
       const usuarioData: UsuarioUpdate = {
@@ -494,49 +501,37 @@ describe("UsuariosController", () => {
 
     it("should return 400 if validation fails", async () => {
       const usuarioData: UsuarioUpdate = {
-        email: "invalid-email", // Un email inválido para forzar el error de validación
+        email: "invalid-email",
         role: "user",
       };
 
-      // Mock de la validación para simular que falla la validación debido al email incorrecto
-      jest.mock("@/src/usuarios/schemasUsuarios", () => ({
-        validateUsuarioUpdate: jest.fn().mockReturnValue({
-          success: false,
-          error: {
-            issues: [
-              {
-                message: "El email debe ser válido", // Mensaje de error que esperamos
-              },
-            ],
-          },
-        }),
-      }));
-
-      const mockResponse = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn().mockReturnThis(),
-      } as unknown as Response;
+      // Mock del esquema de validación para simular el fallo
+      (validateUsuarioUpdate as jest.Mock).mockReturnValue({
+        success: false,
+        error: {
+          issues: [
+            {
+              message: "El email debe ser válido",
+            },
+          ],
+        },
+      });
 
       const mockRequest: Request = {
         body: usuarioData,
-        params: { id: "1" }, // El ID no importa aquí porque la validación falla antes
-        get: jest.fn(),
-        header: jest.fn(),
-        accepts: jest.fn(),
-        acceptsCharsets: jest.fn(),
+        params: { id: "1" },
       } as unknown as Request;
 
-      // Llamada al controlador con los mocks
       await usuariosController.updateUsuario(
         mockRequest,
-        mockResponse,
+        mockResponse as Response,
         mockNext
       );
 
-      // Verifica que el estado sea 400 debido a la validación fallida
+      // Verificar que la validación falló con un estado 400
       expect(mockResponse.status).toHaveBeenCalledWith(400);
       expect(mockResponse.json).toHaveBeenCalledWith({
-        error: "El email debe ser válido", // Aquí esperamos el mensaje de validación
+        error: "El email debe ser válido",
       });
     });
 

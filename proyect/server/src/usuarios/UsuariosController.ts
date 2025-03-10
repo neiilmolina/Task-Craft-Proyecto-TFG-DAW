@@ -66,23 +66,26 @@ export default class UsuariosController {
     }
   };
 
-  createUsuario: RequestHandler = async (req: Request, res: Response) => {
+  createUsuario: RequestHandler = async (req, res) => {
     try {
       const usuarioData: UsuarioCreate = req.body;
+
+      console.log("Request Body:", usuarioData); // Verifica el contenido del cuerpo de la solicitud
 
       // Validación del cuerpo de la solicitud
       const result = validateUsuarioCreate(usuarioData);
       if (!result.success) {
         res.status(400).json({ error: result.error });
-        return; // No es necesario retornar un valor explícito aquí
+        return; // Si la validación falla, termina aquí
       }
 
-      // Si la validación es correcta, crear el usuario
-      const newUsuario = await this.usuariosModel.create(usuarioData);
-      res.status(201).json(newUsuario);
+      console.log("Calling createUsuario model with", usuarioData); // Verifica que el modelo se está llamando
+
+      const newUsuario = await this.usuariosModel.create(usuarioData); // Aquí debería llamarse
+      res.status(201).json(newUsuario); // Retorna el nuevo usuario creado
     } catch (error) {
       console.error("Error al crear el usuario:", error);
-      res.status(500).json({ error: "Error interno del servidor" });
+      res.status(500).json({ error: "Error interno del servidor" }); // Si ocurre un error interno, devuelve el código 500
     }
   };
 
