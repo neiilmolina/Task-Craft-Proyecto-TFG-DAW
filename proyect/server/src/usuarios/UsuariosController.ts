@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction, RequestHandler } from "express";
 import {
+  validateEmail,
+  validatePassword,
   validateUsuarioCreate,
   validateUsuarioUpdate,
 } from "@/src/usuarios/schemasUsuarios";
@@ -135,15 +137,32 @@ export default class UsuariosController {
   changePassword: RequestHandler = async (req, res) => {
     try {
       const { newPassword } = req.body;
+
+      // Validación de la contraseña
+      const validation = validatePassword(newPassword);
+      if (!validation.success) {
+        // Si la validación falla, devolvemos el error 400
+        res.status(400).json({
+          message: validation.error, // Mensaje de validación
+        });
+        return; // Aseguramos que no haya más ejecución
+      }
+
+      // Llama al modelo para cambiar la contraseña
       const result = await this.usuariosModel.changePassword(newPassword);
 
+      // Si el cambio de contraseña fue exitoso
       if (result) {
         res.status(200).json({ message: "Contraseña cambiada correctamente" });
+        return; // Aseguramos que no haya más ejecución
       } else {
-        res.status(400).json({ message: "Error al cambiar la contraseña" });
+        // Si el usuario no se encuentra
+        res.status(404).json({ message: "Usuario no encontrado" });
+        return; // Aseguramos que no haya más ejecución
       }
     } catch (error) {
       console.error("Error al cambiar la contraseña:", error);
+      // Si hay un error interno
       res.status(500).json({ error: "Error interno del servidor" });
     }
   };
@@ -152,6 +171,14 @@ export default class UsuariosController {
   resetEmail: RequestHandler = async (req, res) => {
     try {
       const { email } = req.body;
+
+      // Validar el correo electrónico antes de procesarlo
+      const validation = validateEmail(email);
+      if (!validation.success) {
+        res.status(400).json({ message: validation.error });
+        return;
+      }
+
       const result = await this.usuariosModel.resetEmail(email);
 
       if (result) {
@@ -196,10 +223,16 @@ export default class UsuariosController {
     }
   };
 
-  // Restablecer la contraseña
-  resetPassword: RequestHandler = async (req, res) => {
+  resetPassword: RequestHandler = async (req, res): Promise<void> => {
     try {
       const { email } = req.body;
+
+      // Validar el correo electrónico antes de procesarlo
+      const emailValidation = validateEmail(email); // Asumiendo que validateEmail está definido
+      if (!emailValidation.success) {
+        res.status(400).json({ message: emailValidation.error });
+        return; // Asegúrate de usar return después de enviar la respuesta
+      }
       const result = await this.usuariosModel.resetPassword(email);
 
       if (result) {

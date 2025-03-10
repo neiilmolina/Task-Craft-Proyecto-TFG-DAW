@@ -12,20 +12,25 @@ const user_metadataSchema = z.object({
   last_name: z.string().optional(),
   avatar_url: z.string().optional(),
 });
+const emailSchema = z.string().email("El email debe ser válido");
+
+const passwordSchema = z
+  .string()
+  .min(6, "La contraseña debe tener al menos 6 caracteres");
 
 // Esquema para la creación de un usuario
 const usuarioCreateSchema = z.object({
-  email: z.string().email("El email debe ser válido"),
-  password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+  email: emailSchema,
+  password: passwordSchema,
   user_metadata: user_metadataSchema.optional(),
   role: z.string().min(1).optional(),
 });
 
 // Esquema para actualizar la información de un usuario
 const usuarioUpdateSchema = z.object({
+  email: emailSchema,
   user_metadata: user_metadataSchema.optional(),
   role: z.string().min(1).optional(),
-  email: z.string().email("El email debe ser válido"),
 });
 
 // Esquema para filtros de usuarios
@@ -58,4 +63,22 @@ export function validateUsuarioUpdate(input: UsuarioUpdate) {
 // Validación para filtros de usuarios
 export function validateUserFilters(input: UserFilters) {
   return userFiltersSchema.safeParse(input);
+}
+
+export function validatePassword(password: string) {
+  const result = passwordSchema.safeParse(password);
+
+  if (!result.success) {
+    return { success: false, error: result.error.errors[0].message }; // Devuelve el primer error
+  }
+  return { success: true };
+}
+
+export function validateEmail(email: string) {
+  const result = emailSchema.safeParse(email);
+
+  if (!result.success) {
+    return { success: false, error: result.error.errors[0].message }; // Devuelve el primer error
+  }
+  return { success: true };
 }

@@ -11,6 +11,8 @@ import {
 import {
   validateUsuarioUpdate,
   validateUsuarioCreate,
+  validatePassword,
+  validateEmail,
 } from "@/src/usuarios/schemasUsuarios";
 import { User } from "@supabase/supabase-js";
 
@@ -29,6 +31,14 @@ jest.mock("@/src/usuarios/schemasUsuarios", () => ({
     .fn()
     .mockReturnValue({ success: true, error: "" }),
   validateUsuarioUpdate: jest.fn().mockReturnValue({
+    success: true, // Ahora simula una validación exitosa
+    error: "", // No hay error
+  }),
+  validatePassword: jest.fn().mockReturnValue({
+    success: true, // Ahora simula una validación exitosa
+    error: "", // No hay error
+  }),
+  validateEmail: jest.fn().mockReturnValue({
     success: true, // Ahora simula una validación exitosa
     error: "", // No hay error
   }),
@@ -704,6 +714,12 @@ describe("UsuariosController", () => {
         acceptsCharsets: jest.fn(),
       } as unknown as Request;
 
+      // Simulamos una validación exitosa
+      (validatePassword as jest.Mock).mockReturnValue({
+        success: true,
+        error: "",
+      });
+
       mockUsuariosModel.changePassword.mockResolvedValue(true);
 
       await usuariosController.changePassword(
@@ -712,6 +728,7 @@ describe("UsuariosController", () => {
         mockNext
       );
 
+      expect(validatePassword).toHaveBeenCalledWith(newPassword);
       expect(mockUsuariosModel.changePassword).toHaveBeenCalledWith(
         newPassword
       );
@@ -721,7 +738,36 @@ describe("UsuariosController", () => {
       });
     });
 
-    it("should return 400 if the password change fails", async () => {
+    it("should return 400 if the password is invalid", async () => {
+      const newPassword = "short"; // Contraseña inválida según las reglas
+      const mockRequest: Request = {
+        body: { newPassword },
+        get: jest.fn(),
+        header: jest.fn(),
+        accepts: jest.fn(),
+        acceptsCharsets: jest.fn(),
+      } as unknown as Request;
+
+      // Simulamos una validación fallida
+      (validatePassword as jest.Mock).mockReturnValue({
+        success: false,
+        error: "La contraseña debe tener al menos 6 caracteres",
+      });
+
+      await usuariosController.changePassword(
+        mockRequest,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(validatePassword).toHaveBeenCalledWith(newPassword);
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: "La contraseña debe tener al menos 6 caracteres",
+      });
+    });
+
+    it("should return 404 if the user is not found", async () => {
       const newPassword = "newPassword123";
       const mockRequest: Request = {
         body: { newPassword },
@@ -731,6 +777,12 @@ describe("UsuariosController", () => {
         acceptsCharsets: jest.fn(),
       } as unknown as Request;
 
+      // Simulamos una validación exitosa
+      (validatePassword as jest.Mock).mockReturnValue({
+        success: true,
+        error: "",
+      });
+
       mockUsuariosModel.changePassword.mockResolvedValue(false);
 
       await usuariosController.changePassword(
@@ -739,9 +791,10 @@ describe("UsuariosController", () => {
         mockNext
       );
 
-      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(validatePassword).toHaveBeenCalledWith(newPassword);
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
       expect(mockResponse.json).toHaveBeenCalledWith({
-        message: "Error al cambiar la contraseña",
+        message: "Usuario no encontrado",
       });
     });
 
@@ -755,6 +808,12 @@ describe("UsuariosController", () => {
         acceptsCharsets: jest.fn(),
       } as unknown as Request;
 
+      // Simulamos una validación exitosa
+      (validatePassword as jest.Mock).mockReturnValue({
+        success: true,
+        error: "",
+      });
+
       mockUsuariosModel.changePassword.mockRejectedValue(
         new Error("Database error")
       );
@@ -765,6 +824,7 @@ describe("UsuariosController", () => {
         mockNext
       );
 
+      expect(validatePassword).toHaveBeenCalledWith(newPassword);
       expect(mockResponse.status).toHaveBeenCalledWith(500);
       expect(mockResponse.json).toHaveBeenCalledWith({
         error: "Error interno del servidor",
@@ -783,6 +843,7 @@ describe("UsuariosController", () => {
         acceptsCharsets: jest.fn(),
       } as unknown as Request;
 
+      // Mock de la función resetEmail
       mockUsuariosModel.resetEmail.mockResolvedValue(true);
 
       await usuariosController.resetEmail(
@@ -808,6 +869,7 @@ describe("UsuariosController", () => {
         acceptsCharsets: jest.fn(),
       } as unknown as Request;
 
+      // Simular que resetEmail falla
       mockUsuariosModel.resetEmail.mockResolvedValue(false);
 
       await usuariosController.resetEmail(
@@ -832,6 +894,7 @@ describe("UsuariosController", () => {
         acceptsCharsets: jest.fn(),
       } as unknown as Request;
 
+      // Simular un error en la base de datos
       mockUsuariosModel.resetEmail.mockRejectedValue(
         new Error("Database error")
       );
@@ -845,6 +908,34 @@ describe("UsuariosController", () => {
       expect(mockResponse.status).toHaveBeenCalledWith(500);
       expect(mockResponse.json).toHaveBeenCalledWith({
         error: "Error interno del servidor",
+      });
+    });
+
+    it("should return 400 if the email validation fails", async () => {
+      const email = "invalid-email";
+      const mockRequest: Request = {
+        body: { email },
+        get: jest.fn(),
+        header: jest.fn(),
+        accepts: jest.fn(),
+        acceptsCharsets: jest.fn(),
+      } as unknown as Request;
+
+      // Mock para simular que la validación falla
+      (validateEmail as jest.Mock).mockReturnValue({
+        success: false,
+        error: "Error al restablecer el correo",
+      });
+
+      await usuariosController.resetEmail(
+        mockRequest,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: "Error al restablecer el correo", // Mensaje de error de validación
       });
     });
   });
@@ -1054,6 +1145,33 @@ describe("UsuariosController", () => {
       expect(mockResponse.json).toHaveBeenCalledWith({
         error: "Error interno del servidor",
         details: "Error al restablecer la contraseña",
+      });
+    });
+
+    it("should return 400 if the email is invalid", async () => {
+      const invalidEmail = "invalid-email";
+      const emailValidation = {
+        success: false,
+        error: "Invalid email format",
+      };
+
+      // Simular una respuesta de validación fallida
+      (validateEmail as jest.Mock).mockReturnValue({
+        success: false,
+        error: "Invalid email format",
+      });
+
+      mockRequest.body = { email: invalidEmail };
+
+      await usuariosController.resetPassword(
+        mockRequest as Request,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: "Invalid email format",
       });
     });
   });

@@ -1,6 +1,5 @@
 // src/usuarios/dao/IUsuariosDAO.ts
 import { 
-    Usuario, 
     UsuarioCreate, 
     UsuarioUpdate, 
     AuthResponse, 
@@ -8,6 +7,7 @@ import {
     UserFilters,
     PaginatedUsers 
 } from '@/src/usuarios/interfacesUsuarios';
+import { User } from '@supabase/supabase-js';
 
 export default interface IUsuariosDAO {
     // Métodos de autenticación
@@ -18,9 +18,9 @@ export default interface IUsuariosDAO {
     
     // Métodos de gestión de usuarios
     getAll(filters?: UserFilters): Promise<PaginatedUsers>;
-    getById(id: string): Promise<Usuario | null>;
-    create(userData: UsuarioCreate): Promise<Usuario | null>;
-    update(id: string, usuario: UsuarioUpdate): Promise<Usuario | null>;
+    getById(id: string): Promise<User | null>;
+    create(userData: UsuarioCreate): Promise<User | null>;
+    update(id: string, usuario: UsuarioUpdate): Promise<User | null>;
     delete(id: string): Promise<boolean>;
     
     // Gestión de perfil
