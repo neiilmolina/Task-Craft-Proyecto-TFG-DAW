@@ -25,6 +25,7 @@ export interface UsuarioUpdate {
 
 // Interface for authentication response
 export interface AuthResponse {
+  message?: string;
   user: User | null;
   session: Session | any | null;
   error?: string;

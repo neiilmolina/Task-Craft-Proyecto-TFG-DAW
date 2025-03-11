@@ -520,7 +520,7 @@ describe("UsuariosModel", () => {
     });
   });
 
-  describe.only("update", () => {
+  describe("update", () => {
     const userId = "123";
     const updatedUser: UsuarioUpdate = {
       role: "admin",

@@ -7,6 +7,7 @@ import {
   UsuarioUpdate,
   UserFilters,
   PaginatedUsers,
+  AuthResponse,
 } from "@/src/usuarios/interfacesUsuarios";
 import { User } from "@supabase/supabase-js";
 
@@ -331,6 +332,327 @@ describe("Usuarios Routes", () => {
       expect(response.body).toHaveProperty(
         "message",
         "La contraseña debe tener al menos 6 caracteres"
+      );
+    });
+  });
+
+  // Tests para UsuariosController
+
+  describe("POST /api/usuarios/sign-in", () => {
+    it("debería iniciar sesión correctamente", async () => {
+      const mockAuthResponse: AuthResponse = {
+        user: {
+          id: "1",
+          email: "newuser@example.com",
+          role: "user",
+          created_at: "2025-03-08T00:00:00Z",
+          updated_at: "2025-03-08T00:00:00Z",
+          app_metadata: {
+            provider: "email",
+            providers: ["email"],
+          },
+          user_metadata: {
+            first_name: "New",
+            last_name: "User",
+          },
+          aud: "authenticated",
+        },
+        session: null,
+        error: undefined,
+      };
+      mockUsuariosModel.signIn.mockResolvedValue(mockAuthResponse);
+
+      const response = await request(app)
+        .post("/api/usuarios/sign-in")
+        .send({ email: "newuser@example.com", password: "securePassword123" })
+        .set("Content-Type", "application/json");
+
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty(
+        "message",
+        "Inicio de sesión exitoso"
+      );
+      expect(response.body).toHaveProperty("user", mockAuthResponse.user);
+      expect(mockUsuariosModel.signIn).toHaveBeenCalledWith({
+        email: "newuser@example.com",
+        password: "securePassword123",
+      });
+    });
+
+    it("debería devolver 401 si las credenciales son inválidas", async () => {
+      const invalidCredentials: AuthResponse = {
+        user: null,
+        session: null,
+        error: "Credenciales inválidas",
+      };
+      mockUsuariosModel.signIn.mockResolvedValue(invalidCredentials);
+
+      const response = await request(app)
+        .post("/api/usuarios/sign-in")
+        .send({ email: "user@example.com", password: "wrongPassword" })
+        .set("Content-Type", "application/json");
+
+      expect(response.status).toBe(401);
+      expect(response.body).toHaveProperty("message", "Credenciales inválidas");
+    });
+
+    it("debería manejar errores internos durante el inicio de sesión", async () => {
+      mockUsuariosModel.signIn.mockRejectedValue(new Error("Error interno"));
+
+      const response = await request(app)
+        .post("/api/usuarios/sign-in")
+        .send({ email: "user@example.com", password: "securePassword123" })
+        .set("Content-Type", "application/json");
+
+      expect(response.status).toBe(500);
+      expect(response.body).toHaveProperty(
+        "error",
+        "Error interno del servidor"
+      );
+    });
+  });
+
+  describe("POST /api/usuarios/sign-up", () => {
+    it("should create a new user and return status 201", async () => {
+      const mockUsuarioCreate: UsuarioCreate = {
+        email: "newuser@example.com",
+        password: "password123",
+        user_metadata: {
+          first_name: "New",
+          last_name: "User",
+        },
+        role: "user",
+      };
+
+      const mockAuthResponse: AuthResponse = {
+        user: {
+          id: "1",
+          email: "newuser@example.com",
+          role: "user",
+          created_at: "2025-03-08T00:00:00Z",
+          updated_at: "2025-03-08T00:00:00Z",
+          app_metadata: {
+            provider: "email",
+            providers: ["email"],
+          },
+          user_metadata: {
+            first_name: "New",
+            last_name: "User",
+          },
+          aud: "authenticated",
+        },
+        session: null,
+        error: undefined,
+      };
+
+      mockUsuariosModel.signUp.mockResolvedValue(mockAuthResponse);
+
+      const response = await request(app)
+        .post("/api/usuarios/sign-up")
+        .send(mockUsuarioCreate)
+        .set("Content-Type", "application/json");
+
+      expect(response.status).toBe(201);
+      expect(response.body).toHaveProperty("user", mockAuthResponse.user);
+      expect(response.body).toHaveProperty("session", mockAuthResponse.session);
+    });
+
+    it("should return 400 if email is missing", async () => {
+      const mockUsuarioCreate = {
+        password: "password123",
+        user_metadata: {
+          first_name: "New",
+          last_name: "User",
+        },
+        role: "user",
+      };
+
+      const response = await request(app)
+        .post("/api/usuarios/sign-up")
+        .send(mockUsuarioCreate)
+        .set("Content-Type", "application/json");
+
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty("error", "Required"); // Cambiado a 'Required' temporalmente
+    });
+
+    it("should return 400 if password is missing", async () => {
+      const mockUsuarioCreate = {
+        email: "newuser@example.com",
+        user_metadata: {
+          first_name: "New",
+          last_name: "User",
+        },
+        role: "user",
+      };
+
+      const response = await request(app)
+        .post("/api/usuarios/sign-up")
+        .send(mockUsuarioCreate)
+        .set("Content-Type", "application/json");
+
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty("error", "Required"); // Cambiado a 'Required' temporalmente
+    });
+
+    it("should return 400 if user already exists", async () => {
+      const mockUsuarioCreate: UsuarioCreate = {
+        email: "existinguser@example.com",
+        password: "password123",
+        user_metadata: {
+          first_name: "Existing",
+          last_name: "User",
+        },
+        role: "user",
+      };
+
+      // Simula el comportamiento de signUp donde el error incluye "already exists"
+      mockUsuariosModel.signUp.mockResolvedValue({
+        user: null,
+        session: null,
+        error: "User already exists", // Aquí simulamos que el error devuelto es del tipo esperado por tu controlador
+      });
+
+      const response = await request(app)
+        .post("/api/usuarios/sign-up")
+        .send(mockUsuarioCreate)
+        .set("Content-Type", "application/json");
+
+      // Verificamos que el estado de la respuesta sea 400 en lugar de 201
+      expect(response.status).toBe(400);
+
+      // Verificamos que el mensaje de error esté presente en la respuesta
+      expect(response.body).toHaveProperty("error", "El usuario ya existe");
+    });
+
+    it("should return 500 if an error occurs", async () => {
+      const mockUsuarioCreate: UsuarioCreate = {
+        email: "newuser@example.com",
+        password: "password123",
+        user_metadata: {
+          first_name: "New",
+          last_name: "User",
+        },
+        role: "user",
+      };
+
+      mockUsuariosModel.signUp.mockRejectedValue(new Error("Database error"));
+
+      const response = await request(app)
+        .post("/api/usuarios/sign-up")
+        .send(mockUsuarioCreate)
+        .set("Content-Type", "application/json");
+
+      expect(response.status).toBe(500);
+      expect(response.body).toHaveProperty(
+        "error",
+        "Error interno del servidor"
+      );
+    });
+  });
+
+  describe("POST /api/usuarios/sign-out", () => {
+    it("should return 200 if the user is signed out successfully", async () => {
+      const response = await request(app).post("/api/usuarios/sign-out").send();
+
+      // Verificamos que el estado de la respuesta sea 200
+      expect(response.status).toBe(200);
+
+      // Verificamos que el mensaje de éxito esté presente en la respuesta
+      expect(response.body).toHaveProperty(
+        "message",
+        "Sesión cerrada correctamente"
+      );
+    });
+
+    it("should return 500 if there is an error during sign out", async () => {
+      // Simulamos un error en la función signOut
+      mockUsuariosModel.signOut.mockRejectedValue(
+        new Error("Error en el cierre de sesión")
+      );
+
+      const response = await request(app).post("/api/usuarios/sign-out").send();
+
+      // Verificamos que el estado de la respuesta sea 500
+      expect(response.status).toBe(500);
+
+      // Verificamos que el mensaje de error esté presente en la respuesta
+      expect(response.body).toHaveProperty(
+        "error",
+        "Error interno del servidor"
+      );
+      expect(response.body).toHaveProperty(
+        "details",
+        "Error en el cierre de sesión"
+      );
+    });
+  });
+
+  describe("POST /api/usuarios/reset-password", () => {
+    it("should return 200 when the password is reset successfully", async () => {
+      const mockEmail = "user@example.com";
+
+      // Simulamos el comportamiento de la función resetPassword
+      mockUsuariosModel.resetPassword.mockResolvedValue(true); // Simulamos que el restablecimiento de la contraseña fue exitoso
+
+      const response = await request(app)
+        .post("/api/usuarios/reset-password")
+        .send({ email: mockEmail })
+        .set("Content-Type", "application/json");
+
+      // Verificamos que el estado de la respuesta sea 200
+      expect(response.status).toBe(200);
+
+      // Verificamos que el mensaje de éxito esté presente en la respuesta
+      expect(response.body).toHaveProperty(
+        "message",
+        "Contraseña restablecida correctamente"
+      );
+    });
+
+    it("should return 400 if email is invalid", async () => {
+      const invalidEmail = "invalid-email";
+
+      const response = await request(app)
+        .post("/api/usuarios/reset-password")
+        .send({ email: invalidEmail })
+        .set("Content-Type", "application/json");
+
+      // Verificamos que el estado de la respuesta sea 400
+      expect(response.status).toBe(400);
+
+      // Verificamos que el mensaje de error esté presente en la respuesta
+      // Este mensaje proviene de la validación del email en el controlador
+      expect(response.body).toHaveProperty(
+        "message",
+        "El email debe ser válido"
+      );
+    });
+
+    it("should return 500 if there is an internal error during reset password", async () => {
+      const mockEmail = "user@example.com";
+
+      // Simulamos un error durante el restablecimiento de la contraseña
+      mockUsuariosModel.resetPassword.mockRejectedValue(
+        new Error("Error en el restablecimiento de la contraseña")
+      );
+
+      const response = await request(app)
+        .post("/api/usuarios/reset-password")
+        .send({ email: mockEmail })
+        .set("Content-Type", "application/json");
+
+      // Verificamos que el estado de la respuesta sea 500
+      expect(response.status).toBe(500);
+
+      // Verificamos que el mensaje de error esté presente en la respuesta
+      expect(response.body).toHaveProperty(
+        "error",
+        "Error interno del servidor"
+      );
+      expect(response.body).toHaveProperty(
+        "details",
+        "Error en el restablecimiento de la contraseña"
       );
     });
   });

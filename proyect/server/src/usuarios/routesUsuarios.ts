@@ -13,9 +13,8 @@ export const createUsuariosRoute = (usuariosModel: UsuariosModel) => {
   router.put("/:id", usuariosController.updateUsuario);
   router.delete("/:id", usuariosController.deleteUsuario);
   router.put("/:id/password", usuariosController.changePassword);
-  router.post("/reset-email", usuariosController.resetEmail);
-
   // Rutas para autenticación
+  router.post("/reset-email", usuariosController.resetEmail);
   router.post("/sign-in", usuariosController.signIn);
   router.post("/sign-up", usuariosController.signUp);
   router.post("/sign-out", usuariosController.signOut);

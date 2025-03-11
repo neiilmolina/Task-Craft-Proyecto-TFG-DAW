@@ -56,9 +56,16 @@ export default class UsuariosController {
       }
 
       const newUsuario = await this.usuariosModel.signUp(usuarioData);
+
+      // Verificar si el error es que el usuario ya existe
+      if (newUsuario.error && newUsuario.error.includes("already exists")) {
+        res.status(400).json({ error: "El usuario ya existe" });
+        return;
+      }
+
       res.status(201).json(newUsuario);
     } catch (error) {
-      console.error("Error al crear el usuario:", error); // Aquí se registra cualquier error en el bloque catch
+      console.error("Error al crear el usuario:", error);
       res.status(500).json({ error: "Error interno del servidor" });
     }
   };
@@ -74,6 +81,7 @@ export default class UsuariosController {
 
       // Llamada al modelo
       const newUsuario = await this.usuariosModel.create(usuarioData);
+
       res.status(201).json(newUsuario);
     } catch (error) {
       console.error("Error al crear el usuario:", error);
@@ -194,18 +202,36 @@ export default class UsuariosController {
 
   // Iniciar sesión
   signIn: RequestHandler = async (req, res) => {
-    try {
-      const credentials: LoginCredentials = req.body;
-      const authResponse = await this.usuariosModel.signIn(credentials);
+    const { email, password } = req.body;
 
-      if (authResponse && authResponse.user) {
-        res.status(200).json(authResponse);
-      } else {
-        res.status(400).json({ message: "Credenciales inválidas" });
+    // Validación simple
+    if (!email || !password) {
+      res.status(400).json({
+        message: "Email y contraseña son obligatorios",
+      });
+    }
+
+    try {
+      const loginCredentials: LoginCredentials = { email, password };
+      const result = await this.usuariosModel.signIn(loginCredentials);
+
+      if (!result.user || result.error) {
+        res.status(401).json({
+          message: "Credenciales inválidas",
+        });
+        return;
       }
+
+      res.status(200).json({
+        message: "Inicio de sesión exitoso",
+        user: result.user,
+        session: result.session,
+      });
+      return;
     } catch (error) {
-      console.error("Error al iniciar sesión:", error);
-      res.status(500).json({ error: "Error interno del servidor" });
+      res.status(500).json({
+        error: "Error interno del servidor",
+      });
     }
   };
 
@@ -227,26 +253,28 @@ export default class UsuariosController {
     try {
       const { email } = req.body;
 
-      // Validar el correo electrónico antes de procesarlo
-      const emailValidation = validateEmail(email); // Asumiendo que validateEmail está definido
+      const emailValidation = validateEmail(email);
       if (!emailValidation.success) {
         res.status(400).json({ message: emailValidation.error });
-        return; // Asegúrate de usar return después de enviar la respuesta
+        return;
       }
+
       const result = await this.usuariosModel.resetPassword(email);
 
       if (result) {
         res
           .status(200)
           .json({ message: "Contraseña restablecida correctamente" });
+        return;
       } else {
         res.status(400).json({ message: "Error al restablecer la contraseña" });
+        return;
       }
     } catch (error: any) {
       console.error("Error al restablecer la contraseña:", error);
       res.status(500).json({
         error: "Error interno del servidor",
-        details: error.message, // Añadir detalles del error
+        details: error.message,
       });
     }
   };

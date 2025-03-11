@@ -296,6 +296,7 @@ describe("UsuariosController", () => {
         success: true,
         data: mockUsuarioCreate,
       });
+
       // Mock del modelo
       mockUsuariosModel.signUp.mockResolvedValue(mockAuthResponse);
 
@@ -307,12 +308,110 @@ describe("UsuariosController", () => {
         mockNext
       );
 
-      // Verificar que se llamó al modelo con los datos correctos
       expect(mockUsuariosModel.signUp).toHaveBeenCalledWith(mockUsuarioCreate);
-
-      // Verificar que se respondió con status 201 y el objeto 'user' completo
       expect(mockResponse.status).toHaveBeenCalledWith(201);
       expect(mockResponse.json).toHaveBeenCalledWith(mockAuthResponse);
+    });
+
+    it("should return 400 if email is missing", async () => {
+      const mockUsuarioCreate: UsuarioCreate = {
+        email: "",
+        password: "password123",
+        user_metadata: {
+          first_name: "New",
+          last_name: "User",
+        },
+        role: "user",
+      };
+
+      (validateUsuarioCreate as jest.Mock).mockReturnValue({
+        success: false,
+        error: "Email es obligatorio",
+      });
+
+      mockRequest = { body: mockUsuarioCreate };
+
+      await usuariosController.signUp(
+        mockRequest as Request,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      // Esperamos 'error' en lugar de 'message'
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: "Email es obligatorio",
+      });
+    });
+
+    it("should return 400 if password is missing", async () => {
+      const mockUsuarioCreate: UsuarioCreate = {
+        email: "newuser@example.com",
+        password: "",
+        user_metadata: {
+          first_name: "New",
+          last_name: "User",
+        },
+        role: "user",
+      };
+
+      (validateUsuarioCreate as jest.Mock).mockReturnValue({
+        success: false,
+        error: "Contraseña es obligatoria",
+      });
+
+      mockRequest = { body: mockUsuarioCreate };
+
+      await usuariosController.signUp(
+        mockRequest as Request,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      // Esperamos 'error' en lugar de 'message'
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: "Contraseña es obligatoria",
+      });
+    });
+
+    it("should return 400 if user already exists", async () => {
+      const mockUsuarioCreate: UsuarioCreate = {
+        email: "existinguser@example.com",
+        password: "password123",
+        user_metadata: {
+          first_name: "Existing",
+          last_name: "User",
+        },
+        role: "user",
+      };
+
+      // Simula una validación exitosa
+      (validateUsuarioCreate as jest.Mock).mockReturnValue({
+        success: true,
+        data: mockUsuarioCreate, // Asegúrate de que los datos pasen la validación
+      });
+
+      // Simulando que el usuario ya existe y se devuelve un error con el mensaje adecuado
+      mockUsuariosModel.signUp.mockResolvedValue({
+        user: null, // El usuario no se crea porque ya existe
+        session: null,
+        error: "user already exists", // Este es el error que debería aparecer en tu controlador
+      });
+
+      mockRequest = { body: mockUsuarioCreate };
+
+      await usuariosController.signUp(
+        mockRequest as Request,
+        mockResponse as Response,
+        mockNext
+      );
+
+      // Verificar que se devuelvan el error adecuado con status 400
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: "El usuario ya existe", // Este es el mensaje que esperas en tu controlador
+      });
     });
 
     it("should return 400 if validation fails", async () => {
@@ -337,6 +436,7 @@ describe("UsuariosController", () => {
       );
 
       expect(mockResponse.status).toHaveBeenCalledWith(400);
+      // Esperamos 'error' en lugar de 'message'
       expect(mockResponse.json).toHaveBeenCalledWith({ error: "Invalid data" });
     });
 
@@ -948,6 +1048,7 @@ describe("UsuariosController", () => {
       };
 
       const authResponse: AuthResponse = {
+        message: "Inicio de sesión exitoso",
         session: "fake-token",
         user: {
           id: "1",
@@ -988,7 +1089,7 @@ describe("UsuariosController", () => {
       expect(mockResponse.json).toHaveBeenCalledWith(authResponse);
     });
 
-    it("should return 400 if credentials are invalid", async () => {
+    it("should return 401 if credentials are invalid", async () => {
       const credentials: LoginCredentials = {
         email: "user@example.com",
         password: "wrongpassword", // Contraseña incorrecta
@@ -1017,8 +1118,8 @@ describe("UsuariosController", () => {
         mockNext
       );
 
-      // Verificamos que la respuesta tenga el código de estado 400
-      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      // Verificamos que la respuesta tenga el código de estado 401
+      expect(mockResponse.status).toHaveBeenCalledWith(401);
 
       // Verificamos que el mensaje de error sea el adecuado
       expect(mockResponse.json).toHaveBeenCalledWith({
@@ -1093,8 +1194,12 @@ describe("UsuariosController", () => {
   describe("resetPassword", () => {
     it("should return 200 if password is successfully reset", async () => {
       const email = "user@example.com";
-      mockUsuariosModel.resetPassword.mockResolvedValue(true); // Mock successful reset
 
+      (validateEmail as jest.Mock).mockReturnValue({
+        success: true,
+      });
+
+      mockUsuariosModel.resetPassword.mockResolvedValue(true); // Mock successful reset
       mockRequest.body = { email };
 
       await usuariosController.resetPassword(
@@ -1111,8 +1216,12 @@ describe("UsuariosController", () => {
 
     it("should return 400 if there is an error resetting the password", async () => {
       const email = "user@example.com";
-      mockUsuariosModel.resetPassword.mockResolvedValue(false); // Mock failed reset
 
+      (validateEmail as jest.Mock).mockReturnValue({
+        success: true,
+      });
+
+      mockUsuariosModel.resetPassword.mockResolvedValue(false); // Mock failed reset
       mockRequest.body = { email };
 
       await usuariosController.resetPassword(
@@ -1129,6 +1238,11 @@ describe("UsuariosController", () => {
 
     it("should return 500 if there is an internal server error", async () => {
       const email = "user@example.com";
+
+      (validateEmail as jest.Mock).mockReturnValue({
+        success: true,
+      });
+
       mockUsuariosModel.resetPassword.mockRejectedValue(
         new Error("Error al restablecer la contraseña")
       ); // Mock failure
@@ -1150,12 +1264,7 @@ describe("UsuariosController", () => {
 
     it("should return 400 if the email is invalid", async () => {
       const invalidEmail = "invalid-email";
-      const emailValidation = {
-        success: false,
-        error: "Invalid email format",
-      };
 
-      // Simular una respuesta de validación fallida
       (validateEmail as jest.Mock).mockReturnValue({
         success: false,
         error: "Invalid email format",
