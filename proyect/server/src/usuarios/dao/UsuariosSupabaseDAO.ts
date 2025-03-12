@@ -85,11 +85,8 @@ export default class UsuariosSupabaseDAO implements IUsuariosDAO {
 
   async getAll(filters?: UserFilters): Promise<PaginatedUsers> {
     try {
-      // Obtener todos los usuarios con supabase.auth.admin.listUsers()
-      const { data, error } = await supabase.auth.admin.listUsers({
-        page: filters?.page || 1, // Página solicitada
-        perPage: filters?.limit || 10, // Número de usuarios por página
-      });
+      // Obtener todos los usuarios sin paginación previa
+      const { data, error } = await supabase.auth.admin.listUsers();
 
       if (error) throw error;
 
@@ -104,48 +101,44 @@ export default class UsuariosSupabaseDAO implements IUsuariosDAO {
       if (filters?.searchTerm) {
         const searchTermLower = filters.searchTerm.toLowerCase();
 
-        users = users.filter((user) => {
-          // Filtrar por email, first_name y last_name
-          return (
+        users = users.filter(
+          (user) =>
             user.email?.toLowerCase().includes(searchTermLower) ||
             user.user_metadata?.first_name
-              .toLowerCase()
+              ?.toLowerCase()
               .includes(searchTermLower) ||
             user.user_metadata?.last_name
-              .toLowerCase()
+              ?.toLowerCase()
               .includes(searchTermLower)
-          );
-        });
+        );
       }
 
-      // Ordenar los usuarios por un campo y orden (si se especifica)
+      // Ordenar los usuarios por campo y orden (si se especifica)
       if (filters?.sortBy) {
-        users = users.sort((a, b) => {
-          const fieldA = a[filters.sortBy as keyof User] as string;
-          const fieldB = b[filters.sortBy as keyof User] as string;
-          if (filters.sortOrder === "asc") {
-            return fieldA.localeCompare(fieldB);
-          } else {
-            return fieldB.localeCompare(fieldA);
-          }
+        users.sort((a, b) => {
+          const fieldA = (a[filters.sortBy as keyof User] || "") as string;
+          const fieldB = (b[filters.sortBy as keyof User] || "") as string;
+          return filters.sortOrder === "asc"
+            ? fieldA.localeCompare(fieldB)
+            : fieldB.localeCompare(fieldA);
         });
       }
 
-      // Paginación: calcular los usuarios a mostrar según la página y el límite
-      const page = filters?.page ?? 1; // Usamos 1 como valor predeterminado si no está definido
-      const limit = filters?.limit ?? 10; // Usamos 10 como valor predeterminado si no está definido
+      // Paginación: calcular usuarios después del filtrado y ordenado
+      const page = filters?.page ?? 1;
+      const limit = filters?.limit ?? 10;
+      const total = users.length;
+      const totalPages = Math.ceil(total / limit);
 
       const start = (page - 1) * limit;
-      const end = start + limit;
-      const paginatedUsers = users.slice(start, end);
+      const paginatedUsers = users.slice(start, start + limit);
 
-      // Devolver los resultados paginados
       return {
         users: paginatedUsers,
-        total: users.length,
-        page: filters?.page || 1,
-        limit: filters?.limit || 10,
-        totalPages: Math.ceil(users.length / (filters?.limit || 10)),
+        total,
+        page,
+        limit,
+        totalPages,
       };
     } catch (error) {
       console.error("Error in getAll:", error);
