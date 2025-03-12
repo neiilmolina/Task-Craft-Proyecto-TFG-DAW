@@ -1,5 +1,3 @@
-// src/config/__mocks__/supabase.ts
-
 export const supabase = {
   from: jest.fn().mockReturnThis(),
   select: jest.fn().mockReturnThis(),
@@ -10,6 +8,21 @@ export const supabase = {
   single: jest.fn(),
   then: jest.fn(),
   catch: jest.fn(),
+
+  auth: {
+    signUp: jest.fn(),
+    signInWithPassword: jest.fn(),
+    signOut: jest.fn(),
+    resetPasswordForEmail: jest.fn(),
+    updateUser: jest.fn(),
+    getUser: jest.fn(),
+
+    admin: {
+      listUsers: jest.fn(),
+      deleteUser: jest.fn(),
+      updateUserById: jest.fn(),
+    },
+  },
 };
 
 export default supabase;
