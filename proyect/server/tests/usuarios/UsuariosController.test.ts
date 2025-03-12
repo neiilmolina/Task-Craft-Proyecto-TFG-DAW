@@ -835,6 +835,7 @@ describe("UsuariosController", () => {
       expect(mockResponse.status).toHaveBeenCalledWith(200);
       expect(mockResponse.json).toHaveBeenCalledWith({
         message: "Contraseña cambiada correctamente",
+        success: true,
       });
     });
 

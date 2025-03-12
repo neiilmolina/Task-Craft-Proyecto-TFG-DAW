@@ -161,7 +161,12 @@ export default class UsuariosController {
 
       // Si el cambio de contraseña fue exitoso
       if (result) {
-        res.status(200).json({ message: "Contraseña cambiada correctamente" });
+        res
+          .status(200)
+          .json({
+            message: "Contraseña cambiada correctamente",
+            success: true,
+          });
         return; // Aseguramos que no haya más ejecución
       } else {
         // Si el usuario no se encuentra

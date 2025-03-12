@@ -336,8 +336,6 @@ describe("Usuarios Routes", () => {
     });
   });
 
-  // Tests para UsuariosController
-
   describe("POST /api/usuarios/sign-in", () => {
     it("debería iniciar sesión correctamente", async () => {
       const mockAuthResponse: AuthResponse = {
