@@ -7,7 +7,7 @@ export const supabase = {
   insert: jest.fn().mockReturnThis(),
   update: jest.fn().mockReturnThis(),
   delete: jest.fn().mockReturnThis(),
-  single: jest.fn(),
+  single: jest.fn().mockReturnThis(),
   then: jest.fn(),
   catch: jest.fn(),
 };

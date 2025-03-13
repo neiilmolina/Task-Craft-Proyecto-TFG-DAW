@@ -1,14 +1,14 @@
-import supabase from '@/tests/__mocks__/supabase';
-import EstadosModel from '@/src/estados/EstadosModel';
-import IEstadosDAO  from '@/src/estados/dao/IEstadosDAO';
-import { Estado, EstadoNoId } from '@/src/estados/interfacesEstados';
+import supabase from "@/tests/__mocks__/supabase";
+import EstadosModel from "@/src/estados/EstadosModel";
+import IEstadosDAO from "@/src/estados/dao/IEstadosDAO";
+import { Estado, EstadoNoId } from "@/src/estados/interfacesEstados";
 
-jest.mock('@/config/supabase', () => ({
+jest.mock("@/config/supabase", () => ({
   __esModule: true,
-  default: supabase
+  default: supabase,
 }));
 
-describe('EstadosModel', () => {
+describe("EstadosModel", () => {
   let estadosModel: EstadosModel;
   let mockDAO: jest.Mocked<IEstadosDAO>;
 
@@ -19,17 +19,58 @@ describe('EstadosModel', () => {
       getById: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
-      delete: jest.fn()
+      delete: jest.fn(),
     } as jest.Mocked<IEstadosDAO>;
 
     // Initialize the model with the mock DAO
     estadosModel = new EstadosModel(mockDAO);
   });
 
-  describe('getById', () => {
-    it('debería obtener un estado por su ID', async () => {
+  describe("getAll", () => {
+    it("debería obtener una lista de todos los estados", async () => {
       // Arrange
-      const mockEstado: Estado = { idEstado: 1, estado: 'Activo' };
+      const mockEstados: Estado[] = [
+        { idEstado: 1, estado: "Activo" },
+        { idEstado: 2, estado: "Inactivo" },
+      ];
+      mockDAO.getAll.mockResolvedValue(mockEstados);
+
+      // Act
+      const result = await estadosModel.getAll();
+
+      // Assert
+      expect(mockDAO.getAll).toHaveBeenCalled();
+      expect(result).toEqual(mockEstados);
+    });
+
+    it("debería devolver una lista vacía cuando no hay estados", async () => {
+      // Arrange
+      mockDAO.getAll.mockResolvedValue([]);
+
+      // Act
+      const result = await estadosModel.getAll();
+
+      // Assert
+      expect(mockDAO.getAll).toHaveBeenCalled();
+      expect(result).toEqual([]);
+    });
+
+    it("debería manejar errores en la consulta", async () => {
+      // Arrange
+      const error = new Error("Error al obtener los estados");
+      mockDAO.getAll.mockRejectedValue(error);
+
+      // Act & Assert
+      await expect(estadosModel.getAll()).rejects.toThrow(
+        "Error al obtener los estados"
+      );
+    });
+  });
+
+  describe("getById", () => {
+    it("debería obtener un estado por su ID", async () => {
+      // Arrange
+      const mockEstado: Estado = { idEstado: 1, estado: "Activo" };
       mockDAO.getById.mockResolvedValue(mockEstado);
 
       // Act
@@ -40,7 +81,7 @@ describe('EstadosModel', () => {
       expect(result).toEqual(mockEstado);
     });
 
-    it('debería devolver null cuando el estado no existe', async () => {
+    it("debería devolver null cuando el estado no existe", async () => {
       // Arrange
       mockDAO.getById.mockResolvedValue(null);
 
@@ -52,21 +93,23 @@ describe('EstadosModel', () => {
       expect(result).toBeNull();
     });
 
-    it('debería manejar errores en la consulta', async () => {
+    it("debería manejar errores en la consulta", async () => {
       // Arrange
-      const error = new Error('Error de base de datos');
+      const error = new Error("Error de base de datos");
       mockDAO.getById.mockRejectedValue(error);
 
       // Act & Assert
-      await expect(estadosModel.getById(1)).rejects.toThrow('Error de base de datos');
+      await expect(estadosModel.getById(1)).rejects.toThrow(
+        "Error de base de datos"
+      );
     });
   });
 
-  describe('create', () => {
-    it('debería crear un nuevo estado correctamente', async () => {
+  describe("create", () => {
+    it("debería crear un nuevo estado correctamente", async () => {
       // Arrange
-      const nuevoEstado: EstadoNoId = { estado: 'Pendiente' };
-      const estadoCreado: Estado = { idEstado: 3, estado: 'Pendiente' };
+      const nuevoEstado: EstadoNoId = { estado: "Pendiente" };
+      const estadoCreado: Estado = { idEstado: 3, estado: "Pendiente" };
       mockDAO.create.mockResolvedValue(estadoCreado);
 
       // Act
@@ -77,9 +120,9 @@ describe('EstadosModel', () => {
       expect(result).toEqual(estadoCreado);
     });
 
-    it('debería devolver null cuando falla la creación', async () => {
+    it("debería devolver null cuando falla la creación", async () => {
       // Arrange
-      const nuevoEstado: EstadoNoId = { estado: 'Pendiente' };
+      const nuevoEstado: EstadoNoId = { estado: "Pendiente" };
       mockDAO.create.mockResolvedValue(null);
 
       // Act
@@ -90,23 +133,25 @@ describe('EstadosModel', () => {
       expect(result).toBeNull();
     });
 
-    it('debería manejar errores en la creación', async () => {
+    it("debería manejar errores en la creación", async () => {
       // Arrange
-      const nuevoEstado: EstadoNoId = { estado: 'Pendiente' };
-      const error = new Error('Error al insertar en la base de datos');
+      const nuevoEstado: EstadoNoId = { estado: "Pendiente" };
+      const error = new Error("Error al insertar en la base de datos");
       mockDAO.create.mockRejectedValue(error);
 
       // Act & Assert
-      await expect(estadosModel.create(nuevoEstado)).rejects.toThrow('Error al insertar en la base de datos');
+      await expect(estadosModel.create(nuevoEstado)).rejects.toThrow(
+        "Error al insertar en la base de datos"
+      );
     });
   });
 
-  describe('update', () => {
-    it('debería actualizar un estado correctamente', async () => {
+  describe("update", () => {
+    it("debería actualizar un estado correctamente", async () => {
       // Arrange
       const estadoId = 1;
-      const datosActualizados: EstadoNoId = { estado: 'Actualizado' };
-      const estadoActualizado: Estado = { idEstado: 1, estado: 'Actualizado' };
+      const datosActualizados: EstadoNoId = { estado: "Actualizado" };
+      const estadoActualizado: Estado = { idEstado: 1, estado: "Actualizado" };
       mockDAO.update.mockResolvedValue(estadoActualizado);
 
       // Act
@@ -117,10 +162,10 @@ describe('EstadosModel', () => {
       expect(result).toEqual(estadoActualizado);
     });
 
-    it('debería devolver null cuando el estado a actualizar no existe', async () => {
+    it("debería devolver null cuando el estado a actualizar no existe", async () => {
       // Arrange
       const estadoId = 999;
-      const datosActualizados: EstadoNoId = { estado: 'Actualizado' };
+      const datosActualizados: EstadoNoId = { estado: "Actualizado" };
       mockDAO.update.mockResolvedValue(null);
 
       // Act
@@ -131,20 +176,22 @@ describe('EstadosModel', () => {
       expect(result).toBeNull();
     });
 
-    it('debería manejar errores en la actualización', async () => {
+    it("debería manejar errores en la actualización", async () => {
       // Arrange
       const estadoId = 1;
-      const datosActualizados: EstadoNoId = { estado: 'Actualizado' };
-      const error = new Error('Error al actualizar en la base de datos');
+      const datosActualizados: EstadoNoId = { estado: "Actualizado" };
+      const error = new Error("Error al actualizar en la base de datos");
       mockDAO.update.mockRejectedValue(error);
 
       // Act & Assert
-      await expect(estadosModel.update(estadoId, datosActualizados)).rejects.toThrow('Error al actualizar en la base de datos');
+      await expect(
+        estadosModel.update(estadoId, datosActualizados)
+      ).rejects.toThrow("Error al actualizar en la base de datos");
     });
   });
 
-  describe('delete', () => {
-    it('debería eliminar un estado correctamente', async () => {
+  describe("delete", () => {
+    it("debería eliminar un estado correctamente", async () => {
       // Arrange
       const estadoId = 1;
       mockDAO.delete.mockResolvedValue(true);
@@ -157,7 +204,7 @@ describe('EstadosModel', () => {
       expect(result).toBe(true);
     });
 
-    it('debería devolver false cuando el estado a eliminar no existe', async () => {
+    it("debería devolver false cuando el estado a eliminar no existe", async () => {
       // Arrange
       const estadoId = 999;
       mockDAO.delete.mockResolvedValue(false);
@@ -170,14 +217,16 @@ describe('EstadosModel', () => {
       expect(result).toBe(false);
     });
 
-    it('debería manejar errores en la eliminación', async () => {
+    it("debería manejar errores en la eliminación", async () => {
       // Arrange
       const estadoId = 1;
-      const error = new Error('Error al eliminar de la base de datos');
+      const error = new Error("Error al eliminar de la base de datos");
       mockDAO.delete.mockRejectedValue(error);
 
       // Act & Assert
-      await expect(estadosModel.delete(estadoId)).rejects.toThrow('Error al eliminar de la base de datos');
+      await expect(estadosModel.delete(estadoId)).rejects.toThrow(
+        "Error al eliminar de la base de datos"
+      );
     });
   });
 });
