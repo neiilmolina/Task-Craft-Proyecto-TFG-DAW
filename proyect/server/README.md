@@ -68,11 +68,11 @@ El archivo package.json incluye los siguientes scripts:
   npm run prod
   ```
 
-- **`test`**:  Ejecuta las pruebas-
+- **`test`**: Ejecuta las pruebas-
 
-    ```bash
-    npm test
-    ```
+  ```bash
+  npm test
+  ```
 
 ## Variables de Entorno
 
@@ -196,6 +196,7 @@ class EstadosSupabaseDAO implements IEstadosDAO {
   async delete(id: number): Promise<boolean>;
 }
 ```
+
 ##### 4. Interfaces y Tipos
 
 ```typescript
@@ -214,19 +215,103 @@ interface EstadoNoId {
 
 El módulo incluye tres tipos de pruebas principales:
 
+##### - EstadosSupabaseDAO.test.ts
+
+Pruebas unitarias para la conexión con Supabase:
+
+```ts
+describe("EstadosSupabaseDAO", () => {
+  let estadosDAO: EstadosSupabaseDAO;
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  describe("getAll", () => {
+    it("should return all estados");
+    it("should return an empty array if an error occurs");
+  });
+
+  describe("getById", () => {
+    it("should return a estado by id");
+    it("should return null if an error occurs");
+  });
+
+  describe("create", () => {
+    it("should create a new estado");
+    it("should return null if an error occurs");
+  });
+
+  describe("update", () => {
+    it("should update an existing estado");
+    it("should return null if an error occurs");
+  });
+
+  describe("delete", () => {
+    it("should delete an existing estado");
+    it("should return false if an error occurs");
+  });
+});
+```
+
 ##### - EstadosModel.test.ts
-Pruebas unitarias para la lógica de negocio:
-- Pruebas de obtención de estados
-- Pruebas de creación de estados
-- Pruebas de actualización de estados
-- Pruebas de eliminación de estados
-- Manejo de errores y casos límite
+
+```ts
+describe("EstadosModel", () => {
+  let estadosModel: EstadosModel;
+  let mockDAO: jest.Mocked<IEstadosDAO>;
+
+  beforeEach(() => {
+    // Create a mock implementation of IEstadosDAO
+    mockDAO = {
+      getAll: jest.fn(),
+      getById: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+    } as jest.Mocked<IEstadosDAO>;
+
+    // Initialize the model with the mock DAO
+    estadosModel = new EstadosModel(mockDAO);
+
+    describe("getAll", () => {
+      it("debería obtener una lista de todos los estados");
+      it("debería devolver una lista vacía cuando no hay estados");
+      it("debería manejar errores en la consulta");
+    });
+  });
+
+  describe("getById", () => {
+    it("debería obtener un estado por su ID");
+    it("debería devolver null cuando el estado no existe");
+    it("debería manejar errores en la consulta");
+  });
+
+  describe("create", () => {
+    it("debería crear un nuevo estado correctamente");
+    it("debería devolver null cuando falla la creación");
+    it("debería manejar errores en la creación");
+  });
+
+  describe("update", () => {
+    it("debería actualizar un estado correctamente");
+    it("debería devolver null cuando el estado a actualizar no existe");
+    it("debería manejar errores en la actualización");
+  });
+
+  describe("delete", () => {
+    it("debería eliminar un estado correctamente");
+    it("debería devolver false cuando el estado a eliminar no existe");
+    it("debería manejar errores en la eliminación");
+  });
+});
+```
 
 ##### - EstadosController.test.ts
+
 Pruebas unitarias para el controlador:
 
 ```typescript
-describe('EstadosController', () => {
+describe("EstadosController", () => {
   // Configuración inicial
   let controller: EstadosController;
   let mockModel: jest.Mocked<EstadosModel>;
@@ -238,42 +323,43 @@ describe('EstadosController', () => {
     // Configuración de mocks para cada prueba
   });
 
-  describe('getEstados', () => {
-    it('debería devolver todos los estados con status 200');
-    it('debería manejar errores y devolver status 500');
+  describe("getEstados", () => {
+    it("debería devolver todos los estados con status 200");
+    it("debería manejar errores y devolver status 500");
   });
 
-  describe('getEstadoById', () => {
-    it('debería devolver un estado específico con status 200');
-    it('debería devolver 404 cuando el estado no existe');
-    it('debería manejar errores de parsing de ID');
+  describe("getEstadoById", () => {
+    it("debería devolver un estado específico con status 200");
+    it("debería devolver 404 cuando el estado no existe");
+    it("debería manejar errores de parsing de ID");
   });
 
-  describe('createEstado', () => {
-    it('debería crear un estado y devolver status 201');
-    it('debería validar los datos de entrada');
-    it('debería manejar errores de validación');
+  describe("createEstado", () => {
+    it("debería crear un estado y devolver status 201");
+    it("debería validar los datos de entrada");
+    it("debería manejar errores de validación");
   });
 
-  describe('updateEstado', () => {
-    it('debería actualizar un estado existente');
-    it('debería devolver 404 para estados no existentes');
-    it('debería validar los datos de actualización');
+  describe("updateEstado", () => {
+    it("debería actualizar un estado existente");
+    it("debería devolver 404 para estados no existentes");
+    it("debería validar los datos de actualización");
   });
 
-  describe('deleteEstado', () => {
-    it('debería eliminar un estado existente');
-    it('debería devolver 404 para estados no existentes');
-    it('debería manejar errores en la eliminación');
+  describe("deleteEstado", () => {
+    it("debería eliminar un estado existente");
+    it("debería devolver 404 para estados no existentes");
+    it("debería manejar errores en la eliminación");
   });
 });
 ```
 
 ##### - routeEstados.test.ts
+
 Pruebas de integración para las rutas:
 
 ```typescript
-describe('Estados Routes', () => {
+describe("Estados Routes", () => {
   let app: Express;
   let mockEstadosModel: jest.Mocked<EstadosModel>;
 
@@ -281,34 +367,33 @@ describe('Estados Routes', () => {
     // Configuración del servidor de pruebas
   });
 
-  describe('GET /estados', () => {
-    it('debería devolver todos los estados');
-    it('debería manejar errores del servidor');
+  describe("GET /estados", () => {
+    it("debería devolver todos los estados");
+    it("debería manejar errores del servidor");
   });
 
-  describe('GET /estados/:id', () => {
-    it('debería devolver un estado específico');
-    it('debería devolver 404 para ID no existente');
+  describe("GET /estados/:id", () => {
+    it("debería devolver un estado específico");
+    it("debería devolver 404 para ID no existente");
   });
 
-  describe('POST /estados', () => {
-    it('debería crear un nuevo estado');
-    it('debería validar los datos de entrada');
-    it('debería manejar errores de validación');
+  describe("POST /estados", () => {
+    it("debería crear un nuevo estado");
+    it("debería validar los datos de entrada");
+    it("debería manejar errores de validación");
   });
 
-  describe('PUT /estados/:id', () => {
-    it('debería actualizar un estado existente');
-    it('debería validar los datos de actualización');
-    it('debería devolver 404 para ID no existente');
+  describe("PUT /estados/:id", () => {
+    it("debería actualizar un estado existente");
+    it("debería validar los datos de actualización");
+    it("debería devolver 404 para ID no existente");
   });
 
-  describe('DELETE /estados/:id', () => {
-    it('debería eliminar un estado existente');
-    it('debería devolver 404 para ID no existente');
+  describe("DELETE /estados/:id", () => {
+    it("debería eliminar un estado existente");
+    it("debería devolver 404 para ID no existente");
   });
 });
-
 ```
 
 ## Documentación API
