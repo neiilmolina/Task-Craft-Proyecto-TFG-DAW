@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const createApp = (estadosModel: any) => {
+const createApp = (estadosModel: any, usuariosModel: any) => {
   const app = express();
   const port = process.env.PORT || 3000;
   app.use(json());
@@ -18,6 +18,7 @@ const createApp = (estadosModel: any) => {
 
   // Rutas de la API
   app.use("/estados", createEstadosRoute(estadosModel));
+  app.use("/usuarios", createEstadosRoute(usuariosModel));
 
   app.listen(port, () => {
     console.log(`[server]: Server is running at http://localhost:${port}`);
