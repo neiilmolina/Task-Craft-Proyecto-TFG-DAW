@@ -227,8 +227,6 @@ interface EstadoNoId {
 
 ##### 5. Pruebas Unitarias y de Integración
 
-El módulo incluye tres tipos de pruebas principales:
-
 ##### - EstadosSupabaseDAO.test.ts
 
 Pruebas unitarias para la conexión con Supabase:
@@ -269,7 +267,6 @@ describe("EstadosSupabaseDAO", () => {
 
 ##### - EstadosModel.test.ts
 
-<<<<<<< HEAD
 ```ts
 describe("EstadosModel", () => {
   let estadosModel: EstadosModel;
@@ -320,15 +317,6 @@ describe("EstadosModel", () => {
   });
 });
 ```
-=======
-Pruebas unitarias para la lógica de negocio:
-
-- Pruebas de obtención de estados
-- Pruebas de creación de estados
-- Pruebas de actualización de estados
-- Pruebas de eliminación de estados
-- Manejo de errores y casos límite
->>>>>>> feature/server-connection-usuarios
 
 ##### - EstadosController.test.ts
 
@@ -418,8 +406,6 @@ describe("Estados Routes", () => {
     it("debería devolver 404 para ID no existente");
   });
 });
-<<<<<<< HEAD
-=======
 ```
 
 ### Usuarios
@@ -570,8 +556,6 @@ interface PaginatedUsers {
 ```
 
 #### 5. Pruebas Unitarias y de Integración
-
-El módulo incluye tres tipos de pruebas principales:
 
 ##### - UsuariosSupabaseDAO.test.ts
 
@@ -914,7 +898,6 @@ describe("Usuarios Routes", () => {
 });
 
 const createMockUser = (id: string): User
->>>>>>> feature/server-connection-usuarios
 ```
 
 ## Documentación API
