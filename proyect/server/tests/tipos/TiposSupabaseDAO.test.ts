@@ -310,12 +310,12 @@ describe("TiposSupabaseDAO", () => {
     });
   });
 
-  describe.only("update", () => {
+  describe("update", () => {
     it("should update an existing tipo", async () => {
       const mockUpdate: TipoUpdate = {
         tipo: "Evento",
         color: "#00000",
-        idUsuario: "1", // Asegúrate de que idUsuario esté presente aquí
+        idUsuario: "1",
       };
 
       const mockUpdateReturnValue: Tipo = {
@@ -324,25 +324,30 @@ describe("TiposSupabaseDAO", () => {
         idUsuario: mockUpdate.idUsuario ?? "1",
       };
 
+      const mockUpdateFn = jest.fn().mockReturnThis();
+      const mockEqFn = jest.fn().mockReturnThis();
+      const mockSingleFn = jest.fn().mockResolvedValue({
+        data: mockUpdateReturnValue,
+        error: null,
+      });
+
       supabase.from.mockReturnValue({
-        update: jest
-          .fn()
-          .mockResolvedValue({ data: mockUpdateReturnValue, error: null }),
+        update: mockUpdateFn,
+        eq: mockEqFn,
+        single: mockSingleFn,
       });
 
       const result = await tiposDAO.update(1, mockUpdate);
 
       expect(supabase.from).toHaveBeenCalledWith("tipos");
 
-      // Comparación exacta del objeto
-      expect(supabase.from().update).toHaveBeenCalledWith([
-        {
-          tipo: mockUpdate.tipo,
-          color: mockUpdate.color,
-          idUsuario: mockUpdate.idUsuario,
-        },
-      ]);
+      expect(mockUpdateFn).toHaveBeenCalledWith({
+        tipo: mockUpdate.tipo,
+        color: mockUpdate.color,
+        idUsuario: mockUpdate.idUsuario,
+      });
 
+      expect(mockEqFn).toHaveBeenCalledWith("idTipo", 1);
       expect(result).toEqual(mockUpdateReturnValue);
     });
 
@@ -359,17 +364,20 @@ describe("TiposSupabaseDAO", () => {
 
   describe("delete", () => {
     it("should delete an existing tipo", async () => {
+      const mockDeleteFn = jest.fn().mockReturnThis();
+      const mockEqFn = jest.fn().mockResolvedValue({ error: null });
+
       supabase.from.mockReturnValue({
-        delete: jest
-          .fn()
-          .mockResolvedValue({ data: [mockTipos[0]], error: null }),
+        delete: mockDeleteFn,
+        eq: mockEqFn,
       });
 
       const result = await tiposDAO.delete(1);
 
       expect(supabase.from).toHaveBeenCalledWith("tipos");
-      expect(supabase.from().delete).toHaveBeenCalled();
-      expect(result).toEqual(mockTipos[0]);
+      expect(mockDeleteFn).toHaveBeenCalled(); // Verifica que delete se llamó
+      expect(mockEqFn).toHaveBeenCalledWith("idTipo", 1); // Verifica el filtro
+      expect(result).toEqual(true); // Debe retornar true porque no hay error
     });
 
     it("should return false if an error occurs", async () => {
