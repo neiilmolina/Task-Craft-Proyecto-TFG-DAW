@@ -64,6 +64,11 @@ describe("TiposSupabaseDAO", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
   });
 
   describe("getAll", () => {
@@ -382,12 +387,20 @@ describe("TiposSupabaseDAO", () => {
 
     it("should return false if an error occurs", async () => {
       supabase.from.mockReturnValue({
-        delete: jest.fn().mockResolvedValue({ data: null, error: "Error" }),
+        delete: jest.fn().mockReturnThis(),
+        eq: jest
+          .fn()
+          .mockResolvedValue({ data: null, error: "Error deleting tipo" }),
       });
 
       const result = await tiposDAO.delete(1);
 
       expect(result).toBe(false);
+
+      expect(console.error).toHaveBeenCalledWith(
+        "Error deleting tipo:",
+        "Error deleting tipo"
+      );
     });
   });
 });
