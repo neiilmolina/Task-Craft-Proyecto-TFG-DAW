@@ -554,7 +554,7 @@ describe("TiposController", () => {
     });
   });
 
-  describe.skip("updateTipo", () => {
+  describe("updateTipo", () => {
     const mockTipoUpdate: TipoUpdate = {
       tipo: "TipoActualizado",
       color: "#FF5733",
@@ -586,8 +586,6 @@ describe("TiposController", () => {
       expect(mockTiposModel.update).toHaveBeenCalledWith(1, mockTipoUpdate);
       expect(mockResponse.status).toHaveBeenCalledWith(200);
       expect(mockResponse.json).toHaveBeenCalledWith(mockTipoResponse);
-      expect(console.log).toHaveBeenCalledWith("Validación exitosa");
-      expect(console.log).toHaveBeenCalledWith("Tipo actualizado con éxito");
     });
 
     it("debería actualizar un tipo con idUsuario opcional", async () => {
@@ -645,10 +643,6 @@ describe("TiposController", () => {
       expect(mockResponse.json).toHaveBeenCalledWith({
         error: validationError,
       });
-      expect(console.log).toHaveBeenCalledWith(
-        "Validación fallida",
-        validationError
-      );
     });
 
     it("debería devolver un error 400 cuando la validación falla por color inválido", async () => {

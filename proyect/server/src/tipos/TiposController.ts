@@ -79,12 +79,9 @@ export default class TiposController {
       // Validación de la entrada
       const { success, error } = validateTipoUpdate(req.body);
       if (!success) {
-        console.log("Validación fallida", error);
         res.status(400).json({ error });
         return;
       }
-      console.log("Validación exitosa");
-
       const id = parseInt(req.params.id);
 
       // Llamada al modelo para actualizar el tipo
@@ -95,7 +92,6 @@ export default class TiposController {
         return;
       }
 
-      console.log("Tipo actualizado con éxito");
       res.status(200).json(updatedTipo);
     } catch (error) {
       console.error("Error interno del servidor:", error);
