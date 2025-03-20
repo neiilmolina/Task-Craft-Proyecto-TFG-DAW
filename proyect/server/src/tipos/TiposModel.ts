@@ -5,13 +5,13 @@ export default class TiposModel {
   constructor(private tiposDAO: ITiposDAO) {}
 
   // Obtener todos los tipos
-  async getAll(idUsuario?: string) {
-    return this.tiposDAO.getAll(idUsuario);
+  async getAll(idUsuario?: string, userDetails?: boolean) {
+    return this.tiposDAO.getAll(idUsuario, userDetails);
   }
 
   // Obtener tipo por ID
-  async getById(idTipo: number) {
-    return this.tiposDAO.getById(idTipo);
+  async getById(idTipo: number, userDetails?: boolean) {
+    return this.tiposDAO.getById(idTipo, userDetails);
   }
 
   // Crear un tipo

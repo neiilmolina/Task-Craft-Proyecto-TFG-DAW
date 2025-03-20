@@ -49,9 +49,9 @@ describe("TiposModel", () => {
 
       mockDAO.getAll.mockResolvedValue(mockTiposFiltrados);
 
-      const result = await tiposModel.getAll(idUsuario);
+      const result = await tiposModel.getAll(idUsuario, false);
 
-      expect(mockDAO.getAll).toHaveBeenCalledWith(idUsuario);
+      expect(mockDAO.getAll).toHaveBeenCalledWith(idUsuario, false);
       expect(result).toEqual(mockTiposFiltrados);
     });
 
@@ -62,6 +62,106 @@ describe("TiposModel", () => {
 
       expect(mockDAO.getAll).toHaveBeenCalled();
       expect(result).toEqual([]);
+    });
+
+    it("debería obtener tipos con detalles del usuario", async () => {
+      const mockUser = {
+        id: "1",
+        email: "user1@example.com",
+        role: "admin",
+        created_at: "2025-03-08T00:00:00Z",
+        updated_at: "2025-03-08T00:00:00Z",
+        app_metadata: {
+          provider: "email",
+          providers: ["email"],
+        },
+        user_metadata: {
+          first_name: "Admin User",
+          last_name: "Admin Last Name",
+          avatar_url: "https://example.com/admin-avatar.jpg",
+        },
+        aud: "authenticated",
+      };
+
+      const mockTiposConUsuario: Tipo[] = [
+        {
+          idTipo: 1,
+          tipo: "Evento",
+          color: "#00000",
+          idUsuario: "1",
+          userDetails: mockUser,
+        },
+        {
+          idTipo: 2,
+          tipo: "Tarea",
+          color: "#00000",
+          idUsuario: "1",
+          userDetails: mockUser,
+        },
+      ];
+
+      mockDAO.getAll.mockResolvedValue(mockTiposConUsuario);
+
+      const result = await tiposModel.getAll(undefined, true);
+
+      expect(mockDAO.getAll).toHaveBeenCalledWith(undefined, true);
+      expect(result).not.toBeNull();
+      expect(result).toEqual(mockTiposConUsuario);
+      expect(result![0].userDetails).toBeDefined();
+      expect(result![0].userDetails?.id).toBe("1");
+      expect(result![0].userDetails?.user_metadata.first_name).toBe(
+        "Admin User"
+      );
+    });
+
+    it("debería obtener tipos de un usuario específico con sus detalles", async () => {
+      const idUsuario = "1";
+      const mockUser = {
+        id: "1",
+        email: "user1@example.com",
+        role: "admin",
+        created_at: "2025-03-08T00:00:00Z",
+        updated_at: "2025-03-08T00:00:00Z",
+        app_metadata: {
+          provider: "email",
+          providers: ["email"],
+        },
+        user_metadata: {
+          first_name: "Admin User",
+          last_name: "Admin Last Name",
+          avatar_url: "https://example.com/admin-avatar.jpg",
+        },
+        aud: "authenticated",
+      };
+
+      const mockTiposFiltradosConUsuario: Tipo[] = [
+        {
+          idTipo: 1,
+          tipo: "Evento",
+          color: "#00000",
+          idUsuario: "1",
+          userDetails: mockUser,
+        },
+        {
+          idTipo: 2,
+          tipo: "Tarea",
+          color: "#00000",
+          idUsuario: "1",
+          userDetails: mockUser,
+        },
+      ];
+
+      mockDAO.getAll.mockResolvedValue(mockTiposFiltradosConUsuario);
+
+      const result = await tiposModel.getAll(idUsuario, true);
+
+      expect(mockDAO.getAll).toHaveBeenCalledWith(idUsuario, true);
+      expect(result).toEqual(mockTiposFiltradosConUsuario);
+      expect(result![0].userDetails).toBeDefined();
+      expect(result![0].userDetails?.email).toBe("user1@example.com");
+      expect(result![0].userDetails?.user_metadata.last_name).toBe(
+        "Admin Last Name"
+      );
     });
   });
 
@@ -76,19 +176,59 @@ describe("TiposModel", () => {
 
       mockDAO.getById.mockResolvedValue(mockTipo);
 
-      const result = await tiposModel.getById(1);
+      const result = await tiposModel.getById(1, false);
 
-      expect(mockDAO.getById).toHaveBeenCalledWith(1);
+      expect(mockDAO.getById).toHaveBeenCalledWith(1, false);
       expect(result).toEqual(mockTipo);
     });
 
     it("debería retornar null si el tipo no existe", async () => {
       mockDAO.getById.mockResolvedValue(null);
 
-      const result = await tiposModel.getById(999);
+      const result = await tiposModel.getById(999, false);
 
-      expect(mockDAO.getById).toHaveBeenCalledWith(999);
+      expect(mockDAO.getById).toHaveBeenCalledWith(999, false);
       expect(result).toBeNull();
+    });
+
+    it.only("debería obtener un tipo por ID con detalles del usuario", async () => {
+      const mockUser = {
+        id: "1",
+        email: "user1@example.com",
+        role: "admin",
+        created_at: "2025-03-08T00:00:00Z",
+        updated_at: "2025-03-08T00:00:00Z",
+        app_metadata: {
+          provider: "email",
+          providers: ["email"],
+        },
+        user_metadata: {
+          first_name: "Admin User",
+          last_name: "Admin Last Name",
+          avatar_url: "https://example.com/admin-avatar.jpg",
+        },
+        aud: "authenticated",
+      };
+
+      const mockTipoConUsuario: Tipo = {
+        idTipo: 1,
+        tipo: "Evento",
+        color: "#00000",
+        idUsuario: "1",
+        userDetails: mockUser,
+      };
+
+      mockDAO.getById.mockResolvedValue(mockTipoConUsuario);
+
+      const result = await tiposModel.getById(1, true);
+
+      expect(mockDAO.getById).toHaveBeenCalledWith(1, true);
+      expect(result).toEqual(mockTipoConUsuario);
+      expect(result?.userDetails).toBeDefined();
+      expect(result?.userDetails?.app_metadata.provider).toBe("email");
+      expect(result?.userDetails?.user_metadata.avatar_url).toBe(
+        "https://example.com/admin-avatar.jpg"
+      );
     });
   });
 

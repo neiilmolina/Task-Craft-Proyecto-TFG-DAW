@@ -15,7 +15,7 @@ export default class TiposSupabaseDAO implements ITiposDAO {
   // Obtener todos los tipos, opcionalmente filtrados por idUsuario
   async getAll(
     idUsuario?: string,
-    userDetails = false
+    userDetails?: boolean
   ): Promise<Tipo[] | null> {
     try {
       let query;
@@ -42,7 +42,7 @@ export default class TiposSupabaseDAO implements ITiposDAO {
   }
 
   // Obtener un tipo por su idTipo
-  async getById(idTipo: number, userDetails = false): Promise<Tipo | null> {
+  async getById(idTipo: number, userDetails?: boolean): Promise<Tipo | null> {
     try {
       // Definir el select según si se requieren los detalles del usuario
       let query;

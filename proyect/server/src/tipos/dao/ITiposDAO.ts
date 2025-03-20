@@ -1,9 +1,9 @@
 import { Tipo, TipoCreate, TipoUpdate } from "@/src/tipos/interfacesTipos";
 
 export default interface ITiposDAO {
-  getAll(idUsuario?: string): Promise<Tipo[] | null>;
+  getAll(idUsuario?: string, userDetails?: boolean): Promise<Tipo[] | null>;
 
-  getById(idTipo: number): Promise<Tipo | null>;
+  getById(idTipo: number, userDetails?: boolean): Promise<Tipo | null>;
 
   create(tipo: TipoCreate): Promise<Tipo | null>;
 
