@@ -746,4 +746,89 @@ describe("TiposController", () => {
       expect(mockResponse.status).toHaveBeenCalledWith(200);
     });
   });
+
+  describe("deleteTipo", () => {
+    it("debería eliminar un tipo existente y devolver un estado 200", async () => {
+      mockRequest = { params: { id: "1" } } as unknown as Request;
+      mockTiposModel.delete.mockResolvedValue(true);
+
+      await tiposController.deleteTipo(
+        mockRequest as Request,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(mockTiposModel.delete).toHaveBeenCalledWith(1);
+      expect(mockResponse.status).toHaveBeenCalledWith(200);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: "Tipo eliminado correctamente",
+      });
+    });
+
+    it("debería devolver un estado 404 si el tipo no existe", async () => {
+      mockRequest = { params: { id: "999" } } as unknown as Request;
+      mockTiposModel.delete.mockResolvedValue(false);
+
+      await tiposController.deleteTipo(
+        mockRequest as Request,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(mockTiposModel.delete).toHaveBeenCalledWith(999);
+      expect(mockResponse.status).toHaveBeenCalledWith(404);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: "Tipo no encontrado",
+      });
+    });
+
+    it("debería devolver un estado 500 si ocurre un error interno", async () => {
+      mockRequest = { params: { id: "2" } } as unknown as Request;
+      mockTiposModel.delete.mockRejectedValue(
+        new Error("Error de base de datos")
+      );
+
+      await tiposController.deleteTipo(
+        mockRequest as Request,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(mockTiposModel.delete).toHaveBeenCalledWith(2);
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        error: "Error interno del servidor",
+      });
+      expect(console.error).toHaveBeenCalledWith(
+        "Error al eliminar el tipo:",
+        expect.any(Error)
+      );
+    });
+
+    it("debería devolver un estado 400 si el id no es un número válido", async () => {
+      mockRequest = { params: { id: "abc" } } as unknown as Request;
+
+      await tiposController.deleteTipo(
+        mockRequest as Request,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({ message: "ID inválido" });
+    });
+
+    it("debería manejar correctamente una solicitud sin parámetro de id", async () => {
+      mockRequest = { params: {} } as unknown as Request;
+
+      await tiposController.deleteTipo(
+        mockRequest as Request,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({ message: "ID inválido" });
+    });
+  });
 });

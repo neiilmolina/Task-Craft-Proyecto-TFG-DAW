@@ -98,4 +98,28 @@ export default class TiposController {
       res.status(500).json({ error: "Error interno del servidor" });
     }
   };
+
+  deleteTipo: RequestHandler = async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+
+      if (!id) {
+        res.status(400).json({ message: "ID inválido" });
+        return;
+      }
+
+      const result = await this.tiposModel.delete(id);
+
+      if (result) {
+        res.status(200).json({ message: "Tipo eliminado correctamente" });
+        return;
+      } else {
+        res.status(404).json({ message: "Tipo no encontrado" });
+        return;
+      }
+    } catch (error) {
+      console.error("Error al eliminar el tipo:", error);
+      res.status(500).json({ error: "Error interno del servidor" });
+    }
+  };
 }
