@@ -51,6 +51,8 @@ describe("TiposController", () => {
 
     // Initialize controller with mock model
     tiposController = new TiposController(mockTiposModel);
+
+    jest.clearAllMocks();
   });
 
   describe("getTipos", () => {
@@ -554,7 +556,7 @@ describe("TiposController", () => {
     });
   });
 
-  describe("updateTipo", () => {
+  describe.only("updateTipo", () => {
     const mockTipoUpdate: TipoUpdate = {
       tipo: "TipoActualizado",
       color: "#FF5733",
@@ -569,7 +571,7 @@ describe("TiposController", () => {
 
     it("debería actualizar un tipo exitosamente", async () => {
       // Arrange
-      mockRequest.params = { id: "1" };
+      mockRequest.params = { idTipo: "1" }; // Change 'id' to 'idTipo' to match the controller
       mockRequest.body = mockTipoUpdate;
       mockTiposModel.update.mockResolvedValue(mockTipoResponse);
       (validateTipoUpdate as jest.Mock).mockReturnValue({ success: true });
@@ -583,7 +585,7 @@ describe("TiposController", () => {
 
       // Assert
       expect(validateTipoUpdate).toHaveBeenCalledWith(mockTipoUpdate);
-      expect(mockTiposModel.update).toHaveBeenCalledWith(1, mockTipoUpdate);
+      expect(mockTiposModel.update).toHaveBeenCalledWith(1, mockTipoUpdate); // The ID should be 1 (parsed as a number)
       expect(mockResponse.status).toHaveBeenCalledWith(200);
       expect(mockResponse.json).toHaveBeenCalledWith(mockTipoResponse);
     });
@@ -592,17 +594,22 @@ describe("TiposController", () => {
       // Arrange
       const tipoConUsuario: TipoUpdate = {
         ...mockTipoUpdate,
-        idUsuario: "nuevoUsuario456",
+        idUsuario: "nuevoUsuario456", // idUsuario opcional
       };
 
       const tipoRespuestaConUsuario: Tipo = {
         ...mockTipoResponse,
-        idUsuario: "nuevoUsuario456",
+        idUsuario: "nuevoUsuario456", // idUsuario actualizado
       };
 
-      mockRequest.params = { id: "1" };
+      // Mock request and response
+      mockRequest.params = { idTipo: "1" }; // Make sure `idTipo` matches the method's parameter
       mockRequest.body = tipoConUsuario;
+
+      // Mocking the model update call
       mockTiposModel.update.mockResolvedValue(tipoRespuestaConUsuario);
+
+      // Mocking the validation function
       (validateTipoUpdate as jest.Mock).mockReturnValue({ success: true });
 
       // Act
@@ -614,7 +621,7 @@ describe("TiposController", () => {
 
       // Assert
       expect(validateTipoUpdate).toHaveBeenCalledWith(tipoConUsuario);
-      expect(mockTiposModel.update).toHaveBeenCalledWith(1, tipoConUsuario);
+      expect(mockTiposModel.update).toHaveBeenCalledWith(1, tipoConUsuario); // Expecting the ID as 1
       expect(mockResponse.status).toHaveBeenCalledWith(200);
       expect(mockResponse.json).toHaveBeenCalledWith(tipoRespuestaConUsuario);
     });
@@ -675,7 +682,7 @@ describe("TiposController", () => {
 
     it("debería devolver un error 404 cuando el tipo no existe", async () => {
       // Arrange
-      mockRequest.params = { id: "999" }; // ID que no existe
+      mockRequest.params = { idTipo: "999" }; // ID que no existe
       mockRequest.body = mockTipoUpdate;
       mockTiposModel.update.mockResolvedValue(null); // El modelo devuelve null si no encuentra el tipo
       (validateTipoUpdate as jest.Mock).mockReturnValue({ success: true });
@@ -689,7 +696,7 @@ describe("TiposController", () => {
 
       // Assert
       expect(validateTipoUpdate).toHaveBeenCalledWith(mockTipoUpdate);
-      expect(mockTiposModel.update).toHaveBeenCalledWith(999, mockTipoUpdate);
+      expect(mockTiposModel.update).toHaveBeenCalledWith(999, mockTipoUpdate); // Expecting 999 as the id
       expect(mockResponse.status).toHaveBeenCalledWith(404);
       expect(mockResponse.json).toHaveBeenCalledWith({
         message: "Tipo no encontrado",
@@ -698,11 +705,18 @@ describe("TiposController", () => {
 
     it("debería manejar errores internos del servidor", async () => {
       // Arrange
-      mockRequest.params = { id: "1" };
+      mockRequest.params = { id: "1" }; // ID válido
       mockRequest.body = mockTipoUpdate;
       const serverError = new Error("Error de la base de datos");
+
+      // Mocking model's update to throw an error
       mockTiposModel.update.mockRejectedValue(serverError);
+
+      // Mock validation to return success
       (validateTipoUpdate as jest.Mock).mockReturnValue({ success: true });
+
+      // Mocking console.error to capture error logs
+      console.error = jest.fn();
 
       // Act
       await tiposController.updateTipo(
@@ -712,15 +726,16 @@ describe("TiposController", () => {
       );
 
       // Assert
-      expect(validateTipoUpdate).toHaveBeenCalledWith(mockTipoUpdate);
-      expect(mockTiposModel.update).toHaveBeenCalledWith(1, mockTipoUpdate);
+      expect(validateTipoUpdate).toHaveBeenCalledWith(mockTipoUpdate); // Validate called
+      expect(mockTiposModel.update).toHaveBeenCalledWith(1, mockTipoUpdate); // Model update called
       expect(console.error).toHaveBeenCalledWith(
+        // Error logged to console
         "Error interno del servidor:",
         serverError
       );
-      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.status).toHaveBeenCalledWith(500); // Status should be 500
       expect(mockResponse.json).toHaveBeenCalledWith({
-        error: "Error interno del servidor",
+        error: "Error interno del servidor", // Response should contain error message
       });
     });
 

@@ -1,7 +1,10 @@
 import { RequestHandler } from "express";
 import TiposModel from "@/src/tipos/TiposModel";
 import { TipoCreate } from "@/src/tipos/interfacesTipos";
-import { validateTipoCreate, validateTipoUpdate } from "@/src/tipos/schemasTipos";
+import {
+  validateTipoCreate,
+  validateTipoUpdate,
+} from "@/src/tipos/schemasTipos";
 
 export default class TiposController {
   constructor(private tiposModel: TiposModel) {}
@@ -82,7 +85,13 @@ export default class TiposController {
         res.status(400).json({ error });
         return;
       }
-      const id = parseInt(req.params.id);
+
+      // Obtener el ID desde los parámetros
+      const id = parseInt(req.params.idTipo, 10);
+      if (isNaN(id)) {
+        res.status(400).json({ error: "idTipo debe ser un número válido" });
+        return;
+      }
 
       // Llamada al modelo para actualizar el tipo
       const updatedTipo = await this.tiposModel.update(id, req.body);
@@ -93,9 +102,11 @@ export default class TiposController {
       }
 
       res.status(200).json(updatedTipo);
+      return;
     } catch (error) {
       console.error("Error interno del servidor:", error);
       res.status(500).json({ error: "Error interno del servidor" });
+      return;
     }
   };
 

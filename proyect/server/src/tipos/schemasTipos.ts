@@ -13,16 +13,21 @@ const tipoSchema = z.object({
   idUsuario: z.string(),
 });
 
+const tipoCreateSchema = tipoSchema.omit({ idTipo: true });
+
+const tipoUpdateSchema = tipoSchema.partial(); // Permite actualizar solo algunos campos
+
 export function validateTipoCreate(input: Partial<TipoCreate>) {
-  const result = tipoSchema.safeParse(input);
+  const result = tipoCreateSchema.safeParse(input);
 
   if (!result.success)
-    return { success: false, error: result.error.errors[0].message }; // Mensaje del primer error
+    return { success: false, error: result.error.errors[0].message };
 
   return { success: true };
 }
+
 export function validateTipoUpdate(input: Partial<TipoUpdate>) {
-  const result = tipoSchema.safeParse(input);
+  const result = tipoUpdateSchema.safeParse(input);
 
   if (!result.success)
     return { success: false, error: result.error.errors[0].message }; // Mensaje del primer error
