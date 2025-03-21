@@ -1,11 +1,13 @@
 import "dotenv/config";
 import createEstadosRoute from "@/src/estados/routesEstados";
+import createTiposRoute from "@/src/tipos/routesTipos";
+import createUsuariosRoute from "@/src/usuarios/routesUsuarios";
 import express, { json, NextFunction } from "express";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-const createApp = (estadosModel: any, usuariosModel: any) => {
+const createApp = (estadosModel: any, usuariosModel: any, tiposModel: any) => {
   const app = express();
   const port = process.env.PORT || 3000;
   app.use(json());
@@ -18,7 +20,8 @@ const createApp = (estadosModel: any, usuariosModel: any) => {
 
   // Rutas de la API
   app.use("/estados", createEstadosRoute(estadosModel));
-  app.use("/usuarios", createEstadosRoute(usuariosModel));
+  app.use("/usuarios", createUsuariosRoute(usuariosModel));
+  app.use("/tipos", createTiposRoute(tiposModel));
 
   app.listen(port, () => {
     console.log(`[server]: Server is running at http://localhost:${port}`);
