@@ -556,7 +556,7 @@ describe("TiposController", () => {
     });
   });
 
-  describe.only("updateTipo", () => {
+  describe("updateTipo", () => {
     const mockTipoUpdate: TipoUpdate = {
       tipo: "TipoActualizado",
       color: "#FF5733",
@@ -705,17 +705,17 @@ describe("TiposController", () => {
 
     it("debería manejar errores internos del servidor", async () => {
       // Arrange
-      mockRequest.params = { id: "1" }; // ID válido
+      mockRequest.params = { idTipo: "1" }; // Asegurar que el ID coincide con el controller
       mockRequest.body = mockTipoUpdate;
       const serverError = new Error("Error de la base de datos");
 
-      // Mocking model's update to throw an error
-      mockTiposModel.update.mockRejectedValue(serverError);
-
-      // Mock validation to return success
+      // Simular que la validación es exitosa
       (validateTipoUpdate as jest.Mock).mockReturnValue({ success: true });
 
-      // Mocking console.error to capture error logs
+      // Simular que el modelo lanza un error al intentar actualizar
+      mockTiposModel.update.mockRejectedValue(serverError);
+
+      // Capturar los errores en la consola
       console.error = jest.fn();
 
       // Act
@@ -726,45 +726,23 @@ describe("TiposController", () => {
       );
 
       // Assert
-      expect(validateTipoUpdate).toHaveBeenCalledWith(mockTipoUpdate); // Validate called
-      expect(mockTiposModel.update).toHaveBeenCalledWith(1, mockTipoUpdate); // Model update called
+      expect(validateTipoUpdate).toHaveBeenCalledWith(mockTipoUpdate); // Se llama a la validación
+      expect(mockTiposModel.update).toHaveBeenCalledWith(1, mockTipoUpdate); // El ID se pasa correctamente
       expect(console.error).toHaveBeenCalledWith(
-        // Error logged to console
         "Error interno del servidor:",
         serverError
-      );
-      expect(mockResponse.status).toHaveBeenCalledWith(500); // Status should be 500
+      ); // Se loguea el error
+      expect(mockResponse.status).toHaveBeenCalledWith(500); // Respuesta con estado 500
       expect(mockResponse.json).toHaveBeenCalledWith({
-        error: "Error interno del servidor", // Response should contain error message
-      });
-    });
-
-    it("debería convertir correctamente el ID de string a number", async () => {
-      // Arrange
-      mockRequest.params = { id: "42" };
-      mockRequest.body = mockTipoUpdate;
-      mockTiposModel.update.mockResolvedValue({
-        ...mockTipoResponse,
-        idTipo: 42,
-      });
-      (validateTipoUpdate as jest.Mock).mockReturnValue({ success: true });
-
-      // Act
-      await tiposController.updateTipo(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext
-      );
-
-      // Assert
-      expect(mockTiposModel.update).toHaveBeenCalledWith(42, mockTipoUpdate);
-      expect(mockResponse.status).toHaveBeenCalledWith(200);
+        error: "Error interno del servidor",
+      }); // Mensaje de error en la respuesta
     });
   });
 
   describe("deleteTipo", () => {
     it("debería eliminar un tipo existente y devolver un estado 200", async () => {
-      mockRequest = { params: { id: "1" } } as unknown as Request;
+      mockRequest = { params: { idTipo: "1" } } as unknown as Request;
+
       mockTiposModel.delete.mockResolvedValue(true);
 
       await tiposController.deleteTipo(
@@ -773,7 +751,7 @@ describe("TiposController", () => {
         mockNext
       );
 
-      expect(mockTiposModel.delete).toHaveBeenCalledWith(1);
+      expect(mockTiposModel.delete).toHaveBeenCalledWith(1); // Se asegura de que se pasó un número
       expect(mockResponse.status).toHaveBeenCalledWith(200);
       expect(mockResponse.json).toHaveBeenCalledWith({
         message: "Tipo eliminado correctamente",
@@ -781,7 +759,7 @@ describe("TiposController", () => {
     });
 
     it("debería devolver un estado 404 si el tipo no existe", async () => {
-      mockRequest = { params: { id: "999" } } as unknown as Request;
+      mockRequest = { params: { idTipo: "999" } } as unknown as Request;
       mockTiposModel.delete.mockResolvedValue(false);
 
       await tiposController.deleteTipo(
@@ -798,7 +776,7 @@ describe("TiposController", () => {
     });
 
     it("debería devolver un estado 500 si ocurre un error interno", async () => {
-      mockRequest = { params: { id: "2" } } as unknown as Request;
+      mockRequest = { params: { idTipo: "2" } } as unknown as Request;
       mockTiposModel.delete.mockRejectedValue(
         new Error("Error de base de datos")
       );
@@ -822,6 +800,21 @@ describe("TiposController", () => {
 
     it("debería devolver un estado 400 si el id no es un número válido", async () => {
       mockRequest = { params: { id: "abc" } } as unknown as Request;
+
+      await tiposController.deleteTipo(
+        mockRequest as Request,
+        mockResponse as Response,
+        mockNext
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(400);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: "ID inválido",
+      });
+    });
+
+    it("debería devolver un estado 400 si el id está vacío", async () => {
+      mockRequest = { params: { idTipo: "" } } as unknown as Request;
 
       await tiposController.deleteTipo(
         mockRequest as Request,

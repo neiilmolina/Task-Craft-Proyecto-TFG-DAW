@@ -112,9 +112,10 @@ export default class TiposController {
 
   deleteTipo: RequestHandler = async (req, res) => {
     try {
-      const id = parseInt(req.params.id);
+      const id = parseInt(req.params.idTipo); // Asegurar que use "idTipo" si ese es el parámetro correcto
 
-      if (!id) {
+      if (isNaN(id)) {
+        // Validar si el ID no es un número válido
         res.status(400).json({ message: "ID inválido" });
         return;
       }
@@ -131,6 +132,7 @@ export default class TiposController {
     } catch (error) {
       console.error("Error al eliminar el tipo:", error);
       res.status(500).json({ error: "Error interno del servidor" });
+      return;
     }
   };
 }

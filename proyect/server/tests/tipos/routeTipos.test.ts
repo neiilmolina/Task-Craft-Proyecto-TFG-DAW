@@ -324,4 +324,58 @@ describe("Estados Routes", () => {
       expect(mockTiposModel.update).not.toHaveBeenCalled();
     });
   });
+
+  describe("DELETE /tipos/:idTipo", () => {
+    it("debería eliminar un tipo existente y devolver un estado 200", async () => {
+      mockTiposModel.delete.mockResolvedValue(true); // Mock de eliminación exitosa
+
+      const response = await request(app).delete("/tipos/1");
+
+      expect(mockTiposModel.delete).toHaveBeenCalledWith(1); // Se llama con ID correcto
+      expect(response.status).toBe(200); // Código de estado correcto
+      expect(response.body).toEqual({
+        message: "Tipo eliminado correctamente",
+      });
+    });
+
+    it("debería devolver un estado 404 si el tipo no existe", async () => {
+      mockTiposModel.delete.mockResolvedValue(false); // Mock de "no encontrado"
+
+      const response = await request(app).delete("/tipos/999");
+
+      expect(mockTiposModel.delete).toHaveBeenCalledWith(999);
+      expect(response.status).toBe(404);
+      expect(response.body).toEqual({ message: "Tipo no encontrado" });
+    });
+
+    it("debería devolver un estado 500 si ocurre un error interno", async () => {
+      mockTiposModel.delete.mockRejectedValue(
+        new Error("Error de base de datos")
+      ); // Simular error
+
+      const response = await request(app).delete("/tipos/2");
+
+      expect(mockTiposModel.delete).toHaveBeenCalledWith(2);
+      expect(response.status).toBe(500);
+      expect(response.body).toEqual({ error: "Error interno del servidor" });
+      expect(console.error).toHaveBeenCalledWith(
+        "Error al eliminar el tipo:",
+        expect.any(Error)
+      );
+    });
+
+    it("debería devolver un estado 400 si el id no es un número válido", async () => {
+      const response = await request(app).delete("/tipos/abc");
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({ message: "ID inválido" });
+    });
+
+    it("debería manejar correctamente una solicitud sin parámetro de id", async () => {
+      // Aquí la prueba debería manejar correctamente la falta de ID
+      const response = await request(app).delete("/tipos"); // Sin ID
+
+      expect(response.status).toBe(404); // Probablemente Express devuelva 404, no 400
+    });
+  });
 });
