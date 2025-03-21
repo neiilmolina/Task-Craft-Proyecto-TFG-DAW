@@ -230,7 +230,7 @@ describe("TiposController", () => {
     });
   });
 
-  describe("getTiposById", () => {
+  describe("getTipoById", () => {
     it("debe devolver un tipo cuando existe", async () => {
       // Arrange
       const idTipos = 1;
@@ -268,7 +268,7 @@ describe("TiposController", () => {
       mockTiposModel.getById.mockResolvedValue(mockTipo);
 
       // Act
-      await tiposController.getTiposById(
+      await tiposController.getTipoById(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
@@ -315,7 +315,7 @@ describe("TiposController", () => {
       mockTiposModel.getById.mockResolvedValue(mockTipo);
 
       // Act
-      await tiposController.getTiposById(
+      await tiposController.getTipoById(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
@@ -338,7 +338,7 @@ describe("TiposController", () => {
       mockTiposModel.getById.mockResolvedValue(null);
 
       // Act
-      await tiposController.getTiposById(
+      await tiposController.getTipoById(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
@@ -363,7 +363,7 @@ describe("TiposController", () => {
       mockTiposModel.getById.mockResolvedValue(null);
 
       // Act
-      await tiposController.getTiposById(
+      await tiposController.getTipoById(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
@@ -390,7 +390,7 @@ describe("TiposController", () => {
       );
 
       // Act
-      await tiposController.getTiposById(
+      await tiposController.getTipoById(
         mockRequest as Request,
         mockResponse as Response,
         mockNext
@@ -815,7 +815,9 @@ describe("TiposController", () => {
       );
 
       expect(mockResponse.status).toHaveBeenCalledWith(400);
-      expect(mockResponse.json).toHaveBeenCalledWith({ message: "ID inválido" });
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: "ID inválido",
+      });
     });
 
     it("debería manejar correctamente una solicitud sin parámetro de id", async () => {
@@ -828,7 +830,9 @@ describe("TiposController", () => {
       );
 
       expect(mockResponse.status).toHaveBeenCalledWith(400);
-      expect(mockResponse.json).toHaveBeenCalledWith({ message: "ID inválido" });
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        message: "ID inválido",
+      });
     });
   });
 });

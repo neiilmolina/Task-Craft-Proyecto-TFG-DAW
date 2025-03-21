@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
-import TiposModel from "./TiposModel";
-import { TipoCreate } from "./interfacesTipos";
-import { validateTipoCreate, validateTipoUpdate } from "./schemasTipos";
+import TiposModel from "@/src/tipos/TiposModel";
+import { TipoCreate } from "@/src/tipos/interfacesTipos";
+import { validateTipoCreate, validateTipoUpdate } from "@/src/tipos/schemasTipos";
 
 export default class TiposController {
   constructor(private tiposModel: TiposModel) {}
@@ -22,7 +22,7 @@ export default class TiposController {
     }
   };
 
-  getTiposById: RequestHandler = async (req, res) => {
+  getTipoById: RequestHandler = async (req, res) => {
     try {
       const idTipos = parseInt(req.params.idTipos);
 
