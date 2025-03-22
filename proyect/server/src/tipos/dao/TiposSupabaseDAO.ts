@@ -5,10 +5,10 @@ import supabase from "@/config/supabase"; // Asegúrate de que tu archivo de con
 // Constantes para los nombres de la tabla y los campos
 const TABLE_NAME = "tipos";
 const FIELDS = {
-  idTipo: "idTipo",
+  idTipo: "idtipo",
   tipo: "tipo",
   color: "color",
-  idUsuario: "idUsuario",
+  idUsuario: "idusuario",
 };
 
 export default class TiposSupabaseDAO implements ITiposDAO {

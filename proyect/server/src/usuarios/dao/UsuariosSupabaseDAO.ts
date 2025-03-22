@@ -10,6 +10,15 @@ import {
 } from "@/src/usuarios/interfacesUsuarios";
 import { User } from "@supabase/supabase-js";
 
+// Constantes para los nombres de la tabla y los campos
+const TABLE_NAME = "usuarios";
+const FIELDS = {
+  id: "id",
+  email: "email",
+  role: "role",
+  user_metadata: "user_metadata",
+};
+
 export default class UsuariosSupabaseDAO implements IUsuariosDAO {
   // Registro de usuario
   async signUp(userData: UsuarioCreate): Promise<AuthResponse> {
@@ -85,7 +94,6 @@ export default class UsuariosSupabaseDAO implements IUsuariosDAO {
 
   async getAll(filters?: UserFilters): Promise<PaginatedUsers> {
     try {
-      // Obtener todos los usuarios sin paginación previa
       const { data, error } = await supabase.auth.admin.listUsers();
 
       if (error) throw error;
@@ -198,14 +206,12 @@ export default class UsuariosSupabaseDAO implements IUsuariosDAO {
   // Actualizar un usuario
   async update(id: string, usuario: UsuarioUpdate): Promise<User | null> {
     try {
-      // Preparar los datos de usuario a actualizar
       const updateData: any = {
         email: usuario.email,
         role: usuario.role,
-        user_metadata: usuario.user_metadata, // Usar 'user_metadata' en lugar de 'data'
+        user_metadata: usuario.user_metadata,
       };
 
-      // Realizamos la actualización del usuario
       const { data, error } = await supabase.auth.admin.updateUserById(
         id,
         updateData
@@ -238,7 +244,7 @@ export default class UsuariosSupabaseDAO implements IUsuariosDAO {
   async resetEmail(email: string): Promise<boolean> {
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: "https://your-app-url.com/reset-email", // URL donde el usuario podrá actualizar su correo
+        redirectTo: "https://your-app-url.com/reset-email",
       });
 
       if (error) throw error;

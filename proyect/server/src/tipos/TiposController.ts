@@ -27,10 +27,10 @@ export default class TiposController {
 
   getTipoById: RequestHandler = async (req, res) => {
     try {
-      const idTipos = parseInt(req.params.idTipos);
+      const idTipo = parseInt(req.params.idTipo);
 
       const userDetails = req.params.userDetails === "true";
-      const tipo = await this.tiposModel.getById(idTipos, userDetails);
+      const tipo = await this.tiposModel.getById(idTipo, userDetails);
 
       if (tipo) {
         res.status(200).json(tipo);
