@@ -12,7 +12,7 @@ afterAll(() => {
   console.error = originalConsoleError;
 });
 
-describe("Estados Routes", () => {
+describe("Tipos Routes", () => {
   let app: express.Application;
   let mockTiposModel: jest.Mocked<TiposModel>;
 

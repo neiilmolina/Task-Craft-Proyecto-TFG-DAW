@@ -900,6 +900,307 @@ describe("Usuarios Routes", () => {
 const createMockUser = (id: string): User
 ```
 
+### Tipos
+
+##### 1. TiposController.ts
+
+Maneja las peticiones HTTP y la lógica de control.
+
+```typescript
+class TiposController {
+  constructor(private tiposModel: TiposModel) {}
+
+  // Métodos principales:
+  getTipos: RequestHandler; // GET /tipos
+  getTipoById: RequestHandler; // GET /tipos/:idTipo
+  createTipo: RequestHandler; // POST /tipos
+  updateTipo: RequestHandler; // PUT /tipos/:idTipo
+  deleteTipo: RequestHandler; // DELETE /tipos/:idTipo
+}
+```
+
+##### 2. TiposModel.ts
+
+Implementa la lógica de negocio y maneja las operaciones con la base de datos.
+
+```typescript
+class TiposModel {
+  constructor(private tiposDAO: ITiposDAO) {}
+  // Métodos principales:
+
+  getAll(idUsuario?: string, userDetails?: boolean): Promise<Tipo[] | null>;
+  getById(idTipo: number, userDetails?: boolean): Promise<Tipo | null>;
+  create(tipo: TipoCreate): Promise<Tipo | null>;
+  update(idTipo: number, tipo: TipoUpdate): Promise<Tipo | null>;
+  delete(idTipo: number): Promise<boolean>;
+}
+```
+
+##### 3. TiposSupabaseDAO.ts
+
+Implementa el acceso a datos utilizando Supabase.
+
+```typescript
+class EstadosSupabaseDAO implements IEstadosDAO {
+  // Métodos de acceso a datos:
+  getAll(idUsuario?: string, userDetails?: boolean): Promise<Tipo[] | null>;
+  getById(idTipo: number, userDetails?: boolean): Promise<Tipo | null>;
+  create(tipo: TipoCreate): Promise<Tipo | null>;
+  update(idTipo: number, tipo: TipoUpdate): Promise<Tipo | null>;
+  delete(idTipo: number): Promise<boolean>;
+}
+```
+
+##### 4. Interfaces y Tipos
+
+```typescript
+interface Tipo {
+  idTipo: number;
+  tipo: string;
+  color: string;
+  idUsuario: string;
+  userDetails?: User;
+}
+
+interface TipoCreate {
+  tipo: string;
+  color: string;
+  idUsuario: string;
+}
+
+interface TipoNoId {
+  tipo: string;
+  color: string;
+  idUsuario: string;
+  userDetails?: User;
+}
+
+interface TipoUpdate {
+  tipo: string;
+  color: string;
+  idUsuario?: string;
+}
+```
+
+##### 5. Pruebas Unitarias y de Integración
+
+##### - TiposSupabaseDAO.test.ts
+
+Pruebas unitarias para la conexión con Supabase:
+
+```ts
+describe("TiposSupabaseDAO", () => {
+  const tiposDAO: TiposSupabaseDAO;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
+  describe("getAll", () => {
+    it("should return all tipos");
+    it("should return all tipos with idUsuario = 1");
+    it("should return an empty array if an error occurs");
+  });
+
+  describe("getAll with userDetails = true", () => {
+    it("should return tipos with user details when userDetails is true");
+    it(
+      "should return tipos with user details and idUsuario = 1 when userDetails is true"
+    );
+  });
+
+  describe("getById", () => {
+    it("should return a tipo by id");
+    it("should return null if an error occurs");
+  });
+  describe("getById with userDetails = true", () => {
+    it("should return a tipo by id with user details");
+    it("should return null if an error occurs");
+  });
+
+  describe("create", () => {
+    it("should create a new tipo");
+    it("should return null if an error occurs");
+  });
+
+  describe("update", () => {
+    it("should update an existing tipo");
+    it("should return null if an error occurs");
+  });
+
+  describe("delete", () => {
+    it("should delete an existing tipo");
+    it("should return false if an error occurs");
+  });
+});
+```
+
+##### - TiposModel.test.ts
+
+```ts
+describe("TiposModel", () => {
+  let tiposModel: TiposModel;
+  beforeEach(() => {});
+
+  describe("getAll", () => {
+    it("debería obtener una lista de todos los tipos");
+    it("debería obtener solo los tipos de un usuario específico");
+    it("debería retornar una lista vacía si no hay tipos");
+    it("debería obtener tipos con detalles del usuario");
+    it("debería obtener tipos de un usuario específico con sus detalles");
+  });
+
+  describe("getById", () => {
+    it("debería obtener un tipo por su ID");
+    it("debería retornar null si el tipo no existe");
+    it("debería obtener un tipo por ID con detalles del usuario");
+  });
+
+  describe("create", () => {
+    it("debería crear un nuevo tipo");
+    it("debería retornar null si la creación falla");
+  });
+
+  describe("update", () => {
+    it("debería actualizar un tipo existente");
+    it("debería retornar null si la actualización falla");
+  });
+
+  describe("delete", () => {
+    it("should delete an existing tipo");
+    it("should return false if an error occurs");
+  });
+});
+```
+
+##### - TiposController.test.ts
+
+Pruebas unitarias para el controlador:
+
+```typescript
+describe("TiposController", () => {
+  // Configuración inicial
+  let tiposController: TiposController;
+  let mockTiposModel: jest.Mocked<TiposModel>;
+  let mockRequest: Partial<Request>;
+  let mockResponse: Partial<Response>;
+  let mockNext: jest.Mock;
+
+  beforeEach(() => {
+    // Configuración de mocks para cada prueba
+  });
+
+  describe("getTipos", () => {
+    it("debe devolver todos los tipos sin filtros cuando no hay parámetros");
+    it("debe filtrar por idUsuario cuando se proporciona");
+    it("debe incluir detalles de usuario cuando userDetails es true");
+    it(
+      "debe filtrar por idUsuario y incluir detalles cuando se proporcionan ambos"
+    );
+    it("debe devolver error 500 cuando falla la obtención de tipos");
+    it("debe manejar correctamente cuando getAll devuelve null");
+  });
+
+  describe("getTipoById", () => {
+    it("debe devolver un tipo cuando existe");
+    it(
+      "debe devolver un tipo con detalles de usuario cuando userDetails es true"
+    );
+    it("debe devolver 404 cuando el tipo no existe");
+    it("debe manejar errores al convertir idTipos a número");
+    it("debe devolver error 500 cuando hay una excepción");
+  });
+
+  describe("createTipo", () => {
+    it("debe crear un tipo correctamente");
+    it("debe devolver error 400 cuando los datos son inválidos");
+    it("debe devolver error 500 cuando newTipo es null");
+    it("debe devolver error 400 cuando el usuario ya existe");
+    it("debe devolver error 500 cuando hay una excepción");
+  });
+
+  describe("updateTipo", () => {
+    it("debería actualizar un tipo exitosamente");
+    it("debería actualizar un tipo con idUsuario opcional");
+    it(
+      "debería devolver un error 400 cuando la validación falla por tipo vacío"
+    );
+    it(
+      "debería devolver un error 400 cuando la validación falla por color inválido"
+    );
+    it("debería devolver un error 404 cuando el tipo no existe");
+    it("debería manejar errores internos del servidor");
+  });
+
+  describe("deleteTipo", () => {
+    it("debería eliminar un tipo existente y devolver un estado 200");
+    it("debería devolver un estado 404 si el tipo no existe");
+    it("debería devolver un estado 500 si ocurre un error interno");
+    it("debería devolver un estado 400 si el id no es un número válido");
+    it("debería devolver un estado 400 si el id está vacío");
+    it("debería manejar correctamente una solicitud sin parámetro de id");
+  });
+});
+```
+
+##### - routeTipos.test.ts
+
+Pruebas de integración para las rutas:
+
+```typescript
+describe("Tipos Routes", () => {
+  let app: Express;
+  let mockTiposModel: jest.Mocked<TiposModel>;
+
+  beforeEach(() => {
+    // Configuración del servidor de pruebas
+  });
+
+  describe("GET /tipos", () => {
+    it("debe devolver un array de tipos cuando la base de datos tiene datos");
+    it("debe devolver un array vacío cuando la base de datos no tiene datos");
+    it("debe devolver un error 500 si falla la obtención de datos");
+  });
+
+  describe("GET /tipos/:idTipo", () => {
+    it("debe devolver un tipo cuando el idTipo existe");
+    it(
+      "debe devolver un tipo con detalles de usuario cuando userDetails es true"
+    );
+    it("debe devolver un error 404 cuando el idTipo no existe");
+    it("debe devolver un error 500 si ocurre un fallo en la base de datos");
+    it("debe manejar correctamente un idTipo inválido (NaN)");
+  });
+
+  describe("POST /tipos", () => {
+    it("debe crear un tipo cuando los datos son válidos");
+    it("debe devolver 400 si los datos son inválidos");
+    it("debe devolver 400 si el tipo ya existe");
+    it("debe devolver 500 si hay un error interno");
+  });
+
+  describe("PUT /tipos/:idTipo", () => {
+    it("debe actualizar un tipo cuando los datos son válidos");
+    it("debe devolver 400 si la validación falla");
+    it("debe devolver 404 si el tipo no existe");
+    it("debe devolver 500 si ocurre un error en el servidor");
+    it("debe devolver 400 si el idTipo es inválido");
+  });
+
+  describe("DELETE /tipos/:idTipo", () => {
+    it("debería eliminar un tipo existente y devolver un estado 200");
+    it("debería devolver un estado 404 si el tipo no existe");
+    it("debería devolver un estado 500 si ocurre un error interno");
+    it("debería devolver un estado 400 si el id no es un número válido");
+    it("debería manejar correctamente una solicitud sin parámetro de id");
+  });
+});
+```
+
 ## Documentación API
 
 ### Endpoints de Estados

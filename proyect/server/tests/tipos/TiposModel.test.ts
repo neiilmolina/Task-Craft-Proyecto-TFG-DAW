@@ -191,7 +191,7 @@ describe("TiposModel", () => {
       expect(result).toBeNull();
     });
 
-    it.only("debería obtener un tipo por ID con detalles del usuario", async () => {
+    it("debería obtener un tipo por ID con detalles del usuario", async () => {
       const mockUser = {
         id: "1",
         email: "user1@example.com",
