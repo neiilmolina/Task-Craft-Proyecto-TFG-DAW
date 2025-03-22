@@ -2,9 +2,16 @@ import supabase from "@/config/supabase";
 import { Estado, EstadoNoId } from "@/src/estados/interfacesEstados";
 import IEstadosDAO from "./IEstadosDAO";
 
+// Constantes para los nombres de la tabla y los campos
+const TABLE_NAME = "estados";
+const FIELDS = {
+  idEstado: "idestado",
+  estado: "estado",
+};
+
 export default class EstadosSupabaseDAO implements IEstadosDAO {
   async getAll(): Promise<Estado[]> {
-    const { data, error } = await supabase.from("estados").select("*");
+    const { data, error } = await supabase.from(TABLE_NAME).select("*");
 
     if (error) {
       console.error("Error al obtener estados:", error);
@@ -17,9 +24,9 @@ export default class EstadosSupabaseDAO implements IEstadosDAO {
 
   async getById(id: number): Promise<Estado | null> {
     const { data, error } = await supabase
-      .from("estados")
+      .from(TABLE_NAME)
       .select("*")
-      .eq("idEstado", id)
+      .eq(FIELDS.idEstado, id)
       .single();
 
     if (error) {
@@ -31,10 +38,9 @@ export default class EstadosSupabaseDAO implements IEstadosDAO {
   }
 
   async create(estado: EstadoNoId): Promise<Estado | null> {
-    // Fixed the insert operation - it was using EstadosModel incorrectly
     const { data, error } = await supabase
-      .from("estados")
-      .insert([{ estado: estado.estado }])
+      .from(TABLE_NAME)
+      .insert([{ [FIELDS.estado]: estado.estado }])
       .select();
 
     if (error) {
@@ -47,9 +53,9 @@ export default class EstadosSupabaseDAO implements IEstadosDAO {
 
   async update(id: number, estadoData: EstadoNoId): Promise<Estado | null> {
     const { data, error } = await supabase
-      .from("estados")
-      .update({ estado: estadoData.estado })
-      .eq("idEstado", id)
+      .from(TABLE_NAME)
+      .update({ [FIELDS.estado]: estadoData.estado })
+      .eq(FIELDS.idEstado, id)
       .select();
 
     if (error) {
@@ -62,9 +68,9 @@ export default class EstadosSupabaseDAO implements IEstadosDAO {
 
   async delete(id: number): Promise<boolean> {
     const { data, error } = await supabase
-      .from("estados")
+      .from(TABLE_NAME)
       .delete()
-      .eq("idEstado", id)
+      .eq(FIELDS.idEstado, id)
       .select();
 
     if (error) {
@@ -72,7 +78,7 @@ export default class EstadosSupabaseDAO implements IEstadosDAO {
       return false;
     }
 
-    // If we got data back, it means the deletion was successful
+    // Si obtuvimos datos de vuelta, significa que la eliminación fue exitosa
     return data && data.length > 0;
   }
 }
