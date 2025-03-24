@@ -15,24 +15,37 @@ export default class TiposSupabaseDAO implements ITiposDAO {
   // Obtener todos los tipos, opcionalmente filtrados por idUsuario
   async getAll(
     idUsuario?: string,
-    userDetails?: boolean
+    userDetails: boolean = false
   ): Promise<Tipo[] | null> {
     try {
       let query;
 
       if (userDetails) {
-        query = supabase.from(TABLE_NAME).select("*, auth.users(*)");
+        query = supabase.from(TABLE_NAME).select(
+          `
+            *,
+            userDetails:auth.users(*)
+          `
+        );
       } else {
         query = supabase.from(TABLE_NAME).select("*");
       }
 
       if (idUsuario) {
-        query = query.eq("tipos.idusuario", idUsuario);
+        query = query.eq("idUsuario", idUsuario);
       }
 
       const { data, error } = await query;
 
       if (error) throw error;
+
+      // Si necesitas mapear específicamente
+      if (userDetails && data) {
+        return data.map((item) => ({
+          ...item,
+          userDetails: item.user?.[0] || undefined,
+        })) as Tipo[];
+      }
 
       return data as Tipo[];
     } catch (error) {

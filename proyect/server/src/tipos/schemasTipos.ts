@@ -4,8 +4,8 @@ import { TipoCreate, TipoUpdate } from "./interfacesTipos";
 const tipoSchema = z.object({
   idTipo: z.number(),
   tipo: z.string({
-    required_error: "Estado es requerido",
-    message: "Estado debe ser un string",
+    required_error: "Tipo es requerido",
+    message: "Tipo debe ser un string",
   }),
   color: z.string().regex(/^#?([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/, {
     message: "Color debe ser un valor hexadecimal válido ",

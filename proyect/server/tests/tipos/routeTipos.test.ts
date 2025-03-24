@@ -136,7 +136,7 @@ describe("Tipos Routes", () => {
 
       // Assert
       expect(response.status).toBe(404);
-      expect(response.body).toEqual({ message: "tipo no encontrado" });
+      expect(response.body).toEqual({ error: "tipo no encontrado" });
     });
 
     it("debe devolver un error 500 si ocurre un fallo en la base de datos", async () => {
@@ -159,7 +159,7 @@ describe("Tipos Routes", () => {
 
       // Assert
       expect(response.status).toBe(404);
-      expect(response.body).toEqual({ message: "tipo no encontrado" });
+      expect(response.body).toEqual({ error: "tipo no encontrado" });
     });
   });
 
@@ -285,7 +285,7 @@ describe("Tipos Routes", () => {
 
       // Assert
       expect(response.status).toBe(404);
-      expect(response.body).toEqual({ message: "Tipo no encontrado" });
+      expect(response.body).toEqual({ error: "Tipo no encontrado" });
       expect(mockTiposModel.update).toHaveBeenCalledWith(idTipo, updatedData);
     });
 
@@ -345,7 +345,7 @@ describe("Tipos Routes", () => {
 
       expect(mockTiposModel.delete).toHaveBeenCalledWith(999);
       expect(response.status).toBe(404);
-      expect(response.body).toEqual({ message: "Tipo no encontrado" });
+      expect(response.body).toEqual({ error: "Tipo no encontrado" });
     });
 
     it("debería devolver un estado 500 si ocurre un error interno", async () => {

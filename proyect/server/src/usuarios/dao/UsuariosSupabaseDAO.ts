@@ -10,14 +10,6 @@ import {
 } from "@/src/usuarios/interfacesUsuarios";
 import { User } from "@supabase/supabase-js";
 
-// Constantes para los nombres de la tabla y los campos
-const TABLE_NAME = "usuarios";
-const FIELDS = {
-  id: "id",
-  email: "email",
-  role: "role",
-  user_metadata: "user_metadata",
-};
 
 export default class UsuariosSupabaseDAO implements IUsuariosDAO {
   // Registro de usuario

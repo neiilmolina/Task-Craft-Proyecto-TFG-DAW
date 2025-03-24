@@ -11,14 +11,14 @@ export default class TiposController {
 
   getTipos: RequestHandler = async (req, res) => {
     try {
-      // Access query parameters from the URL
-      const idUsuario = req.query.idUsuario as string; // idUsuario is optional
-      const userDetails = req.query.userDetails === "true"; // Explicitly compare to 'true'
+      const idUsuario = req.params.idUsuario;
+      const userDetails = req.params.userDetails === "true";
 
-      // Call the getAll function with idUsuario and userDetails
+      // Pasar los parámetros a la función getAll
       const tipos = await this.tiposModel.getAll(idUsuario, userDetails);
 
       res.status(200).json(tipos);
+      return;
     } catch (e) {
       console.error("Error al cargar los tipos:", e);
       res.status(500).json({ error: "Error interno del servidor" });
@@ -36,7 +36,7 @@ export default class TiposController {
         res.status(200).json(tipo);
         return;
       } else {
-        res.status(404).json({ message: "tipo no encontrado" });
+        res.status(404).json({ error: "tipo no encontrado" });
         return;
       }
     } catch (error) {
@@ -48,7 +48,13 @@ export default class TiposController {
 
   createTipo: RequestHandler = async (req, res) => {
     try {
-      const tipoData: TipoCreate = req.body;
+      const tipoData: TipoCreate = {
+        tipo: req.body.tipo || (req.query.tipo as string),
+        idUsuario: req.body.idUsuario || (req.query.idUsuario as string),
+        color: decodeURIComponent(
+          req.body.color || (req.query.color as string)
+        ),
+      };
 
       const result = validateTipoCreate(tipoData);
       if (!result.success) {
@@ -58,7 +64,6 @@ export default class TiposController {
 
       const newTipo = await this.tiposModel.create(tipoData);
 
-      // Verificar si newTipo es null
       if (!newTipo) {
         res.status(500).json({ error: "No se pudo crear el tipo" });
         return;
@@ -67,7 +72,7 @@ export default class TiposController {
       res.status(201).json(newTipo);
     } catch (error: any) {
       console.error("Error al crear el Tipo:", error);
-      // Verificar si el error es que el tipo ya existe
+
       if (error.message && error.message.includes("already exists")) {
         res.status(400).json({ error: "El Tipo ya existe" });
         return;
@@ -97,7 +102,7 @@ export default class TiposController {
       const updatedTipo = await this.tiposModel.update(id, req.body);
 
       if (!updatedTipo) {
-        res.status(404).json({ message: "Tipo no encontrado" });
+        res.status(404).json({ error: "Tipo no encontrado" });
         return;
       }
 
@@ -126,7 +131,7 @@ export default class TiposController {
         res.status(200).json({ message: "Tipo eliminado correctamente" });
         return;
       } else {
-        res.status(404).json({ message: "Tipo no encontrado" });
+        res.status(404).json({ error: "Tipo no encontrado" });
         return;
       }
     } catch (error) {
