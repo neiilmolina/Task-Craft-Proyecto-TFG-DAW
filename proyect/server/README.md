@@ -37,6 +37,10 @@ Sigue estos pasos para instalar y ejecutar el servidor en tu entorno local.
     SUPABASE_URL=<tu_url_de_supabase>
     SERVICE_ROLE_KEY=<tu_clave_de_supabase>
     PORT=<puerto_para_el_servidor>
+    MYSQL_HOST = <host_de_la_bd_mysql>
+    MYSQL_USER = <usuario_de_la_bd_mysql>
+    MYSQL_PASSWORD = <contraseña_de_la_bd_mysql>
+    MYSQL_DATABASE = <nombre_de_la_bd_mysql>
    ```
 
 ## Scripts
