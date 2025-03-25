@@ -19,8 +19,3 @@ export function validateEstado(input: Partial<Estado>) {
 export function validateEstadoNoId(input: Partial<EstadoNoId>) {
   return estadoSchema.omit({ idEstado: true }).safeParse(input);
 }
-
-// For validating partial updates
-export function validatePartialEstado(input: Partial<Estado>) {
-  return estadoSchema.partial().safeParse(input);
-}
