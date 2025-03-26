@@ -54,12 +54,11 @@ export default class RolesController {
   createRol: RequestHandler = async (req, res) => {
     try {
       const rolData: RolNoId = {
-        nombre: req.body.nombre || (req.query.nombre as string),
-        descripcion: req.body.descripcion || (req.query.descripcion as string),
+        rol: req.body.rol || (req.query.rol as string),
       };
 
       // Validar la entrada con el esquema de validación
-      const result = validateRolCreate(rolData);
+      const result = validateRolNoId(rolData);
       if (!result.success) {
         res.status(400).json({ error: result.error });
         return;
@@ -83,6 +82,67 @@ export default class RolesController {
       }
 
       res.status(500).json({ error: "Error interno del servidor" });
+    }
+  };
+
+  updateRol: RequestHandler = async (req, res) => {
+    try {
+      // Validate the input data
+      const rolData: RolNoId = req.body;
+      const { success, error } = validateRolNoId(rolData);
+
+      if (!success) {
+        res.status(400).json({ error });
+        return;
+      }
+
+      // Validate the role ID
+      const idRol = parseInt(req.params.idRol, 10);
+      if (isNaN(idRol)) {
+        res.status(400).json({ error: "Invalid role ID" });
+        return;
+      }
+
+      // Attempt to update the role
+      const updatedRol = await this.rolesModel.update(idRol, rolData);
+
+      if (!updatedRol) {
+        res.status(404).json({ error: "Rol no encontrado" });
+        return;
+      }
+
+      // Successfully updated
+      res.status(200).json(updatedRol);
+      return;
+    } catch (error) {
+      console.error("Error al actualizar el role:", error);
+      res.status(500).json({ error: "Error interno del servidor" });
+      return;
+    }
+  };
+
+  deleteRol: RequestHandler = async (req, res) => {
+    try {
+      const idRol = parseInt(req.params.idRol, 10);
+
+      if (isNaN(idRol)) {
+        res.status(400).json({ error: "ID inválido" });
+        return;
+      }
+
+      const result = await this.rolesModel.delete(idRol);
+
+      if (result) {
+        res.status(200).json({ message: "Rol eliminado correctamente" });
+        return;
+      } else {
+        res.status(404).json({ error: "Rol no encontrado" });
+        return;
+      }
+    } catch (error) {
+      console.error("Error al eliminar el rol:", error);
+      res.status(500).json({ error: "Error interno del servidor" });
+      return;
     }
   };
 }

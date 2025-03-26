@@ -14,5 +14,10 @@ export function validateRol(input: Partial<Rol>) {
 }
 
 export function validateRolNoId(input: Partial<RolNoId>) {
-  return rolSchema.omit({ idRol: true }).safeParse(input);
+  const result = rolSchema.safeParse(input);
+
+  if (!result.success)
+    return { success: false, error: result.error.errors[0].message };
+
+  return { success: true };
 }

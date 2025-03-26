@@ -61,12 +61,13 @@ export default class RolesMysqlDAO implements IRolesDAO {
   }
 
   // Create a new role
-  async create(role: RolNoId): Promise<Rol> {
+  async create(role: RolNoId): Promise<Rol | null> {
     return new Promise<Rol>((resolve, reject) => {
       const query = `INSERT INTO ${TABLE_NAME} (${FIELDS.rol}) VALUES (?)`;
       connection.query(query, [role.rol], (err, results) => {
         if (err) {
-          return reject(err);
+          console.error(err);
+          return reject(null);
         }
 
         // Asegurarse de que results sea del tipo ResultSetHeader
@@ -80,12 +81,13 @@ export default class RolesMysqlDAO implements IRolesDAO {
   }
 
   // Update a role
-  async update(id: number, role: RolNoId): Promise<Rol> {
+  async update(id: number, role: RolNoId): Promise<Rol | null> {
     return new Promise<Rol>((resolve, reject) => {
       const query = `UPDATE ${TABLE_NAME} SET ${FIELDS.rol} = ? WHERE ${FIELDS.idRol} = ?`;
       connection.query(query, [role.rol, id], (err, results) => {
         if (err) {
-          return reject(err);
+          console.error(err);
+          return reject(null);
         }
 
         // Asegurarse de que results sea del tipo ResultSetHeader
