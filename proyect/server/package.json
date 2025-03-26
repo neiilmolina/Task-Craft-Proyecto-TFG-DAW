@@ -4,8 +4,8 @@
   "main": "index.js",
   "scripts": {
     "build": "npx tsc",
-    "start": "ts-node -r tsconfig-paths/register ./server-supabase.ts",
-    "dev": "nodemon -r tsconfig-paths/register ./server-supabase.ts",
+    "start": "ts-node -r tsconfig-paths/register ./server-mysql.ts",
+    "dev": "nodemon -r tsconfig-paths/register ./server-mysql.ts",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"

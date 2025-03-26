@@ -5,9 +5,13 @@ import {
   validateTipoCreate,
   validateTipoUpdate,
 } from "@/src/tipos/schemasTipos";
+import ITiposDAO from "@/src/tipos/dao/ITiposDAO";
 
 export default class TiposController {
-  constructor(private tiposModel: TiposModel) {}
+  private tiposModel: TiposModel;
+  constructor(tiposDAO: ITiposDAO) {
+    this.tiposModel = new TiposModel(tiposDAO);
+  }
 
   getTipos: RequestHandler = async (req, res) => {
     try {

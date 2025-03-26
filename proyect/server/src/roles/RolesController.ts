@@ -1,10 +1,15 @@
 import { RequestHandler } from "express";
 import RolesModel from "@/src/roles/RolesModel";
-import { validateRol, validateRolNoId } from "@/src/roles/schemasRoles";
+import { validateRolNoId } from "@/src/roles/schemasRoles";
 import { RolNoId } from "./interfacesRoles";
+import IRolesDAO from "./dao/IRolesDAO";
 
 export default class RolesController {
-  constructor(private rolesModel: RolesModel) {}
+  private rolesModel: RolesModel;
+
+  constructor(rolesDAO: IRolesDAO) {
+    this.rolesModel = new RolesModel(rolesDAO);
+  }
 
   // Método para obtener todos los roles
   getRoles: RequestHandler = async (req, res) => {
@@ -89,10 +94,10 @@ export default class RolesController {
     try {
       // Validate the input data
       const rolData: RolNoId = req.body;
-      const { success, error } = validateRolNoId(rolData);
+      const validationResult = validateRolNoId(rolData);
 
-      if (!success) {
-        res.status(400).json({ error });
+      if (!validationResult.success) {
+        res.status(400).json({ error: validationResult.error });
         return;
       }
 

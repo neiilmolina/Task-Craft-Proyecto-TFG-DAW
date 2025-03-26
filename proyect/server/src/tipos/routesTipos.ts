@@ -1,8 +1,8 @@
 import TiposController from "@/src/tipos/TiposController";
-import TiposModel from "@/src/tipos/TiposModel";
 import { Router } from "express";
+import ITiposDAO from "./dao/ITiposDAO";
 
-export const createTiposRoute = (tiposModel: TiposModel) => {
+export const createTiposRoute = (tiposModel: ITiposDAO) => {
   const router = Router();
   const tiposController = new TiposController(tiposModel);
 

@@ -1,8 +1,8 @@
 import { Router } from "express";
 import UsuariosController from "@/src/usuarios/UsuariosController";
-import UsuariosModel from "@/src/usuarios/UsuariosModel";
+import IUsuariosDAO from "@/src/usuarios/dao/IUsuariosDAO";
 
-export const createUsuariosRoute = (usuariosModel: UsuariosModel) => {
+export const createUsuariosRoute = (usuariosModel: IUsuariosDAO) => {
   const router = Router();
   const usuariosController = new UsuariosController(usuariosModel);
 

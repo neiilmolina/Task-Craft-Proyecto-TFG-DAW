@@ -1,7 +1,7 @@
 import { Rol, RolNoId } from "@/src/roles/interfacesRoles";
-import connection from "@/config/mysql"; // Asegúrate de que la ruta sea correcta
-import IRolesDAO from "./IRolesDAO";
+import connection from "@/config/mysql"; 
 import { ResultSetHeader, RowDataPacket } from "mysql2";
+import IRolesDAO from "./IRolesDAO";
 
 const TABLE_NAME = "roles"; // Nombre de la tabla
 const FIELDS = {

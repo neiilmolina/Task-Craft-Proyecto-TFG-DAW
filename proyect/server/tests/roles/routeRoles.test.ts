@@ -186,7 +186,7 @@ describe("Roles Routes", () => {
     });
   });
 
-  describe.only("PUT /roles/:idRol", () => {
+  describe("PUT /roles/:idRol", () => {
     it("debe actualizar un rol cuando los datos son válidos", async () => {
       // Arrange
       const idRol = 1;

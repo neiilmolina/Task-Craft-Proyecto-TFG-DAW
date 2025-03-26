@@ -5,15 +5,19 @@ import {
   validateUsuarioCreate,
   validateUsuarioUpdate,
 } from "@/src/usuarios/schemasUsuarios";
-import UsuariosModel from "./UsuariosModel";
+import UsuariosModel from "@/src/usuarios/UsuariosModel";
 import {
   UsuarioCreate,
   UsuarioUpdate,
   LoginCredentials,
 } from "@/src/usuarios/interfacesUsuarios";
+import IUsuariosDAO from "@/src/usuarios/dao/IUsuariosDAO";
 
 export default class UsuariosController {
-  constructor(private usuariosModel: UsuariosModel) {}
+  private usuariosModel: UsuariosModel;
+  constructor(usuariosDAO: IUsuariosDAO) {
+    this.usuariosModel = new UsuariosModel(usuariosDAO);
+  }
 
   // Obtener todos los usuarios
   getUsuarios: RequestHandler = async (req, res) => {
@@ -161,12 +165,10 @@ export default class UsuariosController {
 
       // Si el cambio de contraseña fue exitoso
       if (result) {
-        res
-          .status(200)
-          .json({
-            message: "Contraseña cambiada correctamente",
-            success: true,
-          });
+        res.status(200).json({
+          message: "Contraseña cambiada correctamente",
+          success: true,
+        });
         return; // Aseguramos que no haya más ejecución
       } else {
         // Si el usuario no se encuentra

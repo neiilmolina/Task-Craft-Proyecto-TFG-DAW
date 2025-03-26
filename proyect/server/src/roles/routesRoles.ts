@@ -1,10 +1,10 @@
 import { Router } from "express";
 import RolesController from "@/src/roles/RolesController";
-import RolesModel from "@/src/roles/RolesModel";
+import IRolesDAO from "@/src/roles/dao/IRolesDAO";
 
-const createRolesRoute = (rolesModel: RolesModel) => {
+const createRolesRoute = (rolesDAO: IRolesDAO) => {
   const router = Router();
-  const rolesController = new RolesController(rolesModel);
+  const rolesController = new RolesController(rolesDAO);
 
   router.get("/", rolesController.getRoles);
   router.get("/:idRol", rolesController.getRolById);
