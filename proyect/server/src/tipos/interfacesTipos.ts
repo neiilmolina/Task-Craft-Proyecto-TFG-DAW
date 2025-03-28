@@ -14,13 +14,6 @@ export interface TipoCreate {
   idUsuario: string;
 }
 
-export interface TipoNoId {
-  tipo: string;
-  color: string;
-  idUsuario: string;
-  userDetails?: User;
-}
-
 export interface TipoUpdate {
   tipo: string;
   color: string;

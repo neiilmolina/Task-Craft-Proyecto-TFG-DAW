@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { Rol, RolNoId } from "@/src/roles/interfacesRoles";
 
-const rolSchema = z.object({
+export const rolSchema = z.object({
   idRol: z.number().optional(),
   rol: z
     .string({
