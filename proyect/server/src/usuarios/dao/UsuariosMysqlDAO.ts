@@ -21,11 +21,12 @@ const FIELDS = {
 export default class UsuariosMysqlDAO implements IUsuariosDAO {
   async getAll(idRol?: string): Promise<Usuario[]> {
     return new Promise<Usuario[]>((resolve, reject) => {
-      let query = `SELECT u.${FIELDS.idUsuario}, u.${FIELDS.nombreUsuario}, u.${FIELDS.email}, u.${FIELDS.urlImg}, r.idRol, r.rol 
-                       FROM ${TABLE_NAME} u 
-                       JOIN roles r ON u.${FIELDS.idRol} = r.idRol`;
+      let query = `SELECT u.${FIELDS.idUsuario}, u.${FIELDS.nombreUsuario}, u.${FIELDS.email}, 
+                            u.${FIELDS.urlImg}, 
+                            r.idRol AS idRol, r.rol AS rol 
+                     FROM ${TABLE_NAME} u 
+                     JOIN roles r ON u.${FIELDS.idRol} = r.idRol`;
 
-      // Si se proporciona idRol, agregamos la condición WHERE
       if (idRol) {
         query += ` WHERE u.${FIELDS.idRol} = ?`;
       }
@@ -37,16 +38,26 @@ export default class UsuariosMysqlDAO implements IUsuariosDAO {
           if (err) {
             return reject(err);
           }
-          const usuarios: Usuario[] = results.map((row) => ({
-            idUsuario: row[FIELDS.idUsuario],
-            nombreUsuario: row[FIELDS.nombreUsuario],
-            email: row[FIELDS.email],
-            urlImg: row[FIELDS.urlImg],
-            rol: {
-              idRol: row.idRol,
-              rol: row.rol,
-            },
-          }));
+
+          if (!Array.isArray(results)) {
+            return reject(
+              new Error("Expected array of results but got something else.")
+            );
+          }
+
+          const usuarios: Usuario[] = results.map((row) => {
+            return {
+              idUsuario: row[FIELDS.idUsuario],
+              nombreUsuario: row[FIELDS.nombreUsuario],
+              email: row[FIELDS.email],
+              urlImg: row[FIELDS.urlImg] || null,
+              rol: {
+                idRol: row.idRol,
+                rol: row.rol,
+              },
+            };
+          });
+
           resolve(usuarios);
         }
       );
@@ -59,17 +70,25 @@ export default class UsuariosMysqlDAO implements IUsuariosDAO {
                      FROM ${TABLE_NAME} u 
                      JOIN roles r ON u.${FIELDS.idRol} = r.idRol 
                      WHERE u.${FIELDS.idUsuario} = ?`;
-      connection.query(query, [id], (err, results) => {
+
+      connection.query(query, [id], (err, results: RowDataPacket[]) => {
         if (err) {
           return reject(err);
         }
-        if (Array.isArray(results) && results.length > 0) {
-          const row = results[0] as RowDataPacket;
+
+        if (!Array.isArray(results)) {
+          return reject(
+            new Error("Expected array of results but got something else.")
+          );
+        }
+
+        if (results.length > 0) {
+          const row = results[0];
           const usuario: Usuario = {
             idUsuario: row[FIELDS.idUsuario],
             nombreUsuario: row[FIELDS.nombreUsuario],
             email: row[FIELDS.email],
-            urlImg: row[FIELDS.urlImg],
+            urlImg: row[FIELDS.urlImg] || null,
             rol: {
               idRol: row.idRol,
               rol: row.rol,
@@ -86,6 +105,7 @@ export default class UsuariosMysqlDAO implements IUsuariosDAO {
   async create(usuario: UsuarioCreate): Promise<UsuarioReturn | null> {
     return new Promise<UsuarioReturn>((resolve, reject) => {
       const query = `INSERT INTO ${TABLE_NAME} (${FIELDS.idUsuario}, ${FIELDS.nombreUsuario}, ${FIELDS.email}, ${FIELDS.password}, ${FIELDS.urlImg}, ${FIELDS.idRol}) VALUES (?, ?, ?, ?, ?, ?)`;
+
       connection.query(
         query,
         [
@@ -98,7 +118,7 @@ export default class UsuariosMysqlDAO implements IUsuariosDAO {
         ],
         (err, results) => {
           if (err) {
-            return reject(null);
+            return reject(new Error("Database insertion error")); // Lanza un error específico
           }
           resolve({
             nombreUsuario: usuario.nombreUsuario ?? "",
@@ -118,12 +138,13 @@ export default class UsuariosMysqlDAO implements IUsuariosDAO {
   ): Promise<UsuarioReturn | null> {
     return new Promise<UsuarioReturn>((resolve, reject) => {
       const query = `UPDATE ${TABLE_NAME} SET
-                    ${FIELDS.nombreUsuario} = ?, 
-                    ${FIELDS.email} = ?, 
-                    ${FIELDS.password} = ?, 
-                    ${FIELDS.urlImg} = ?, 
-                    ${FIELDS.idRol} = ? 
-                    WHERE ${FIELDS.idUsuario} = ?`;
+                      ${FIELDS.nombreUsuario} = ?, 
+                      ${FIELDS.email} = ?, 
+                      ${FIELDS.password} = ?, 
+                      ${FIELDS.urlImg} = ?, 
+                      ${FIELDS.idRol} = ? 
+                      WHERE ${FIELDS.idUsuario} = ?`;
+
       connection.query(
         query,
         [
@@ -136,8 +157,16 @@ export default class UsuariosMysqlDAO implements IUsuariosDAO {
         ],
         (err, results) => {
           if (err) {
-            return reject(null);
+            return reject(new Error("Database update error: " + err.message)); // Lanza un error con mensaje detallado
           }
+
+          const resultSet = results as ResultSetHeader;
+
+          if (resultSet.affectedRows === 0) {
+            return reject(new Error("User not found"));
+          }
+
+          // Resolver con el resultado
           resolve({
             idUsuario: id,
             nombreUsuario: usuario.nombreUsuario,
