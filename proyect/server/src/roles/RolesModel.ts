@@ -8,22 +8,22 @@ export default class RolesModel {
     return this.rolesDAO.getAll();
   }
 
-  // Obtener tipo por ID
+  // Obtener rol por ID
   async getById(idRol: number) {
     return this.rolesDAO.getById(idRol);
   }
 
-  // Crear un tipo
-  async create(tipo: RolNoId) {
-    return this.rolesDAO.create(tipo);
+  // Crear un rol
+  async create(rol: RolNoId) {
+    return this.rolesDAO.create(rol);
   }
 
-  // Actualizar un tipo
-  async update(idRol: number, tipo: RolNoId) {
-    return this.rolesDAO.update(idRol, tipo);
+  // Actualizar un rol
+  async update(idRol: number, rol: RolNoId) {
+    return this.rolesDAO.update(idRol, rol);
   }
 
-  // Eliminar un tipo
+  // Eliminar un rol
   async delete(idRol: number) {
     return this.rolesDAO.delete(idRol);
   }

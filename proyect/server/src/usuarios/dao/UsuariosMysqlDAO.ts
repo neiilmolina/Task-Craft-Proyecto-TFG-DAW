@@ -19,7 +19,7 @@ const FIELDS = {
 };
 
 export default class UsuariosMysqlDAO implements IUsuariosDAO {
-  async getAll(idRol?: string): Promise<Usuario[]> {
+  async getAll(idRol?: Number): Promise<Usuario[]> {
     return new Promise<Usuario[]>((resolve, reject) => {
       let query = `SELECT u.${FIELDS.idUsuario}, u.${FIELDS.nombreUsuario}, u.${FIELDS.email}, 
                             u.${FIELDS.urlImg}, 

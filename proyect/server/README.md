@@ -96,36 +96,53 @@ La estructura básica de los archivos es la siguiente:
 │ ├── /estados # Módulo de Estados  
 │ │ ├── /dao # Data Access Objects (DAO)  
 │ │ │ ├── IEstadosDAO.ts # Interfaz para DAO  
-│ │ │ ├── EstadosSupabaseDAO.ts # Implementación con Supabase  
+│ │ │ ├── EstadosMysqlDAO.ts # Implementación con MySQL  
 │ │ ├── EstadosController.ts # Controlador de Estados  
 │ │ ├── EstadosModel.ts # Modelo de Estados  
 │ │ ├── interfacesEstados.ts # Definición de interfaces  
 │ │ ├── routesEstados.ts # Definición de rutas  
 │ │ ├── schemasEstados.ts # Esquemas de validación  
+│ ├── /roles # Módulo de Roles  
+│ │ ├── /dao # Data Access Objects (DAO)  
+│ │ │ ├── IRolesDAO.ts # Interfaz para DAO  
+│ │ │ ├── RolesMysqlDAO.ts # Implementación con MySQL  
+│ │ ├── RolesController.ts # Controlador de Roles  
+│ │ ├── RolesModel.ts # Modelo de Roles  
+│ │ ├── interfacesRoles.ts # Definición de interfaces  
+│ │ ├── routesRoles.ts # Definición de rutas  
+│ │ ├── schemasRoles.ts # Esquemas de validación  
+│ ├── /tipos # Módulo de Tipos  
+│ │ ├── /dao # Data Access Objects (DAO)  
+│ │ │ ├── interfacesTipos.ts # Definición de interfaces  
+│ │ ├── TiposController.ts # Controlador de Tipos  
+│ │ ├── TiposModel.ts # Modelo de Tipos  
+│ │ ├── routesTipos.ts # Definición de rutas  
+│ │ ├── schemasTipos.ts # Esquemas de validación  
 │ ├── /usuarios # Módulo de Usuarios  
 │ │ ├── /dao # Data Access Objects (DAO)  
 │ │ │ ├── IUsuariosDAO.ts # Interfaz para DAO  
-│ │ │ ├── UsuariosSupabaseDAO.ts # Implementación con Supabase  
+│ │ │ ├── UsuariosMysqlDAO.ts # Implementación con MySQL  
 │ │ ├── UsuariosController.ts # Controlador de Usuarios  
 │ │ ├── UsuariosModel.ts # Modelo de Usuarios  
 │ │ ├── interfacesUsuarios.ts # Definición de interfaces  
 │ │ ├── routesUsuarios.ts # Definición de rutas  
 │ │ ├── schemasUsuarios.ts # Esquemas de validación  
 │ ├── /config  
-│ │ └── supabase.ts # Configuración de Supabase  
+│ │ └── mysql.ts # Configuración de conexión a MySQL  
 │ ├── app.ts # Configuración principal de Express  
 ├── /tests  
 │ ├── /mocks # Carpeta para mocks en testing  
-│ │ └── supabase.ts # Crear mock para la conexión a la BD de Supabase  
 │ ├── /estados # Tests del módulo Estados  
 │ │ ├── EstadosController.test.ts # Pruebas del controlador de Estados  
 │ │ ├── EstadosModel.test.ts # Pruebas del modelo de Estados  
-│ │ └── routeEstados.test.ts # Pruebas del modelo de Estados  
+│ │ ├── routesEstados.test.ts # Pruebas de rutas de Estados  
 │ ├── /usuarios # Tests del módulo Usuarios  
-│ │ ├── UsuariosController.test.ts # Pruebas del controlador de Usuarios  
-│ │ ├── UsuariosModel.test.ts # Pruebas del modelo de Usuarios  
-│ │ └── routeUsuarios.test.ts # Pruebas del modelo de Usuarios  
-├── server-supabase.ts # Punto de entrada del servidor con Supabase  
+│ │ ├── UsuariosMysqlDAO.test.ts # Pruebas del DAO de Usuarios  
+│ │ ├── routesUsuarios.test.ts # Pruebas de rutas de Usuarios  
+│ ├── /roles # Tests del módulo Roles  
+│ │ ├── RolesMysqlDAO.test.ts # Pruebas del DAO de roles  
+│ │ ├── routesRoles.test.ts # Pruebas de rutas de roles  
+├── server.ts # Punto de entrada del servidor  
 ├── tsconfig.json # Configuración de TypeScript  
 ├── package.json # Dependencias y scripts  
 └── .env # Variables de entorno
@@ -154,12 +171,24 @@ La estructura básica de los archivos es la siguiente:
 El archivo server-supabase.ts inicializa la aplicación:
 
 ```typescript
-// Inicialización del DAO y Modelo
-const estadosDAO = new EstadosSupabaseDAO();
-const estadosModel = new EstadosModel(estadosDAO);
+/**
+ * Inicialización del servidor con DAOs basados en MySQL.
+ *
+ * Se crean instancias de los DAOs para cada módulo y se pasan a la aplicación.
+ */
 
-// Creación de la aplicación
-createApp(estadosModel);
+import createApp from "@/src/app";
+import EstadosMysqlDAO from "@/src/estados/dao/EstadosMysqlDAO";
+import TiposMysqlDAO from "@/src/tipos/dao/TiposMysqlDAO";
+import RolesMysqlDAO from "@/src/roles/dao/RolesMysqlDAO";
+
+// Creación de instancias de los DAOs con MySQL
+const estadosMysqlDAO = new EstadosMysqlDAO();
+const tiposMysqlDAO = new TiposMysqlDAO();
+const rolesMysqlDAO = new RolesMysqlDAO();
+
+// Inicialización de la aplicación con los DAOs
+createApp(estadosMysqlDAO, tiposMysqlDAO, rolesMysqlDAO);
 ```
 
 ### Descripción de Componentes
@@ -200,12 +229,12 @@ class EstadosModel {
 }
 ```
 
-##### 3. EstadosSupabaseDAO.ts
+##### 3. IEstadosDAO.ts
 
-Implementa el acceso a datos utilizando Supabase.
+Implementa el acceso a datos utilizando MySQL.
 
 ```typescript
-class EstadosSupabaseDAO implements IEstadosDAO {
+class EstadosMysqlDAO implements IEstadosDAO {
   // Métodos de acceso a datos:
   async getAll(): Promise<Estado[]>;
   async getById(id: number): Promise<Estado | null>;
@@ -231,13 +260,14 @@ interface EstadoNoId {
 
 ##### 5. Pruebas Unitarias y de Integración
 
-##### - EstadosSupabaseDAO.test.ts
+##### - EstadosMysqlDAO.test.ts
 
 Pruebas unitarias para la conexión con Supabase:
 
 ```ts
-describe("EstadosSupabaseDAO", () => {
-  let estadosDAO: EstadosSupabaseDAO;
+// No se crearon
+describe("EstadosMysql", () => {
+  let estadosDAO: EstadosMysql;
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -376,11 +406,21 @@ Pruebas de integración para las rutas:
 
 ```typescript
 describe("Estados Routes", () => {
-  let app: Express;
-  let mockEstadosModel: jest.Mocked<EstadosModel>;
+  let app: express.Application;
+  let mockEstadosModel: any;
 
   beforeEach(() => {
-    // Configuración del servidor de pruebas
+    mockEstadosModel = {
+      getAll: jest.fn(),
+      getById: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+    };
+
+    app = express();
+    app.use(express.json());
+    app.use("/estados", createEstadosRoute(mockEstadosModel));
   });
 
   describe("GET /estados", () => {
@@ -412,6 +452,177 @@ describe("Estados Routes", () => {
 });
 ```
 
+### Roles
+
+##### 1. RolesController.ts
+
+Maneja las peticiones HTTP y la lógica de control.
+
+```typescript
+class RolesController {
+  constructor(private RolesModel: RolesModel) {}
+
+  // Métodos principales:
+  getRoles: RequestHandler; // GET /Roles
+  getEstadoById: RequestHandler; // GET /Roles/:idRol
+  createEstado: RequestHandler; // POST /Roles
+  updateEstado: RequestHandler; // PUT /Roles/:idRol
+  deleteEstado: RequestHandler; // DELETE /Roles/:idRol
+}
+```
+
+##### 2. RolesModel.ts
+
+Implementa la lógica de negocio y maneja las operaciones con la base de datos.
+
+```typescript
+class RolesModel {
+  constructor(private RolesDAO: IRolesDAO) {}
+
+  // Métodos principales:
+  async getAll(): Promise<Rol[]>;
+  async getById(id: number): Promise<Rol | null>;
+  async create(rol: RolNoId): Promise<Rol | null>;
+  async update(id: number, rol: RolNoId): Promise<Rol | null>;
+  async delete(id: number): Promise<boolean>;
+}
+```
+
+##### 3. IRolesDAO.ts
+
+Implementa el acceso a datos utilizando MySQL.
+
+```typescript
+class RolesMysqlDAO implements IRolesDAO {
+  getAll(): Promise<Rol[]>;
+  getById(id: number): Promise<Rol | null>;
+  create(role: RolNoId): Promise<Rol | null>;
+  update(id: number, role: RolNoId): Promise<Rol | null>;
+  delete(id: number): Promise<boolean>;
+}
+```
+
+##### 4. Interfaces y Tipos
+
+```typescript
+// interfacesEstados.ts
+interface Rol {
+  idRol: number;
+  rol: string;
+}
+
+interface RolNoId {
+  rol: string;
+}
+```
+
+##### 5. Pruebas Unitarias y de Integración
+
+##### - EstadosMysqlDAO.test.ts
+
+Pruebas unitarias para la conexión con Supabase:
+
+```ts
+// No se crearon
+describe("RolesMysqlDAO", () => {
+  let rolesDAO: RolesMysqlDAO;
+  beforeEach(() => {
+    // Configura la instancia de RolesMysqlDAO antes de cada test
+    rolesDAO = new RolesMysqlDAO();
+
+    // Clear all mocks before each test
+    jest.clearAllMocks();
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
+  describe("RolesMysqlDAO - getAll", () => {
+    it("should return an array of roles when query is successful");
+    it("should throw an error if query fails");
+    it("should throw an error if results are not an array");
+  });
+
+  describe("RolesMysqlDAO - getById", () => {
+    it("should return a role when a valid ID is provided");
+    it("should return null when no role is found");
+    it("should throw an error if database query fails");
+  });
+
+  describe("RolesMysqlDAO - create", () => {
+    it("should successfully create a new role");
+    it("should throw an error if database query fails");
+  });
+
+  describe("RolesMysqlDAO - update", () => {
+    it("should successfully update an existing role");
+    it("should throw an error if role is not found");
+    it("should throw an error if database query fails");
+  });
+
+  describe("RolesMysqlDAO - delete", () => {
+    it("should return true when the role is successfully deleted");
+    it("should throw an error if role is not found");
+    it("should throw an error if database query fails");
+  });
+});
+```
+
+##### - routeEstados.test.ts
+
+Pruebas de integración para las rutas:
+
+```typescript
+describe("Roles Routes", () => {
+  let app: express.Application;
+  let mockRolesModel: jest.Mocked<RolesModel>;
+
+  beforeEach(() => {
+    mockRolesModel = {
+      getAll: jest.fn(),
+      getById: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+    } as unknown as jest.Mocked<RolesModel>;
+
+    app = express();
+    app.use(express.json());
+    app.use("/roles", createRolesRoute(mockRolesModel));
+  });
+
+  describe("RolesMysqlDAO - getAll", () => {
+    it("should return an array of roles when query is successful");
+    it("should throw an error if query fails");
+    it("should throw an error if results are not an array");
+  });
+
+  describe("RolesMysqlDAO - getById", () => {
+    it("should return a role when a valid ID is provided");
+    it("should return null when no role is found");
+    it("should throw an error if database query fails");
+  });
+
+  describe("RolesMysqlDAO - create", () => {
+    it("should successfully create a new role");
+    it("should throw an error if database query fails");
+  });
+
+  describe("RolesMysqlDAO - update", () => {
+    it("should successfully update an existing role");
+    it("should throw an error if role is not found");
+    it("should throw an error if database query fails");
+  });
+
+  describe("RolesMysqlDAO - delete", () => {
+    it("should return true when the role is successfully deleted");
+    it("should throw an error if role is not found");
+    it("should throw an error if database query fails");
+  });
+});
+```
+
 ### Usuarios
 
 #### 1. UsuariosController.ts
@@ -421,19 +632,6 @@ Maneja las peticiones HTTP y la lógica de control.
 ```ts
 class UsuariosController {
   constructor(private usuariosModel: UsuariosModel) {}
-
-  // Métodos principales:
-  getUsuarios: RequestHandler; // GET /usuarios
-  getUsuarioById: RequestHandler; // GET /usuarios/:id
-  signUp: RequestHandler; // POST /usuarios/signup
-  createUsuario: RequestHandler; // POST /usuarios
-  updateUsuario: RequestHandler; // PUT /usuarios/:id
-  deleteUsuario: RequestHandler; // DELETE /usuarios/:id
-  changePassword: RequestHandler; // PATCH /usuarios/change-password
-  resetEmail: RequestHandler; // PATCH /usuarios/reset-email
-  signIn: RequestHandler; // POST /usuarios/signin
-  signOut: RequestHandler; // POST /usuarios/signout
-  resetPassword: RequestHandler; // PATCH /usuarios/reset-password
 }
 ```
 
@@ -444,19 +642,6 @@ Implementa la lógica de negocio y maneja las operaciones con la base de datos.
 ```ts
 class UsuariosModel {
   constructor(private usuariosDAO: IUsuariosDAO) {}
-
-  // Métodos principales:
-  signUp(usuario: UsuarioCreate): Promise<AuthResponse>; // Crear un usuario
-  signIn(credentials: LoginCredentials): Promise<AuthResponse>; // Iniciar sesión
-  signOut(): Promise<void>; // Cerrar sesión
-  resetPassword(email: string): Promise<boolean>; // Restablecer la contraseña
-  getAll(filters?: UserFilters): Promise<PaginatedUsers>; // Obtener todos los usuarios con filtros y paginación
-  getById(id: string): Promise<User | null>; // Obtener usuario por ID
-  delete(id: string): Promise<boolean>; // Eliminar un usuario
-  create(usuario: UsuarioCreate): Promise<User | null>; // Crear un usuario
-  update(id: string, usuario: UsuarioUpdate): Promise<User | null>; // Actualizar un usuario
-  changePassword(newPassword: string): Promise<boolean>; // Cambiar la contraseña del usuario
-  resetEmail(email: string): Promise<boolean>; // Restablecer el correo del usuario
 }
 ```
 
@@ -465,443 +650,109 @@ class UsuariosModel {
 Implementa el acceso a datos, interactuando con la base de datos.
 
 ```ts
-interface IUsuariosDAO {
-  // Métodos de autenticación
-  signUp(userData: UsuarioCreate): Promise<AuthResponse>; // Crear un usuario
-  signIn(credentials: LoginCredentials): Promise<AuthResponse>; // Iniciar sesión
-  signOut(): Promise<void>; // Cerrar sesión
-  resetPassword(email: string): Promise<boolean>; // Restablecer la contraseña
-
-  // Métodos de gestión de usuarios
-  getAll(filters?: UserFilters): Promise<PaginatedUsers>; // Obtener todos los usuarios con filtros
-  getById(id: string): Promise<User | null>; // Obtener un usuario por su ID
-  create(userData: UsuarioCreate): Promise<User | null>; // Crear un usuario
-  update(id: string, usuario: UsuarioUpdate): Promise<User | null>; // Actualizar un usuario
-  delete(id: string): Promise<boolean>; // Eliminar un usuario
-
-  // Gestión de perfil
-  changePassword(newPassword: string): Promise<boolean>; // Cambiar la contraseña del usuario
-
-  // Nuevo método para resetear el email
-  resetEmail(email: string): Promise<boolean>; // Restablecer el correo del usuario
-}
+interface IUsuariosDAO {}
 ```
 
 #### 4. Interfaces y Tipos
 
 ```typescript
-interface user_metadata extends UserMetadata {
-  first_name?: string; // Nombre del usuario
-  last_name?: string; // Apellido del usuario
-  avatar_url?: string; // URL del avatar
+import { Rol } from "@/src/roles/interfacesRoles";
+
+export interface UsuarioBD {
+  idUsuario: string;
+  nombreUsuario: string;
+  email: string;
+  password: string; // Incluimos el campo password ya que estaba en el objeto
+  urlImagen: string | null; // Se permite null para la URL de la imagen
+  idRol: number; // Asumiendo que el idRol es un número
+  rol?: string;
 }
 
-// Interface para crear un nuevo usuario (sin ID ni marcas de tiempo)
-interface UsuarioCreate {
-  email: string; // Correo electrónico del usuario
-  password: string; // Contraseña del usuario
-  user_metadata: user_metadata; // Información adicional del usuario
-  role?: string; // Rol del usuario (opcional)
+export interface Usuario {
+  idUsuario: string;
+  nombreUsuario: string;
+  email: string;
+  urlImg: string | null;
+  rol: Rol;
 }
 
-// Interface para actualizar la información del usuario (todos los campos opcionales)
-interface UsuarioUpdate {
-  user_metadata: user_metadata; // Información adicional del usuario
-  app_metadata: UserAppMetadata; // Metadata de la aplicación
-  role?: string; // Rol del usuario (opcional)
-  email?: string; // Correo electrónico del usuario (opcional)
+export interface UsuarioCreate {
+  idUsuario: string;
+  nombreUsuario?: string;
+  email: string;
+  password: string;
+  urlImg?: string | null;
+  idRol?: number;
 }
 
-// Interface para la respuesta de autenticación
-interface AuthResponse {
-  message?: string; // Mensaje (opcional)
-  user: User | null; // Usuario autenticado
-  session: Session | any | null; // Sesión del usuario
-  error?: string; // Error (opcional)
+export interface UsuarioUpdate {
+  nombreUsuario: string;
+  email?: string;
+  password?: string;
+  urlImg?: string | null;
+  idRol?: number;
 }
 
-// Interface para las credenciales de inicio de sesión
-interface LoginCredentials {
-  email: string; // Correo electrónico del usuario
-  password: string; // Contraseña del usuario
-}
-
-// Interface para restablecimiento de contraseña
-interface PasswordReset {
-  email: string; // Correo electrónico del usuario
-}
-
-// Interface para el perfil de usuario
-interface UserProfile {
-  firstName?: string; // Nombre del usuario (opcional)
-  lastName?: string; // Apellido del usuario (opcional)
-  role?: string; // Rol del usuario (opcional)
-  email: string; // Correo electrónico del usuario
-}
-
-// Interface para filtros de búsqueda de usuarios
-interface UserFilters {
-  role?: string; // Rol del usuario (opcional)
-  searchTerm?: string; // Término de búsqueda (opcional)
-  sortBy?: "createdAt" | "email" | "role"; // Criterio de ordenamiento
-  sortOrder?: "asc" | "desc"; // Orden (ascendente o descendente)
-  page?: number; // Página de resultados
-  limit?: number; // Límite de resultados por página
-}
-
-// Interface para la respuesta de paginación de usuarios
-interface PaginatedUsers {
-  users: User[]; // Lista de usuarios
-  total: number; // Total de usuarios
-  page: number; // Página actual
-  limit: number; // Límite de usuarios por página
-  totalPages: number; // Total de páginas disponibles
+export interface UsuarioReturn {
+  idUsuario: string;
+  nombreUsuario?: string;
+  email: string;
+  urlImg?: string | null;
+  idRol: number;
 }
 ```
 
 #### 5. Pruebas Unitarias y de Integración
 
-##### - UsuariosSupabaseDAO.test.ts
+##### - UsuariosMysqlDAO.test.ts
 
 Pruebas unitarias para la conexión con Supabase:
 
 ```ts
-describe("UsuariosSupabaseDAO", () => {
-  let usuariosDAO: UsuariosSupabaseDAO;
+describe("UsuariosMysqlDAO", () => {
+  let usuariosDAO: UsuariosMysqlDAO;
 
   beforeEach(() => {
-    usuariosDAO = new UsuariosSupabaseDAO();
+    usuariosDAO = new UsuariosMysqlDAO();
+
     jest.clearAllMocks();
   });
 
-  describe("signUp", () => {
-    it("debe registrar un usuario exitosamente");
-    it("debe manejar errores en el registro");
-  });
-
-  describe("signIn", () => {
-    it("debe iniciar sesión exitosamente con credenciales correctas");
-    it("debe manejar errores en el inicio de sesión");
-  });
-
-  describe("signOut", () => {
-    it("debe cerrar sesión exitosamente");
-    it("debe manejar errores en el cierre de sesión");
-  });
-
-  describe("resetPassword", () => {
-    it("debe restablecer la contraseña correctamente");
-    it("debe manejar errores en el restablecimiento de contraseña");
+  afterAll(() => {
+    jest.restoreAllMocks();
   });
 
   describe("getAll", () => {
-    it("debe devolver una lista de usuarios paginada");
+    it("should return an array of users when query is successful");
+    it("should throw an error if query fails");
+    it("should throw an error if results are not an array");
+    it("should return an empty array if no users are found");
+    it("should handle filtering users by idRol");
   });
 
   describe("getById", () => {
-    it("debe devolver un usuario por ID");
-    it("debe manejar errores al obtener un usuario");
+    it("should return a user when a valid ID is provided");
+    it("should return null when no user is found");
+    it("should throw an error if database query fails");
   });
 
-  describe("delete", () => {
-    it("debe eliminar un usuario por ID");
+  describe("UsuariosMysqlDAO - create", () => {
+    it("should successfully create a new user");
+    it("should throw an error if database query fails");
   });
 
-  describe("create", () => {
-    it("debe crear un usuario exitosamente");
-    it("debe manejar errores al crear un usuario");
+  describe("UsuariosMysqlDAO - update", () => {
+    it("should successfully update an existing user");
+    it("should throw an error if user is not found");
+    it("should throw an error if database query fails");
   });
 
-  describe("update", () => {
-    it("debe actualizar los datos de un usuario");
-  });
-
-  describe("changePassword", () => {
-    it("debe cambiar la contraseña de un usuario exitosamente");
-    it("debe manejar errores al cambiar la contraseña");
-  });
-
-  describe("resetEmail", () => {
-    it("debe iniciar el proceso de restablecimiento de email");
-    it("debe manejar errores al restablecer el email");
+  describe("UsuariosMysqlDAO - delete", () => {
+    it("should return true when the user is successfully deleted");
+    it("should throw an error if user is not found");
+    it("should throw an error if database query fails");
   });
 });
-```
-
-##### - UsuariosModel.test.ts
-
-```ts
-jest.mock("@/config/supabase", () => ({
-  __esModule: true,
-  default: supabase,
-}));
-
-// Mock del DAO
-const usuariosDAOMock: IUsuariosDAO = {
-  signUp: jest.fn(),
-  signIn: jest.fn(),
-  signOut: jest.fn(),
-  resetPassword: jest.fn(),
-  getAll: jest.fn(),
-  getById: jest.fn(),
-  delete: jest.fn(),
-  create: jest.fn(),
-  update: jest.fn(),
-  changePassword: jest.fn(),
-  resetEmail: jest.fn(),
-};
-
-// Crear una instancia de UsuariosModel con el DAO simulado
-const usuariosModel = new UsuariosModel(usuariosDAOMock);
-
-describe("UsuariosModel", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  describe("signUp", () => {
-    it("debe llamar a signUp en el DAO con los argumentos correctos");
-    it("debe retornar una respuesta de error si signUp falla");
-  });
-
-  describe("signIn", () => {
-    it("debe llamar a signIn en el DAO con los argumentos correctos");
-    it("debe retornar una respuesta de error si signIn falla");
-  });
-
-  describe("signOut", () => {
-    it("should call signOut on the DAO");
-    it("should throw an error if signOut fails");
-  });
-
-  describe("resetPassword", () => {
-    it("should call resetPassword on the DAO with the correct email");
-    it("should return false if resetPassword fails");
-    it("should throw an error if resetPassword throws an exception");
-  });
-
-  describe("getAll", () => {
-    it(
-      "should call getAll on the DAO with the correct filters and return paginated users"
-    );
-    it("should call getAll on the DAO with no filters and return all users");
-    it("should handle errors when getAll fails");
-  });
-
-  describe("getById", () => {
-    it(
-      "should call getById on the DAO with the correct id and return the user"
-    );
-    it("should return null if the user is not found");
-    it("should handle errors when getById fails");
-  });
-
-  describe("delete", () => {
-    it(
-      "should call delete on the DAO with the correct id and return true on success"
-    );
-    it("should return false if delete fails");
-    it("should handle errors when delete fails");
-  });
-
-  describe("create", () => {
-    it(
-      "should call create on the DAO with the correct user and return the created user"
-    );
-    it("should return null if create fails");
-    it("should handle errors when create fails");
-  });
-
-  describe("update", () => {
-    it(
-      "should call update on the DAO with the correct id and updated user data"
-    );
-    it("should return null if update fails");
-    it("should handle errors when update fails");
-  });
-
-  describe("changePassword", () => {
-    it(
-      "should call changePassword on the DAO with the correct new password and return true on success"
-    );
-    it("should return false if changePassword fails");
-    it("should handle errors when changePassword fails");
-  });
-
-  describe("resetEmail", () => {
-    it(
-      "should call resetEmail on the DAO with the correct email and return true on success"
-    );
-    it("should return false if resetEmail fails");
-    it("should handle errors when resetEmail fails");
-  });
-});
-```
-
-#### - UsuariosController.test.ts
-
-```ts
-describe("UsuariosController", () => {
-  let usuariosController: UsuariosController;
-  let mockUsuariosModel: jest.Mocked<UsuariosModel>;
-  let mockRequest: Partial<Request>;
-  let mockResponse: Partial<Response>;
-  let mockNext: jest.Mock;
-
-  beforeEach(() => {
-    // Configuración de mocks para cada prueba
-  });
-
-  describe("UsuariosController - getUsuarios", () => {
-    it("should return a list of users with status 200");
-    it("should return 500 if an error occurs");
-  });
-
-  describe("UsuariosController - getUsuarioById", () => {
-    it("should return a user by ID with status 200");
-    it("should return 404 if the user is not found");
-    it("should return 500 if an error occurs");
-  });
-
-  describe("UsuariosController - signUp", () => {
-    it("should create a new user and return status 201");
-    it("should return 400 if email is missing");
-    it("should return 400 if password is missing");
-    it("should return 400 if user already exists");
-    it("should return 400 if validation fails");
-    it("should return 500 if an error occurs");
-  });
-
-  describe("UsuariosController - createUsuario", () => {
-    it("should create a new user and return status 201");
-    it("should return 400 if validation fails");
-    it("should return 500 if an error occurs");
-  });
-
-  describe("UsuariosController - updateUsuario", () => {
-    it("should update a user and return status 200 when validation succeeds");
-    it("should return 400 if validation fails");
-    it("should return 404 if the user is not found");
-    it("should return 500 if an error occurs");
-  });
-
-  describe("UsuariosController - deleteUsuario", () => {
-    it("should delete a user and return status 200");
-    it("should return 404 if the user is not found");
-    it("should return 500 if an error occurs");
-  });
-
-  describe("UsuariosController - changePassword", () => {
-    it("should change the password and return status 200");
-    it("should return 400 if the password is invalid");
-    it("should return 404 if the user is not found");
-    it("should return 500 if an error occurs");
-  });
-
-  describe("UsuariosController - resetEmail", () => {
-    it("should reset the email and return status 200");
-    it("should return 400 if the email reset fails");
-    it("should return 500 if an error occurs");
-    it("should return 400 if the email validation fails");
-  });
-
-  describe("UsuariosController - signIn", () => {
-    it("should sign in a user and return status 200");
-    it("should return 401 if credentials are invalid");
-    it("should return 500 if an error occurs");
-  });
-
-  describe("signOut", () => {
-    it("should return 200 if the session is successfully closed");
-    it("should return 500 if there is an error while signing out");
-  });
-
-  describe("resetPassword", () => {
-    it("should return 200 if password is successfully reset");
-    it("should return 400 if there is an error resetting the password");
-    it("should return 500 if there is an internal server error");
-    it("should return 400 if the email is invalid");
-  });
-});
-```
-
-##### - UsuariosRoutes.test.ts
-
-Pruebas de integración para las rutas:
-
-```ts
-describe("Usuarios Routes", () => {
-  let app: express.Application;
-  let mockUsuariosModel: jest.Mocked<UsuariosModel>;
-
-  beforeEach(() => {
-    // Configuración del servidor de pruebas
-  });
-
-  describe("GET /api/usuarios", () => {
-    it("debería devolver todos los usuarios");
-    it("debería manejar errores al obtener usuarios");
-  });
-
-  describe("GET /api/usuarios/:id", () => {
-    it("debería devolver un usuario por ID");
-    it("debería devolver 404 si el usuario no existe");
-    it("debería manejar errores al obtener un usuario por ID");
-  });
-
-  describe("POST /api/usuarios", () => {
-    it("debería crear un nuevo usuario correctamente");
-    it("debería manejar errores al crear un nuevo usuario");
-    it("debería validar datos de entrada");
-  });
-
-  describe("PUT /api/usuarios/:id", () => {
-    it("debería actualizar un usuario correctamente");
-    it("debería devolver 404 si el usuario no existe");
-    it("debería manejar errores al actualizar un usuario");
-  });
-
-  describe("DELETE /api/usuarios/:id", () => {
-    it("debería eliminar un usuario correctamente");
-    it("debería devolver 404 si el usuario no existe");
-    it("debería manejar errores al eliminar un usuario");
-  });
-
-  describe("PUT /api/usuarios/:id/password", () => {
-    it("debería cambiar la contraseña de un usuario correctamente");
-    it("debería devolver 404 si el usuario no existe");
-    it("debería manejar errores al cambiar la contraseña");
-    it("debería devolver 400 si la contraseña es inválida");
-  });
-
-  describe("POST /api/usuarios/sign-in", () => {
-    it("debería iniciar sesión correctamente");
-    it("debería devolver 401 si las credenciales son inválidas");
-    it("debería manejar errores internos durante el inicio de sesión");
-  });
-
-  describe("POST /api/usuarios/sign-up", () => {
-    it("should create a new user and return status 201");
-    it("should return 400 if email is missing");
-    it("should return 400 if password is missing");
-    it("should return 400 if user already exists");
-    it("should return 500 if an error occurs");
-  });
-
-  describe("POST /api/usuarios/sign-out", () => {
-    it("should return 200 if the user is signed out successfully");
-    it("should return 500 if there is an error during sign out");
-  });
-
-  describe("POST /api/usuarios/reset-password", () => {
-    it("should return 200 when the password is reset successfully");
-    it("should return 400 if email is invalid");
-    it("should return 500 if there is an internal error during reset password");
-  });
-
-});
-
-const createMockUser = (id: string): User
 ```
 
 ### Tipos
@@ -1039,114 +890,6 @@ describe("TiposSupabaseDAO", () => {
   describe("delete", () => {
     it("should delete an existing tipo");
     it("should return false if an error occurs");
-  });
-});
-```
-
-##### - TiposModel.test.ts
-
-```ts
-describe("TiposModel", () => {
-  let tiposModel: TiposModel;
-  beforeEach(() => {});
-
-  describe("getAll", () => {
-    it("debería obtener una lista de todos los tipos");
-    it("debería obtener solo los tipos de un usuario específico");
-    it("debería retornar una lista vacía si no hay tipos");
-    it("debería obtener tipos con detalles del usuario");
-    it("debería obtener tipos de un usuario específico con sus detalles");
-  });
-
-  describe("getById", () => {
-    it("debería obtener un tipo por su ID");
-    it("debería retornar null si el tipo no existe");
-    it("debería obtener un tipo por ID con detalles del usuario");
-  });
-
-  describe("create", () => {
-    it("debería crear un nuevo tipo");
-    it("debería retornar null si la creación falla");
-  });
-
-  describe("update", () => {
-    it("debería actualizar un tipo existente");
-    it("debería retornar null si la actualización falla");
-  });
-
-  describe("delete", () => {
-    it("should delete an existing tipo");
-    it("should return false if an error occurs");
-  });
-});
-```
-
-##### - TiposController.test.ts
-
-Pruebas unitarias para el controlador:
-
-```typescript
-describe("TiposController", () => {
-  // Configuración inicial
-  let tiposController: TiposController;
-  let mockTiposModel: jest.Mocked<TiposModel>;
-  let mockRequest: Partial<Request>;
-  let mockResponse: Partial<Response>;
-  let mockNext: jest.Mock;
-
-  beforeEach(() => {
-    // Configuración de mocks para cada prueba
-  });
-
-  describe("getTipos", () => {
-    it("debe devolver todos los tipos sin filtros cuando no hay parámetros");
-    it("debe filtrar por idUsuario cuando se proporciona");
-    it("debe incluir detalles de usuario cuando userDetails es true");
-    it(
-      "debe filtrar por idUsuario y incluir detalles cuando se proporcionan ambos"
-    );
-    it("debe devolver error 500 cuando falla la obtención de tipos");
-    it("debe manejar correctamente cuando getAll devuelve null");
-  });
-
-  describe("getTipoById", () => {
-    it("debe devolver un tipo cuando existe");
-    it(
-      "debe devolver un tipo con detalles de usuario cuando userDetails es true"
-    );
-    it("debe devolver 404 cuando el tipo no existe");
-    it("debe manejar errores al convertir idTipos a número");
-    it("debe devolver error 500 cuando hay una excepción");
-  });
-
-  describe("createTipo", () => {
-    it("debe crear un tipo correctamente");
-    it("debe devolver error 400 cuando los datos son inválidos");
-    it("debe devolver error 500 cuando newTipo es null");
-    it("debe devolver error 400 cuando el usuario ya existe");
-    it("debe devolver error 500 cuando hay una excepción");
-  });
-
-  describe("updateTipo", () => {
-    it("debería actualizar un tipo exitosamente");
-    it("debería actualizar un tipo con idUsuario opcional");
-    it(
-      "debería devolver un error 400 cuando la validación falla por tipo vacío"
-    );
-    it(
-      "debería devolver un error 400 cuando la validación falla por color inválido"
-    );
-    it("debería devolver un error 404 cuando el tipo no existe");
-    it("debería manejar errores internos del servidor");
-  });
-
-  describe("deleteTipo", () => {
-    it("debería eliminar un tipo existente y devolver un estado 200");
-    it("debería devolver un estado 404 si el tipo no existe");
-    it("debería devolver un estado 500 si ocurre un error interno");
-    it("debería devolver un estado 400 si el id no es un número válido");
-    it("debería devolver un estado 400 si el id está vacío");
-    it("debería manejar correctamente una solicitud sin parámetro de id");
   });
 });
 ```
