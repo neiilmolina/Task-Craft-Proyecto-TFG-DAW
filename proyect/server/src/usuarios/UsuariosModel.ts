@@ -2,7 +2,7 @@ import IUsuariosDAO from "@/src/usuarios/dao/IUsuariosDAO";
 import { UsuarioCreate, UsuarioUpdate } from "./interfacesUsuarios";
 
 export default class UsuariosModel {
-  private constructor(private usuariosDAO: IUsuariosDAO) {}
+  constructor(private usuariosDAO: IUsuariosDAO) {}
 
   // Obtener todos los roles
   async getAll(idRol?: number) {

@@ -915,9 +915,6 @@ describe("Tipos Routes", () => {
 
   describe("GET /tipos/:idTipo", () => {
     it("debe devolver un tipo cuando el idTipo existe");
-    it(
-      "debe devolver un tipo con detalles de usuario cuando userDetails es true"
-    );
     it("debe devolver un error 404 cuando el idTipo no existe");
     it("debe devolver un error 500 si ocurre un fallo en la base de datos");
     it("debe manejar correctamente un idTipo inválido (NaN)");

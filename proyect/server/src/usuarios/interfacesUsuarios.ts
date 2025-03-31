@@ -19,7 +19,6 @@ export interface Usuario {
 }
 
 export interface UsuarioCreate {
-  idUsuario: string;
   nombreUsuario?: string;
   email: string;
   password: string;
