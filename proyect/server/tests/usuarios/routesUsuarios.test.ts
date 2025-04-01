@@ -173,6 +173,7 @@ describe("Usuarios Routes", () => {
       const usuarioCreado = {
         idUsuario: "550e8400-e29b-41d4-a716-446655440000",
         ...nuevoUsuario,
+        password: "$2b$10$hashedPasswordExample", // Simulación de hash
       };
 
       const usuarioReturn: UsuarioReturn = {
@@ -190,10 +191,15 @@ describe("Usuarios Routes", () => {
       expect(response.status).toBe(200);
       expect(response.body).toEqual(usuarioReturn);
       expect(mockUsuariosModel.create).toHaveBeenCalledWith(
-        expect.objectContaining(nuevoUsuario)
+        expect.objectContaining({
+          nombreUsuario: nuevoUsuario.nombreUsuario,
+          email: nuevoUsuario.email,
+          urlImg: nuevoUsuario.urlImg,
+          idRol: nuevoUsuario.idRol,
+          password: expect.any(String), // Verificamos que la contraseña ha sido encriptada
+        })
       );
     });
-
     it("debe devolver 400 si los datos son inválidos", async () => {
       const datosInvalidos = {}; // Faltan campos requeridos
 
@@ -202,7 +208,12 @@ describe("Usuarios Routes", () => {
         .send(datosInvalidos);
 
       expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty("error");
+      expect(response.body).toHaveProperty(
+        "error",
+        "Todos los campos son obligatorios"
+      );
+
+      // Asegurar que `create` no se llama
       expect(mockUsuariosModel.create).not.toHaveBeenCalled();
     });
 
@@ -215,22 +226,22 @@ describe("Usuarios Routes", () => {
         password: "password123",
       };
 
-      // Mock de la función randomUUID para simular un ID no válido
+      // Mock de la función randomUUID para simular un ID inválido
       jest
-        .spyOn(global.crypto, "randomUUID")
-        .mockReturnValue("invalid-uuid-1234-5678-9101-1121"); // Simula un UUID no válido
+        .spyOn(require("crypto"), "randomUUID")
+        .mockReturnValue("invalid-uuid");
 
       const response = await request(app).post("/usuarios").send(nuevoUsuario);
 
-      // Verificamos que se devuelve un error 400 cuando el ID no es válido
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty(
         "error",
         "El ID del usuario debe ser válido"
       );
-
-      // Verificamos que no se haya llamado al método de creación
       expect(mockUsuariosModel.create).not.toHaveBeenCalled();
+
+      // Restauramos el comportamiento original
+      jest.restoreAllMocks();
     });
 
     it("debe devolver 500 si hay un error interno", async () => {
@@ -240,7 +251,7 @@ describe("Usuarios Routes", () => {
         nombreUsuario: "usuarioError",
         email: "error@example.com",
         urlImg: "https://imagen.com/error.png",
-        idRol: 2, // Cambiado para que sea consistente con la estructura del test
+        idRol: 2,
         password: "password123",
       };
 

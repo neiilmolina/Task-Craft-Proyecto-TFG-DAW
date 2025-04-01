@@ -10,7 +10,7 @@ import {
   UsuarioUpdate,
 } from "@/src/usuarios/interfacesUsuarios";
 import { randomUUID } from "crypto";
-
+import bcrypt from "bcryptjs";
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -65,27 +65,40 @@ export default class UsuariosController {
       return;
     }
   };
+
   createUsuario: RequestHandler = async (req, res) => {
     try {
-      const idUsuario = randomUUID(); // UUID generado de manera aleatoria
-      const validUUIDRegex =
-        /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/; // Regex para validar UUID
+      const { nombreUsuario, email, urlImg, idRol, password } = req.body;
 
-      // Validación del UUID
-      if (!validUUIDRegex.test(idUsuario)) {
+      // Validar campos obligatorios antes de continuar
+      if (!nombreUsuario || !email || !urlImg || !idRol || !password) {
+        res.status(400).json({ error: "Todos los campos son obligatorios" });
+        return;
+      }
+
+      const idUsuario = randomUUID(); // Generamos un UUID
+
+      const UUID_REGEX =
+        /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+      if (!UUID_REGEX.test(idUsuario)) {
         res.status(400).json({ error: "El ID del usuario debe ser válido" });
         return;
       }
 
-      const usuarioData: UsuarioCreate = { idUsuario: idUsuario, ...req.body };
-      const result = validateUsuarioCreate(usuarioData);
+      const hashedPassword = await bcrypt.hash(password, 10);
 
-      if (!result.success) {
-        res.status(400).json({ error: result.error });
-        return;
-      }
+      const usuarioConPasswordEncriptado = {
+        idUsuario,
+        nombreUsuario,
+        email,
+        urlImg,
+        idRol,
+        password: hashedPassword,
+      };
 
-      const newUsuario = await this.usuariosModel.create(usuarioData);
+      const newUsuario = await this.usuariosModel.create(
+        usuarioConPasswordEncriptado
+      );
 
       if (!newUsuario) {
         res.status(500).json({ error: "El usuario no se ha podido crear" });
@@ -93,11 +106,9 @@ export default class UsuariosController {
       }
 
       res.status(200).json(newUsuario);
-      return;
     } catch (error) {
       console.error("Error al crear el usuario:", error);
       res.status(500).json({ error: "Error interno del servidor" });
-      return;
     }
   };
 
