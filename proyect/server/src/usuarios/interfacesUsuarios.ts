@@ -28,6 +28,7 @@ export interface UsuarioCreate {
 }
 
 export interface UsuarioUpdate {
+  idUsuario: string;
   nombreUsuario: string;
   email?: string;
   password?: string;

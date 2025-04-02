@@ -6,6 +6,7 @@ import {
   Usuario,
   UsuarioCreate,
   UsuarioReturn,
+  UsuarioUpdate,
 } from "@/src/usuarios/interfacesUsuarios";
 
 const originalConsoleError = console.error;
@@ -235,5 +236,126 @@ describe("Usuarios Routes", () => {
     });
   });
 
-  describe("", () => {});
+  describe("PUT /usuarios/:idUsuario", () => {
+    const idUsuarioValido = "550e8400-e29b-41d4-a716-446655440000";
+
+    it("debe actualizar un usuario cuando los datos son válidos", async () => {
+      const datosActualizados: UsuarioUpdate = {
+        idUsuario: idUsuarioValido,
+        nombreUsuario: "usuarioActualizado",
+        email: "actualizado@example.com",
+        urlImg: "https://imagen.com/actualizado.png",
+        idRol: 2,
+      };
+
+      const usuarioActualizado: UsuarioReturn = {
+        idUsuario: idUsuarioValido,
+        nombreUsuario: datosActualizados.nombreUsuario,
+        email: datosActualizados.email || "default@example.com",
+        urlImg: datosActualizados.urlImg,
+        idRol: datosActualizados.idRol ?? 1,
+      };
+
+      mockUsuariosModel.update.mockResolvedValue(usuarioActualizado);
+
+      const response = await request(app)
+        .put(`/usuarios/${idUsuarioValido}`)
+        .send(datosActualizados);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(usuarioActualizado);
+      expect(mockUsuariosModel.update).toHaveBeenCalledWith(
+        idUsuarioValido,
+        datosActualizados
+      );
+    });
+
+    it("debe devolver 400 si la validación falla", async () => {
+      const datosInvalidos = { email: "correo-invalido" };
+
+      const response = await request(app)
+        .put(`/usuarios/${idUsuarioValido}`)
+        .send(datosInvalidos);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty("error");
+      expect(mockUsuariosModel.update).not.toHaveBeenCalled();
+    });
+
+    it("debe devolver 404 si el usuario no existe", async () => {
+      const response = await request(app)
+        .put(`/usuarios/550e8400-e29b-41d4-a716-446655440000`)
+        .send({ nombreUsuario: "NuevoNombre" }); // Aquí no se está enviando `idUsuario`, solo `nombreUsuario`
+
+      expect(response.status).toBe(404);
+      expect(response.body).toHaveProperty(
+        "error",
+        "El usuario no se ha encontrado"
+      );
+    });
+
+    it("debe devolver 500 si ocurre un error en el servidor", async () => {
+      mockUsuariosModel.update.mockRejectedValue(new Error("Error en la BD"));
+
+      const response = await request(app)
+        .put(`/usuarios/${idUsuarioValido}`)
+        .send({ nombreUsuario: "UsuarioError" });
+
+      expect(response.status).toBe(500);
+      expect(response.body).toHaveProperty(
+        "error",
+        "Error interno del servidor"
+      );
+    });
+  });
+
+  describe("DELETE /usuarios/:idUsuario", () => {
+    const idUsuario = "550e8400-e29b-41d4-a716-446655440000";
+    it("debería eliminar un usuario existente y devolver un estado 200", async () => {
+      // Simula una respuesta exitosa del modelo
+      mockUsuariosModel.delete = jest.fn().mockResolvedValue({ idUsuario });
+
+      const response = await request(app).delete(`/usuarios/${idUsuario}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual({ idUsuario });
+    });
+
+    it("debería devolver un estado 404 si el usuario no existe", async () => {
+      // Simula que no se encuentra el usuario
+      mockUsuariosModel.delete = jest.fn().mockResolvedValue(null);
+
+      const response = await request(app).delete(`/usuarios/${idUsuario}`);
+
+      expect(response.status).toBe(404);
+      expect(response.body).toHaveProperty("error", "Usuario no encontrado");
+    });
+
+    it("debería devolver un estado 500 si ocurre un error interno", async () => {
+      // Simula un error en la base de datos
+      mockUsuariosModel.delete = jest
+        .fn()
+        .mockRejectedValue(new Error("Error interno"));
+
+      const response = await request(app).delete(`/usuarios/${idUsuario}`);
+
+      expect(response.status).toBe(500);
+      expect(response.body).toHaveProperty(
+        "error",
+        "Error interno del servidor"
+      );
+    });
+
+    it("debería devolver un estado 400 si el id no es un UUID válido", async () => {
+      const idUsuario = "invalid-id";
+
+      const response = await request(app).delete(`/usuarios/${idUsuario}`);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty(
+        "error",
+        "El ID del usuario debe ser válido"
+      );
+    });
+  });
 });

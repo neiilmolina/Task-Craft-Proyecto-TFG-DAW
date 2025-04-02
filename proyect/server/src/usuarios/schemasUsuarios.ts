@@ -1,5 +1,8 @@
 import { z } from "zod";
-import { UsuarioCreate, UsuarioUpdate } from "@/src/usuarios/interfacesUsuarios";
+import {
+  UsuarioCreate,
+  UsuarioUpdate,
+} from "@/src/usuarios/interfacesUsuarios";
 
 export const usuarioCreateSchema = z.object({
   idUsuario: z
@@ -19,7 +22,10 @@ export const usuarioCreateSchema = z.object({
 });
 
 export const usuarioUpdateSchema = z.object({
-  nombre: z.string().trim().min(1, { message: "El nombre es requerido" }),
+  idUsuario: z
+    .string()
+    .uuid({ message: "El ID de usuario debe ser un UUID válido" }),
+  nombreUsuario: z.string().trim().min(1, { message: "El nombre es requerido" }),
   email: z.string().email({ message: "Email inválido" }).optional(),
   password: z
     .string()

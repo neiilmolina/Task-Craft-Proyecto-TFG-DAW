@@ -106,13 +106,15 @@ export default class UsuariosController {
 
   updateUsuario: RequestHandler = async (req, res) => {
     try {
-      const usuarioData: UsuarioUpdate = req.body;
+      const idUsuario = req.params.idUsuario;
+      const usuarioData: UsuarioUpdate = { ...req.body, idUsuario: idUsuario };
       const result = validateUsuarioUpdate(usuarioData);
+
       if (!result.success) {
         res.status(400).json({ error: result.error });
         return;
       }
-      const idUsuario = req.params.idUsuario;
+
       const usuarioUpdate = await this.usuariosModel.update(
         idUsuario,
         usuarioData
@@ -122,17 +124,30 @@ export default class UsuariosController {
         res.status(404).json({ error: "El usuario no se ha encontrado" });
         return;
       }
+
       res.status(200).json(usuarioUpdate);
-      return;
     } catch (error) {
       console.error("Error al actualizar el usuario:", error);
       res.status(500).json({ error: "Error interno del servidor" });
-      return;
     }
   };
+
   deleteUsuario: RequestHandler = async (req, res) => {
     try {
       const idUsuario = req.params.idUsuario;
+
+      // Verificar si el idUsuario está presente
+      if (!idUsuario) {
+        res.status(400).json({ error: "ID de usuario es requerido" });
+        return;
+      }
+
+      // Verificar si el idUsuario es un UUID válido
+      if (!UUID_REGEX.test(idUsuario)) {
+        res.status(400).json({ error: "El ID del usuario debe ser válido" });
+        return;
+      }
+
       const usuario = await this.usuariosModel.delete(idUsuario);
 
       if (!usuario) {
@@ -141,11 +156,9 @@ export default class UsuariosController {
       }
 
       res.status(200).json(usuario);
-      return;
     } catch (error) {
       console.error("Error al eliminar el usuario:", error);
       res.status(500).json({ error: "Error interno del servidor" });
-      return;
     }
   };
 }
