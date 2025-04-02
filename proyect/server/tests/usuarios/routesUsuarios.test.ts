@@ -160,9 +160,10 @@ describe("Usuarios Routes", () => {
     });
   });
 
-  describe.only("POST /usuarios", () => {
+  describe("POST /usuarios", () => {
     it("debe crear un usuario cuando los datos son válidos", async () => {
       const nuevoUsuario: UsuarioCreate = {
+        idUsuario: "550e8400-e29b-41d4-a716-446655440000",
         nombreUsuario: "nuevoUsuario",
         email: "nuevo@example.com",
         urlImg: "https://imagen.com/nuevo.png",
@@ -170,18 +171,12 @@ describe("Usuarios Routes", () => {
         password: "password123",
       };
 
-      const usuarioCreado = {
-        idUsuario: "550e8400-e29b-41d4-a716-446655440000",
-        ...nuevoUsuario,
-        password: "$2b$10$hashedPasswordExample", // Simulación de hash
-      };
-
       const usuarioReturn: UsuarioReturn = {
-        idUsuario: usuarioCreado.idUsuario,
-        nombreUsuario: usuarioCreado.nombreUsuario,
-        email: usuarioCreado.email,
-        urlImg: usuarioCreado.urlImg,
-        idRol: usuarioCreado.idRol || 1,
+        idUsuario: nuevoUsuario.idUsuario,
+        nombreUsuario: nuevoUsuario.nombreUsuario,
+        email: nuevoUsuario.email,
+        urlImg: nuevoUsuario.urlImg,
+        idRol: nuevoUsuario.idRol || 1,
       };
 
       mockUsuariosModel.create.mockResolvedValue(usuarioReturn);
@@ -200,6 +195,7 @@ describe("Usuarios Routes", () => {
         })
       );
     });
+
     it("debe devolver 400 si los datos son inválidos", async () => {
       const datosInvalidos = {}; // Faltan campos requeridos
 
@@ -217,37 +213,11 @@ describe("Usuarios Routes", () => {
       expect(mockUsuariosModel.create).not.toHaveBeenCalled();
     });
 
-    it("debe devolver 400 si el ID generado no es válido", async () => {
-      const nuevoUsuario = {
-        nombreUsuario: "usuarioErroneo",
-        email: "error@example.com",
-        urlImg: "https://imagen.com/error.png",
-        idRol: 1,
-        password: "password123",
-      };
-
-      // Mock de la función randomUUID para simular un ID inválido
-      jest
-        .spyOn(require("crypto"), "randomUUID")
-        .mockReturnValue("invalid-uuid");
-
-      const response = await request(app).post("/usuarios").send(nuevoUsuario);
-
-      expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty(
-        "error",
-        "El ID del usuario debe ser válido"
-      );
-      expect(mockUsuariosModel.create).not.toHaveBeenCalled();
-
-      // Restauramos el comportamiento original
-      jest.restoreAllMocks();
-    });
-
     it("debe devolver 500 si hay un error interno", async () => {
       mockUsuariosModel.create.mockRejectedValue(new Error("Error en la BD"));
 
       const usuarioValido: UsuarioCreate = {
+        idUsuario: "550e8400-e29b-41d4-a716-446655440000",
         nombreUsuario: "usuarioError",
         email: "error@example.com",
         urlImg: "https://imagen.com/error.png",
@@ -264,4 +234,6 @@ describe("Usuarios Routes", () => {
       );
     });
   });
+
+  describe("", () => {});
 });

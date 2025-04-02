@@ -11,8 +11,7 @@ import {
 } from "@/src/usuarios/interfacesUsuarios";
 import { randomUUID } from "crypto";
 import bcrypt from "bcryptjs";
-const UUID_REGEX =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+import { UUID_REGEX } from "@/src/core/constants";
 
 export default class UsuariosController {
   private usuariosModel: UsuariosModel;
@@ -68,31 +67,24 @@ export default class UsuariosController {
 
   createUsuario: RequestHandler = async (req, res) => {
     try {
-      const { nombreUsuario, email, urlImg, idRol, password } = req.body;
+      const usuarioData: UsuarioCreate = req.body;
+
+      const result = validateUsuarioCreate(usuarioData);
 
       // Validar campos obligatorios antes de continuar
-      if (!nombreUsuario || !email || !urlImg || !idRol || !password) {
+      if (!result.success) {
         res.status(400).json({ error: "Todos los campos son obligatorios" });
         return;
       }
 
-      const idUsuario = randomUUID(); // Generamos un UUID
-
-      const UUID_REGEX =
-        /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
-      if (!UUID_REGEX.test(idUsuario)) {
-        res.status(400).json({ error: "El ID del usuario debe ser válido" });
-        return;
-      }
+      const { password } = usuarioData;
+      const idUsuario = randomUUID(); // Generamos el UUID sin necesidad de validarlo con regex
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
       const usuarioConPasswordEncriptado = {
+        ...usuarioData,
         idUsuario,
-        nombreUsuario,
-        email,
-        urlImg,
-        idRol,
         password: hashedPassword,
       };
 
