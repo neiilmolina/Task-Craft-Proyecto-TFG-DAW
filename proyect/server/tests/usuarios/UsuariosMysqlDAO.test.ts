@@ -7,6 +7,7 @@ import {
   UsuarioCreate,
   UsuarioUpdate,
 } from "@/src/usuarios/interfacesUsuarios";
+import bcrypt from "bcryptjs";
 
 jest.mock("mysql2", () => ({
   createConnection: mysql.createConnection,
@@ -309,6 +310,148 @@ describe("UsuariosMysqlDAO", () => {
     });
   });
 
+  describe("getByCredentials", () => {
+    it("should return a user when valid credentials are provided", async () => {
+      // Datos de prueba
+      const mockNombreUsuario = "JohnDoe";
+      const mockPassword = "password123";
+      const hashedPassword = await bcrypt.hash(mockPassword, 10);
+  
+      const mockUsuario = {
+        idUsuario: "1",
+        nombreUsuario: mockNombreUsuario,
+        email: "john@example.com",
+        urlImg: null,
+        password: hashedPassword,
+        rol: {
+          idRol: 1,
+          rol: "admin",
+        },
+      };
+  
+      // Mock de la conexión
+      const mockConnection = mysql.createConnection();
+      const mockQuery = mockConnection.query as jest.Mock;
+  
+      // Simulación del resultado de la base de datos
+      mockQuery.mockImplementation((query, params, callback) => {
+        callback(null, [
+          {
+            idUsuario: mockUsuario.idUsuario,
+            nombreUsuario: mockUsuario.nombreUsuario,
+            email: mockUsuario.email,
+            urlImg: mockUsuario.urlImg,
+            password: mockUsuario.password,
+            idRol: mockUsuario.rol.idRol,
+            rol: mockUsuario.rol.rol,
+          },
+        ]);
+      });
+  
+      // Ejecutar método y verificar
+      const result = await usuariosDAO.getByCredentials(
+        mockNombreUsuario,
+        mockPassword
+      );
+  
+      expect(result).toEqual({
+        idUsuario: mockUsuario.idUsuario,
+        nombreUsuario: mockUsuario.nombreUsuario,
+        email: mockUsuario.email,
+        urlImg: mockUsuario.urlImg,
+        rol: mockUsuario.rol,
+      });
+    });
+  
+    it("should return null when the user is not found", async () => {
+      const mockNombreUsuario = "NonExistentUser";
+      const mockPassword = "password123";
+  
+      // Mock de la conexión
+      const mockConnection = mysql.createConnection();
+      const mockQuery = mockConnection.query as jest.Mock;
+  
+      // Simular un resultado vacío
+      mockQuery.mockImplementation((query, params, callback) => {
+        callback(null, []);
+      });
+  
+      // Ejecutar método y verificar
+      const result = await usuariosDAO.getByCredentials(
+        mockNombreUsuario,
+        mockPassword
+      );
+  
+      expect(result).toBeNull();
+    });
+  
+    it("should return null when the password is incorrect", async () => {
+      const mockNombreUsuario = "JohnDoe";
+      const mockPassword = "wrongPassword";
+      const hashedPassword = await bcrypt.hash("password123", 10); // Contraseña correcta
+  
+      const mockUsuario = {
+        idUsuario: "1",
+        nombreUsuario: mockNombreUsuario,
+        email: "john@example.com",
+        urlImg: null,
+        password: hashedPassword,
+        rol: {
+          idRol: 1,
+          rol: "admin",
+        },
+      };
+  
+      // Mock de la conexión
+      const mockConnection = mysql.createConnection();
+      const mockQuery = mockConnection.query as jest.Mock;
+  
+      // Simulación del resultado de la base de datos
+      mockQuery.mockImplementation((query, params, callback) => {
+        callback(null, [
+          {
+            idUsuario: mockUsuario.idUsuario,
+            nombreUsuario: mockUsuario.nombreUsuario,
+            email: mockUsuario.email,
+            urlImg: mockUsuario.urlImg,
+            password: mockUsuario.password,
+            idRol: mockUsuario.rol.idRol,
+            rol: mockUsuario.rol.rol,
+          },
+        ]);
+      });
+  
+      // Ejecutar método y verificar
+      const result = await usuariosDAO.getByCredentials(
+        mockNombreUsuario,
+        mockPassword
+      );
+  
+      expect(result).toBeNull();
+    });
+  
+    it("should throw an error if database query fails", async () => {
+      const mockNombreUsuario = "JohnDoe";
+      const mockPassword = "password123";
+      const mockError = new Error("Database connection error");
+  
+      // Mock de la conexión
+      const mockConnection = mysql.createConnection();
+      const mockQuery = mockConnection.query as jest.Mock;
+  
+      // Simular un error de base de datos
+      mockQuery.mockImplementation((query, params, callback) => {
+        callback(mockError, null);
+      });
+  
+      // Ejecutar método y verificar
+      await expect(
+        usuariosDAO.getByCredentials(mockNombreUsuario, mockPassword)
+      ).rejects.toThrow(mockError);
+    });
+  });
+  
+
   describe("UsuariosMysqlDAO - create", () => {
     it("should successfully create a new user", async () => {
       // Preparar datos de prueba
@@ -397,6 +540,7 @@ describe("UsuariosMysqlDAO", () => {
       // Preparar datos de prueba
       const userId = "1";
       const userToUpdate: UsuarioUpdate = {
+        idUsuario : userId,
         nombreUsuario: "usuario_actualizado",
         email: "usuario@actualizado.com",
         password: "nueva_contraseña",
@@ -449,6 +593,7 @@ describe("UsuariosMysqlDAO", () => {
       // Preparar datos de prueba
       const userId = "999"; // ID que no existe
       const userToUpdate: UsuarioUpdate = {
+        idUsuario : userId,
         nombreUsuario: "usuario_inexistente",
         email: "usuario@inexistente.com",
         password: "nueva_contraseña",
@@ -479,6 +624,7 @@ describe("UsuariosMysqlDAO", () => {
       // Preparar datos de prueba
       const userId = "1";
       const userToUpdate: UsuarioUpdate = {
+        idUsuario: userId,
         nombreUsuario: "usuario_actualizado",
         email: "usuario@actualizado.com",
         password: "nueva_contraseña",

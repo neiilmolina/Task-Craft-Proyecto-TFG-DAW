@@ -8,6 +8,8 @@ import {
   UsuarioReturn,
   UsuarioUpdate,
 } from "@/src/usuarios/interfacesUsuarios";
+import IUsuariosDAO from "@/src/usuarios/dao/IUsuariosDAO";
+import { get } from "http";
 
 const originalConsoleError = console.error;
 beforeAll(() => {
@@ -19,16 +21,17 @@ afterAll(() => {
 
 describe("Usuarios Routes", () => {
   let app: express.Application;
-  let mockUsuariosModel: jest.Mocked<UsuariosModel>;
+  let mockUsuariosModel: jest.Mocked<IUsuariosDAO>;
 
   beforeEach(() => {
     mockUsuariosModel = {
       getAll: jest.fn(),
+      getByCredentials: jest.fn(),
       getById: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
-    } as unknown as jest.Mocked<UsuariosModel>;
+    } as unknown as jest.Mocked<IUsuariosDAO>;
 
     app = express();
     app.use(express.json());
@@ -161,7 +164,7 @@ describe("Usuarios Routes", () => {
     });
   });
 
-  describe("POST /usuarios", () => {
+  describe("POST /usuarios/create", () => {
     it("debe crear un usuario cuando los datos son válidos", async () => {
       const nuevoUsuario: UsuarioCreate = {
         idUsuario: "550e8400-e29b-41d4-a716-446655440000",
@@ -182,7 +185,7 @@ describe("Usuarios Routes", () => {
 
       mockUsuariosModel.create.mockResolvedValue(usuarioReturn);
 
-      const response = await request(app).post("/usuarios").send(nuevoUsuario);
+      const response = await request(app).post("/usuarios/create").send(nuevoUsuario);
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual(usuarioReturn);
@@ -201,7 +204,7 @@ describe("Usuarios Routes", () => {
       const datosInvalidos = {}; // Faltan campos requeridos
 
       const response = await request(app)
-        .post("/usuarios")
+        .post("/usuarios/create")
         .send(datosInvalidos);
 
       expect(response.status).toBe(400);
@@ -226,7 +229,7 @@ describe("Usuarios Routes", () => {
         password: "password123",
       };
 
-      const response = await request(app).post("/usuarios").send(usuarioValido);
+      const response = await request(app).post("/usuarios/create").send(usuarioValido);
 
       expect(response.status).toBe(500);
       expect(response.body).toHaveProperty(

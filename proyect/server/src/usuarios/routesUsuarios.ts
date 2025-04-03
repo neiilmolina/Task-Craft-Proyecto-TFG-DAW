@@ -8,7 +8,8 @@ const createRouteUsuarios = (usuariosDAO: IUsuariosDAO) => {
 
   router.get("/", usuariosController.getUsuarios);
   router.get("/:idUsuario", usuariosController.getUsuarioById);
-  router.post("/", usuariosController.createUsuario);
+  router.post("/validateUser", usuariosController.getUsuarioByCredentials);
+  router.post("/create", usuariosController.createUsuario);
   router.put("/:idUsuario", usuariosController.updateUsuario);
   router.delete("/:idUsuario", usuariosController.deleteUsuario);
 

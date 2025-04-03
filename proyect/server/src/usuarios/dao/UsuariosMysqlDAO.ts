@@ -7,6 +7,7 @@ import {
 import IUsuariosDAO from "@/src/usuarios/dao/IUsuariosDAO";
 import connection from "@/config/mysql";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
+import bcrypt from "bcryptjs";
 
 const TABLE_NAME = "usuarios";
 const FIELDS = {
@@ -102,6 +103,50 @@ export default class UsuariosMysqlDAO implements IUsuariosDAO {
     });
   }
 
+  async getByCredentials(nombreUsuario: string, password: string): Promise<Usuario | null> {
+    return new Promise<Usuario | null>((resolve, reject) => {
+      const query = `SELECT u.${FIELDS.idUsuario}, u.${FIELDS.nombreUsuario}, u.${FIELDS.email}, u.${FIELDS.urlImg}, 
+                            u.password, r.idRol, r.rol 
+                     FROM ${TABLE_NAME} u 
+                     JOIN roles r ON u.${FIELDS.idRol} = r.idRol 
+                     WHERE u.${FIELDS.nombreUsuario} = ?`;
+  
+      connection.query(query, [nombreUsuario], async (err, results: RowDataPacket[]) => {
+        if (err) {
+          return reject(err);
+        }
+  
+        if (!Array.isArray(results)) {
+          return reject(new Error("Expected array of results but got something else."));
+        }
+  
+        if (results.length > 0) {
+          const row = results[0];
+  
+          // Comparar contraseña usando bcrypt
+          const passwordMatch = await bcrypt.compare(password, row.password);
+          if (!passwordMatch) {
+            return resolve(null); // Contraseña incorrecta
+          }
+  
+          const usuario: Usuario = {
+            idUsuario: row[FIELDS.idUsuario],
+            nombreUsuario: row[FIELDS.nombreUsuario],
+            email: row[FIELDS.email],
+            urlImg: row[FIELDS.urlImg] || null,
+            rol: {
+              idRol: row.idRol,
+              rol: row.rol,
+            },
+          };
+          resolve(usuario);
+        } else {
+          resolve(null); // Usuario no encontrado
+        }
+      });
+    });
+  }
+  
   async create(usuario: UsuarioCreate): Promise<UsuarioReturn | null> {
     return new Promise<UsuarioReturn>((resolve, reject) => {
       const query = `INSERT INTO ${TABLE_NAME} (${FIELDS.idUsuario}, ${FIELDS.nombreUsuario}, ${FIELDS.email}, ${FIELDS.password}, ${FIELDS.urlImg}, ${FIELDS.idRol}) VALUES (?, ?, ?, ?, ?, ?)`;

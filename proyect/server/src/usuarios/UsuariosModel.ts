@@ -9,6 +9,10 @@ export default class UsuariosModel {
     return this.usuariosDAO.getAll(idRol);
   }
 
+  async getByCredentials(nombreUsuario: string, password: string) {
+    return this.usuariosDAO.getByCredentials(nombreUsuario, password);
+  }
+
   // Obtener rol por ID
   async getById(id: string) {
     return this.usuariosDAO.getById(id);

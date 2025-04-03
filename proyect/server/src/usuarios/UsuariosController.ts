@@ -65,6 +65,36 @@ export default class UsuariosController {
     }
   };
 
+  getUsuarioByCredentials: RequestHandler = async (req, res) => {
+    try {
+      const { nombreUsuario, password } = req.body;
+
+      if (!nombreUsuario || !password) {
+        res
+          .status(400)
+          .json({
+            error: "El nombre de usuario y la contraseña son obligatorios",
+          });
+        return;
+      }
+
+      const usuario = await this.usuariosModel.getByCredentials(
+        nombreUsuario,
+        password
+      );
+
+      if (!usuario) {
+        res.status(401).json({ error: "Credenciales incorrectas" });
+        return;
+      }
+
+      res.status(200).json(usuario);
+    } catch (error) {
+      console.error("Error al autenticar el usuario:", error);
+      res.status(500).json({ error: "Error interno del servidor" });
+    }
+  };
+
   createUsuario: RequestHandler = async (req, res) => {
     try {
       const usuarioData: UsuarioCreate = req.body;
