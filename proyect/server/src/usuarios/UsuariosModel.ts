@@ -9,8 +9,8 @@ export default class UsuariosModel {
     return this.usuariosDAO.getAll(idRol);
   }
 
-  async getByCredentials(nombreUsuario: string, password: string) {
-    return this.usuariosDAO.getByCredentials(nombreUsuario, password);
+  async getByCredentials(email: string, password: string) {
+    return this.usuariosDAO.getByCredentials(email, password);
   }
 
   // Obtener rol por ID
@@ -19,8 +19,8 @@ export default class UsuariosModel {
   }
 
   // Crear un rol
-  async create(usuario: UsuarioCreate) {
-    return this.usuariosDAO.create(usuario);
+  async create(idUsuario: string, usuario: UsuarioCreate) {
+    return this.usuariosDAO.create(idUsuario ,usuario);
   }
 
   // Actualizar un rol

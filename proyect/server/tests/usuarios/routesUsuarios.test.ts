@@ -164,11 +164,11 @@ describe("Usuarios Routes", () => {
     });
   });
 
-  describe.only("POST /validateUser", () => {
+  describe("POST /validateUser", () => {
     it("debe devolver un usuario cuando las credenciales son correctas", async () => {
       // Mock de las credenciales correctas
       const mockCredentials = {
-        nombreUsuario: "john_doe",
+        email: "john@example.com",
         password: "correct_password",
       };
 
@@ -195,14 +195,14 @@ describe("Usuarios Routes", () => {
       expect(response.status).toBe(200);
       expect(response.body).toEqual(mockUsuario);
       expect(mockUsuariosModel.getByCredentials).toHaveBeenCalledWith(
-        mockCredentials.nombreUsuario,
+        mockCredentials.email,
         mockCredentials.password
       );
     });
 
     it("debe devolver un error 404 si el usuario no existe", async () => {
       const mockCredentials = {
-        nombreUsuario: "non_existent_user",
+        email: "nonexistent@example.com",
         password: "password123",
       };
 
@@ -214,16 +214,16 @@ describe("Usuarios Routes", () => {
         .send(mockCredentials);
 
       expect(response.status).toBe(404);
-      expect(response.body).toEqual({ error: "Usuarios no encontrado" });
+      expect(response.body).toEqual({ error: "Usuario no encontrado" });
       expect(mockUsuariosModel.getByCredentials).toHaveBeenCalledWith(
-        mockCredentials.nombreUsuario,
+        mockCredentials.email,
         mockCredentials.password
       );
     });
 
     it("debe devolver un error 500 si ocurre un fallo en el controlador", async () => {
       const mockCredentials = {
-        nombreUsuario: "john_doe",
+        email: "john@example.com",
         password: "any_password",
       };
 
@@ -239,7 +239,7 @@ describe("Usuarios Routes", () => {
       expect(response.status).toBe(500);
       expect(response.body).toEqual({ error: "Error interno del servidor" });
       expect(mockUsuariosModel.getByCredentials).toHaveBeenCalledWith(
-        mockCredentials.nombreUsuario,
+        mockCredentials.email,
         mockCredentials.password
       );
     });
@@ -248,11 +248,11 @@ describe("Usuarios Routes", () => {
       // Datos de entrada no válidos
       const response = await request(app)
         .post("/usuarios/validateUser")
-        .send({ nombreUsuario: "", password: "" });
+        .send({ email: "", password: "" });
 
       expect(response.status).toBe(400);
       expect(response.body).toEqual({
-        error: "El nombre de usuario y la contraseña son obligatorios",
+        error: "El email y la contraseña son obligatorios",
       });
     });
   });
@@ -260,7 +260,6 @@ describe("Usuarios Routes", () => {
   describe("POST /usuarios/create", () => {
     it("debe crear un usuario cuando los datos son válidos", async () => {
       const nuevoUsuario: UsuarioCreate = {
-        idUsuario: "550e8400-e29b-41d4-a716-446655440000",
         nombreUsuario: "nuevoUsuario",
         email: "nuevo@example.com",
         urlImg: "https://imagen.com/nuevo.png",
@@ -269,7 +268,7 @@ describe("Usuarios Routes", () => {
       };
 
       const usuarioReturn: UsuarioReturn = {
-        idUsuario: nuevoUsuario.idUsuario,
+        idUsuario: "550e8400-e29b-41d4-a716-446655440000",
         nombreUsuario: nuevoUsuario.nombreUsuario,
         email: nuevoUsuario.email,
         urlImg: nuevoUsuario.urlImg,
@@ -285,12 +284,13 @@ describe("Usuarios Routes", () => {
       expect(response.status).toBe(200);
       expect(response.body).toEqual(usuarioReturn);
       expect(mockUsuariosModel.create).toHaveBeenCalledWith(
+        expect.any(String), // El idUsuario se genera dinámicamente
         expect.objectContaining({
           nombreUsuario: nuevoUsuario.nombreUsuario,
           email: nuevoUsuario.email,
           urlImg: nuevoUsuario.urlImg,
           idRol: nuevoUsuario.idRol,
-          password: expect.any(String), // Verificamos que la contraseña ha sido encriptada
+          password: expect.any(String), // La contraseña es encriptada
         })
       );
     });
@@ -316,7 +316,6 @@ describe("Usuarios Routes", () => {
       mockUsuariosModel.create.mockRejectedValue(new Error("Error en la BD"));
 
       const usuarioValido: UsuarioCreate = {
-        idUsuario: "550e8400-e29b-41d4-a716-446655440000",
         nombreUsuario: "usuarioError",
         email: "error@example.com",
         urlImg: "https://imagen.com/error.png",
@@ -336,12 +335,11 @@ describe("Usuarios Routes", () => {
     });
   });
 
-  describe("PUT /usuarios/:idUsuario", () => {
+  describe.only("PUT /usuarios/:idUsuario", () => {
     const idUsuarioValido = "550e8400-e29b-41d4-a716-446655440000";
 
     it("debe actualizar un usuario cuando los datos son válidos", async () => {
       const datosActualizados: UsuarioUpdate = {
-        idUsuario: idUsuarioValido,
         nombreUsuario: "usuarioActualizado",
         email: "actualizado@example.com",
         urlImg: "https://imagen.com/actualizado.png",
@@ -405,6 +403,18 @@ describe("Usuarios Routes", () => {
       expect(response.body).toHaveProperty(
         "error",
         "Error interno del servidor"
+      );
+    });
+
+    it("debería devolver un estado 400 si el id no es un UUID válido", async () => {
+      const idUsuario = "invalid-id";
+
+      const response = await request(app).put(`/usuarios/${idUsuario}`);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toHaveProperty(
+        "error",
+        "El ID del usuario debe ser válido"
       );
     });
   });

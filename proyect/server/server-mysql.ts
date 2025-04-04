@@ -15,4 +15,4 @@ const tiposMysqlDAO = new TiposSupabaseDAO();
 const rolesMysqlDAO = new RolesMysqlDAO();
 
 // Pass the model instance to createApp
-createApp(estadosMysqlDAO , tiposMysqlDAO, rolesMysqlDAO, usuariosMysqlDAO);
+createApp(estadosMysqlDAO, tiposMysqlDAO, rolesMysqlDAO, usuariosMysqlDAO);

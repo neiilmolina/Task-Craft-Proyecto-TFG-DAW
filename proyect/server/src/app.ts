@@ -1,16 +1,13 @@
 import "dotenv/config";
 import createEstadosRoute from "@/src/estados/routesEstados";
 import createTiposRoute from "@/src/tipos/routesTipos";
-// import createUsuariosRoute from "@/src/usuarios/routesUsuarios";
 import createRolesRoute from "@/src/roles/routesRoles";
 import express, { json } from "express";
 import dotenv from "dotenv";
 import { corsMiddleware, errorHandler } from "@/config/middleware";
 import IRolesDAO from "@/src/roles/dao/IRolesDAO";
 import IEstadosDAO from "@/src/estados/dao/IEstadosDAO";
-// import IUsuariosDAO from "@/src/usuarios/dao/IUsuariosDAO";
 import ITiposDAO from "@/src/tipos/dao/ITiposDAO";
-import createRouteUsuarios from "@/src/usuarios/routesUsuarios";
 import createUsuariosRoute from "@/src/usuarios/routesUsuarios";
 import IUsuariosDAO from "@/src/usuarios/dao/IUsuariosDAO";
 

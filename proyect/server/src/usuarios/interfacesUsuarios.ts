@@ -19,7 +19,6 @@ export interface Usuario {
 }
 
 export interface UsuarioCreate {
-  idUsuario: string;
   nombreUsuario?: string;
   email: string;
   password: string;
@@ -28,10 +27,8 @@ export interface UsuarioCreate {
 }
 
 export interface UsuarioUpdate {
-  idUsuario: string;
   nombreUsuario: string;
   email?: string;
-  password?: string;
   urlImg?: string | null;
   idRol?: number;
 }

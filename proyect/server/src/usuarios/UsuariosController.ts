@@ -67,24 +67,22 @@ export default class UsuariosController {
 
   getUsuarioByCredentials: RequestHandler = async (req, res) => {
     try {
-      const { nombreUsuario, password } = req.body;
+      const { email, password } = req.body;
 
-      if (!nombreUsuario || !password) {
-        res
-          .status(400)
-          .json({
-            error: "El nombre de usuario y la contraseña son obligatorios",
-          });
+      if (!email || !password) {
+        res.status(400).json({
+          error: "El email y la contraseña son obligatorios",
+        });
         return;
       }
 
       const usuario = await this.usuariosModel.getByCredentials(
-        nombreUsuario,
+        email,
         password
       );
 
       if (!usuario) {
-        res.status(404).json({ error: "Usuarios no encontrado" });
+        res.status(404).json({ error: "Usuario no encontrado" });
         return;
       }
 
@@ -119,6 +117,7 @@ export default class UsuariosController {
       };
 
       const newUsuario = await this.usuariosModel.create(
+        idUsuario,
         usuarioConPasswordEncriptado
       );
 
@@ -137,8 +136,13 @@ export default class UsuariosController {
   updateUsuario: RequestHandler = async (req, res) => {
     try {
       const idUsuario = req.params.idUsuario;
-      const usuarioData: UsuarioUpdate = { ...req.body, idUsuario: idUsuario };
+      const usuarioData: UsuarioUpdate = req.body;
       const result = validateUsuarioUpdate(usuarioData);
+
+      if (!UUID_REGEX.test(idUsuario)) {
+        res.status(400).json({ error: "El ID del usuario debe ser válido" });
+        return;
+      }
 
       if (!result.success) {
         res.status(400).json({ error: result.error });

@@ -5,9 +5,9 @@ import {
 } from "@/src/usuarios/interfacesUsuarios";
 
 export const usuarioCreateSchema = z.object({
-  idUsuario: z
-    .string()
-    .uuid({ message: "El ID de usuario debe ser un UUID válido" }),
+  // idUsuario: z
+  //   .string()
+  //   .uuid({ message: "El ID de usuario debe ser un UUID válido" }),
   nombre: z
     .string()
     .trim()
@@ -22,9 +22,6 @@ export const usuarioCreateSchema = z.object({
 });
 
 export const usuarioUpdateSchema = z.object({
-  idUsuario: z
-    .string()
-    .uuid({ message: "El ID de usuario debe ser un UUID válido" }),
   nombreUsuario: z.string().trim().min(1, { message: "El nombre es requerido" }),
   email: z.string().email({ message: "Email inválido" }).optional(),
   password: z

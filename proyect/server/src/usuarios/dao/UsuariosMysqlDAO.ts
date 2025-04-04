@@ -103,58 +103,71 @@ export default class UsuariosMysqlDAO implements IUsuariosDAO {
     });
   }
 
-  async getByCredentials(email: string, password: string): Promise<Usuario | null> {
+  async getByCredentials(
+    email: string,
+    password: string
+  ): Promise<Usuario | null> {
     return new Promise<Usuario | null>((resolve, reject) => {
       const query = `SELECT u.${FIELDS.idUsuario}, u.${FIELDS.nombreUsuario}, u.${FIELDS.email}, u.${FIELDS.urlImg}, 
                             u.password, r.idRol, r.rol 
                      FROM ${TABLE_NAME} u 
                      JOIN roles r ON u.${FIELDS.idRol} = r.idRol 
                      WHERE u.${FIELDS.email} = ?`;
-  
-      connection.query(query, [email], async (err, results: RowDataPacket[]) => {
-        if (err) {
-          return reject(err);
-        }
-  
-        if (!Array.isArray(results)) {
-          return reject(new Error("Expected array of results but got something else."));
-        }
-  
-        if (results.length > 0) {
-          const row = results[0];
-  
-          // Comparar contraseña usando bcrypt
-          const passwordMatch = await bcrypt.compare(password, row.password);
-          if (!passwordMatch) {
-            return resolve(null); // Contraseña incorrecta
+
+      connection.query(
+        query,
+        [email],
+        async (err, results: RowDataPacket[]) => {
+          if (err) {
+            return reject(err);
           }
-  
-          const usuario: Usuario = {
-            idUsuario: row[FIELDS.idUsuario],
-            nombreUsuario: row[FIELDS.nombreUsuario],
-            email: row[FIELDS.email],
-            urlImg: row[FIELDS.urlImg] || null,
-            rol: {
-              idRol: row.idRol,
-              rol: row.rol,
-            },
-          };
-          resolve(usuario);
-        } else {
-          resolve(null); // Usuario no encontrado
+
+          if (!Array.isArray(results)) {
+            return reject(
+              new Error("Expected array of results but got something else.")
+            );
+          }
+
+          if (results.length > 0) {
+            const row = results[0];
+
+            // Comparar contraseña usando bcrypt
+            const passwordMatch = await bcrypt.compare(password, row.password);
+
+            if (!passwordMatch) {
+              return resolve(null); // Contraseña incorrecta
+            }
+
+            const usuario: Usuario = {
+              idUsuario: row[FIELDS.idUsuario],
+              nombreUsuario: row[FIELDS.nombreUsuario],
+              email: row[FIELDS.email],
+              urlImg: row[FIELDS.urlImg] || null,
+              rol: {
+                idRol: row.idRol,
+                rol: row.rol,
+              },
+            };
+            resolve(usuario);
+          } else {
+            resolve(null); // Usuario no encontrado
+          }
         }
-      });
+      );
     });
   }
-  
-  async create(usuario: UsuarioCreate): Promise<UsuarioReturn | null> {
+
+  async create(
+    idUsuario: string,
+    usuario: UsuarioCreate
+  ): Promise<UsuarioReturn | null> {
     return new Promise<UsuarioReturn>((resolve, reject) => {
       const query = `INSERT INTO ${TABLE_NAME} (${FIELDS.idUsuario}, ${FIELDS.nombreUsuario}, ${FIELDS.email}, ${FIELDS.password}, ${FIELDS.urlImg}, ${FIELDS.idRol}) VALUES (?, ?, ?, ?, ?, ?)`;
 
       connection.query(
         query,
         [
-          usuario.idUsuario,
+          idUsuario,
           usuario.nombreUsuario || "", // Si `nombreUsuario` es `undefined`, lo asignamos como una cadena vacía
           usuario.email,
           usuario.password,
@@ -170,7 +183,7 @@ export default class UsuariosMysqlDAO implements IUsuariosDAO {
             email: usuario.email,
             urlImg: usuario.urlImg ?? "",
             idRol: usuario.idRol || 1,
-            idUsuario: usuario.idUsuario,
+            idUsuario: idUsuario,
           });
         }
       );
@@ -185,7 +198,6 @@ export default class UsuariosMysqlDAO implements IUsuariosDAO {
       const query = `UPDATE ${TABLE_NAME} SET
                       ${FIELDS.nombreUsuario} = ?, 
                       ${FIELDS.email} = ?, 
-                      ${FIELDS.password} = ?, 
                       ${FIELDS.urlImg} = ?, 
                       ${FIELDS.idRol} = ? 
                       WHERE ${FIELDS.idUsuario} = ?`;
@@ -195,7 +207,6 @@ export default class UsuariosMysqlDAO implements IUsuariosDAO {
         [
           usuario.nombreUsuario,
           usuario.email,
-          usuario.password,
           usuario.urlImg,
           usuario.idRol,
           id,
