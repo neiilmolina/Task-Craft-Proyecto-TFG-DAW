@@ -164,6 +164,99 @@ describe("Usuarios Routes", () => {
     });
   });
 
+  describe.only("POST /validateUser", () => {
+    it("debe devolver un usuario cuando las credenciales son correctas", async () => {
+      // Mock de las credenciales correctas
+      const mockCredentials = {
+        nombreUsuario: "john_doe",
+        password: "correct_password",
+      };
+
+      const mockUsuario = {
+        idUsuario: "1",
+        nombreUsuario: "john_doe",
+        email: "john@example.com",
+        urlImg: null,
+        rol: {
+          idRol: 1,
+          rol: "admin",
+        },
+      };
+
+      // Simula la respuesta del controlador `getByCredentials`
+      mockUsuariosModel.getByCredentials.mockResolvedValue(mockUsuario);
+
+      // Realiza la petición al endpoint
+      const response = await request(app)
+        .post("/usuarios/validateUser")
+        .send(mockCredentials);
+
+      // Verificaciones
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(mockUsuario);
+      expect(mockUsuariosModel.getByCredentials).toHaveBeenCalledWith(
+        mockCredentials.nombreUsuario,
+        mockCredentials.password
+      );
+    });
+
+    it("debe devolver un error 404 si el usuario no existe", async () => {
+      const mockCredentials = {
+        nombreUsuario: "non_existent_user",
+        password: "password123",
+      };
+
+      // Simula la respuesta del controlador `getByCredentials`
+      mockUsuariosModel.getByCredentials.mockResolvedValue(null);
+
+      const response = await request(app)
+        .post("/usuarios/validateUser")
+        .send(mockCredentials);
+
+      expect(response.status).toBe(404);
+      expect(response.body).toEqual({ error: "Usuarios no encontrado" });
+      expect(mockUsuariosModel.getByCredentials).toHaveBeenCalledWith(
+        mockCredentials.nombreUsuario,
+        mockCredentials.password
+      );
+    });
+
+    it("debe devolver un error 500 si ocurre un fallo en el controlador", async () => {
+      const mockCredentials = {
+        nombreUsuario: "john_doe",
+        password: "any_password",
+      };
+
+      // Simula un error en el controlador
+      mockUsuariosModel.getByCredentials.mockRejectedValue(
+        new Error("Error interno")
+      );
+
+      const response = await request(app)
+        .post("/usuarios/validateUser")
+        .send(mockCredentials);
+
+      expect(response.status).toBe(500);
+      expect(response.body).toEqual({ error: "Error interno del servidor" });
+      expect(mockUsuariosModel.getByCredentials).toHaveBeenCalledWith(
+        mockCredentials.nombreUsuario,
+        mockCredentials.password
+      );
+    });
+
+    it("debe devolver un error 400 si los datos de entrada no son válidos", async () => {
+      // Datos de entrada no válidos
+      const response = await request(app)
+        .post("/usuarios/validateUser")
+        .send({ nombreUsuario: "", password: "" });
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({
+        error: "El nombre de usuario y la contraseña son obligatorios",
+      });
+    });
+  });
+
   describe("POST /usuarios/create", () => {
     it("debe crear un usuario cuando los datos son válidos", async () => {
       const nuevoUsuario: UsuarioCreate = {
@@ -185,7 +278,9 @@ describe("Usuarios Routes", () => {
 
       mockUsuariosModel.create.mockResolvedValue(usuarioReturn);
 
-      const response = await request(app).post("/usuarios/create").send(nuevoUsuario);
+      const response = await request(app)
+        .post("/usuarios/create")
+        .send(nuevoUsuario);
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual(usuarioReturn);
@@ -229,7 +324,9 @@ describe("Usuarios Routes", () => {
         password: "password123",
       };
 
-      const response = await request(app).post("/usuarios/create").send(usuarioValido);
+      const response = await request(app)
+        .post("/usuarios/create")
+        .send(usuarioValido);
 
       expect(response.status).toBe(500);
       expect(response.body).toHaveProperty(

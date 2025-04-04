@@ -84,7 +84,7 @@ export default class UsuariosController {
       );
 
       if (!usuario) {
-        res.status(401).json({ error: "Credenciales incorrectas" });
+        res.status(404).json({ error: "Usuarios no encontrado" });
         return;
       }
 

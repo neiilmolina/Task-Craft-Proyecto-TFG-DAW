@@ -2,7 +2,7 @@ import IUsuariosDAO from "@/src/usuarios/dao/IUsuariosDAO";
 import UsuariosController from "@/src/usuarios/UsuariosController";
 import { Router } from "express";
 
-const createRouteUsuarios = (usuariosDAO: IUsuariosDAO) => {
+const createUsuariosRoute = (usuariosDAO: IUsuariosDAO) => {
   const router = Router();
   const usuariosController = new UsuariosController(usuariosDAO);
 
@@ -16,4 +16,4 @@ const createRouteUsuarios = (usuariosDAO: IUsuariosDAO) => {
   return router;
 };
 
-export default createRouteUsuarios;
+export default createUsuariosRoute;

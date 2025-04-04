@@ -103,15 +103,15 @@ export default class UsuariosMysqlDAO implements IUsuariosDAO {
     });
   }
 
-  async getByCredentials(nombreUsuario: string, password: string): Promise<Usuario | null> {
+  async getByCredentials(email: string, password: string): Promise<Usuario | null> {
     return new Promise<Usuario | null>((resolve, reject) => {
       const query = `SELECT u.${FIELDS.idUsuario}, u.${FIELDS.nombreUsuario}, u.${FIELDS.email}, u.${FIELDS.urlImg}, 
                             u.password, r.idRol, r.rol 
                      FROM ${TABLE_NAME} u 
                      JOIN roles r ON u.${FIELDS.idRol} = r.idRol 
-                     WHERE u.${FIELDS.nombreUsuario} = ?`;
+                     WHERE u.${FIELDS.email} = ?`;
   
-      connection.query(query, [nombreUsuario], async (err, results: RowDataPacket[]) => {
+      connection.query(query, [email], async (err, results: RowDataPacket[]) => {
         if (err) {
           return reject(err);
         }
