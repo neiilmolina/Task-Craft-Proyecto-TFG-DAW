@@ -2,13 +2,8 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import request from "supertest";
 import IUsuariosDAO from "@/src/usuarios/dao/IUsuariosDAO";
-import {
-  Usuario,
-  UsuarioCreate,
-  UsuarioReturn,
-  UsuarioUpdate,
-} from "@/src/usuarios/interfacesUsuarios";
 import createAuthRoute from "@/src/auth/routesAuth";
+const KEY_ACCESS_COOKIE = "access_token";
 
 const originalConsoleError = console.error;
 beforeAll(() => {
@@ -27,7 +22,6 @@ describe("Auth Routes", () => {
   let app: express.Application;
   let mockUsuariosModel: jest.Mocked<IUsuariosDAO>;
   let secretKey: string;
-
   beforeEach(() => {
     mockUsuariosModel = {
       getAll: jest.fn(),
@@ -47,8 +41,7 @@ describe("Auth Routes", () => {
   });
 
   describe("POST /login", () => {
-    it.only("debe devolver un token cuando las credenciales son correctas", async () => {
-      // Mock de las credenciales correctas
+    it("debe devolver un mensaje de éxito y guardar el token en una cookie cuando las credenciales son correctas", async () => {
       const mockCredentials = {
         email: "john@example.com",
         password: "correct_password",
@@ -65,33 +58,36 @@ describe("Auth Routes", () => {
         },
       };
 
-      // Simula la respuesta del controlador `getByCredentials`
-      mockUsuariosModel.getByCredentials.mockResolvedValue(mockUsuario);
-
-      // Simula la función `jwt.sign`
       const mockToken = "mockToken123";
+      mockUsuariosModel.getByCredentials.mockResolvedValue(mockUsuario);
       jwt.sign = jest.fn().mockReturnValue(mockToken);
 
-      // Realiza la petición al endpoint
       const response = await request(app)
         .post("/auth/login")
         .send(mockCredentials);
 
-      // Verificaciones
       expect(response.status).toBe(200);
       expect(response.body.message).toBe("Login exitoso");
-      expect(response.body.token).toBe(mockToken);
+
+      // Verifica que la cookie esté presente y tenga el nombre correcto
+      const cookies = response.header["set-cookie"];
+      const cookieArray = Array.isArray(cookies) ? cookies : [cookies];
+
+      const cookieExiste = cookieArray.some((cookie) =>
+        cookie.startsWith(`${KEY_ACCESS_COOKIE}=`)
+      );
+
+      expect(cookieExiste).toBe(true);
+
       expect(mockUsuariosModel.getByCredentials).toHaveBeenCalledWith(
         mockCredentials.email,
         mockCredentials.password
       );
-      expect(jwt.sign).toHaveBeenCalledWith(
-        { idUsuario: mockUsuario.idUsuario, email: mockUsuario.email },
-        secretKey,
-        { expiresIn: "1h" }
-      );
-    });
 
+      expect(jwt.sign).toHaveBeenCalledWith(mockUsuario, secretKey, {
+        expiresIn: "1h",
+      });
+    });
     it("debe devolver un error 404 si el usuario no existe o las credenciales son incorrectas", async () => {
       const mockCredentials = {
         email: "nonexistent@example.com",
@@ -148,6 +144,23 @@ describe("Auth Routes", () => {
       expect(response.body).toEqual({
         error: "El email y la contraseña son obligatorios",
       });
+    });
+  });
+
+  describe("POST /logout", () => {
+    it("debe borrar la cookie y devolver un mensaje de éxito", async () => {
+      // Simula una cookie de token en la solicitud
+      const response = await request(app)
+        .post("/auth/logout")
+        .set("Cookie", "token=dummy_token");
+
+      expect(response.status).toBe(200);
+      expect(response.body.message).toBe("Logout exitoso");
+
+      // Verifica que la cookie 'token' haya sido eliminada
+      expect(response.headers["set-cookie"][0]).toContain(
+        "token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT"
+      );
     });
   });
 });

@@ -11,6 +11,7 @@ import ITiposDAO from "@/src/tipos/dao/ITiposDAO";
 import createUsuariosRoute from "@/src/usuarios/routesUsuarios";
 import IUsuariosDAO from "@/src/usuarios/dao/IUsuariosDAO";
 import createAuthRoute from "./auth/routesAuth";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -24,6 +25,7 @@ const createApp = (
   const app = express();
   const port = process.env.PORT || 3000;
   app.use(json());
+  app.use(cookieParser());
   app.disable("x-powered-by");
 
   // Usar el middleware de CORS
@@ -39,7 +41,7 @@ const createApp = (
   app.use("/tipos", createTiposRoute(tiposDAO));
   app.use("/roles", createRolesRoute(rolesDAO));
   app.use("/usuarios", createUsuariosRoute(usuariosDAO));
-  // app.use("/auth", createAuthRoute(usuariosDAO));
+  app.use("/auth", createAuthRoute(usuariosDAO));
 
   // Usar el middleware de manejo de errores al final de todas las rutas
   app.use(errorHandler);
