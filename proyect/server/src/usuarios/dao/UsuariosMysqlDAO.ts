@@ -238,8 +238,8 @@ export default class UsuariosMysqlDAO implements IUsuariosDAO {
   updatePassword(id: string, password: string): Promise<Boolean> {
     return new Promise<Boolean>((resolve, reject) => {
       const query = `UPDATE ${TABLE_NAME} SET
-                      ${FIELDS.password} = ?, 
-                      WHERE ${FIELDS.idUsuario} = ?`;
+      ${FIELDS.password} = ?
+      WHERE ${FIELDS.idUsuario} = ?`;
 
       connection.query(query, [password, id], (err, results) => {
         if (err) {
