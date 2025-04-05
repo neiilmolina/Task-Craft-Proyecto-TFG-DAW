@@ -1,5 +1,4 @@
 import createRouteUsuarios from "@/src/usuarios/routesUsuarios";
-import UsuariosModel from "@/src/usuarios/UsuariosModel";
 import express from "express";
 import request from "supertest";
 import {
@@ -9,7 +8,6 @@ import {
   UsuarioUpdate,
 } from "@/src/usuarios/interfacesUsuarios";
 import IUsuariosDAO from "@/src/usuarios/dao/IUsuariosDAO";
-import bcrypt from "bcryptjs";
 
 const originalConsoleError = console.error;
 beforeAll(() => {

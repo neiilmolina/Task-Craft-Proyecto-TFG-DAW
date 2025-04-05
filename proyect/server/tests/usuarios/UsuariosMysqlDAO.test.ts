@@ -4,7 +4,6 @@ import UsuariosMysqlDAO from "@/src/usuarios/dao/UsuariosMysqlDAO";
 import {
   Usuario,
   UsuarioBD,
-  UsuarioCreate,
   UsuarioUpdate,
 } from "@/src/usuarios/interfacesUsuarios";
 import bcrypt from "bcryptjs";

@@ -10,6 +10,7 @@ import IEstadosDAO from "@/src/estados/dao/IEstadosDAO";
 import ITiposDAO from "@/src/tipos/dao/ITiposDAO";
 import createUsuariosRoute from "@/src/usuarios/routesUsuarios";
 import IUsuariosDAO from "@/src/usuarios/dao/IUsuariosDAO";
+import createAuthRoute from "./auth/routesAuth";
 
 dotenv.config();
 
@@ -35,10 +36,10 @@ const createApp = (
 
   // Rutas de la API
   app.use("/estados", createEstadosRoute(estadosDAO));
-  // app.use("/usuarios", createUsuariosRoute(usuariosDAO));
   app.use("/tipos", createTiposRoute(tiposDAO));
   app.use("/roles", createRolesRoute(rolesDAO));
   app.use("/usuarios", createUsuariosRoute(usuariosDAO));
+  // app.use("/auth", createAuthRoute(usuariosDAO));
 
   // Usar el middleware de manejo de errores al final de todas las rutas
   app.use(errorHandler);
