@@ -2,6 +2,7 @@ import UsuariosModel from "@/src/usuarios/UsuariosModel";
 import IUsuariosDAO from "@/src/usuarios/dao/IUsuariosDAO";
 import { RequestHandler } from "express";
 import {
+  validatePassword,
   validateUsuarioCreate,
   validateUsuarioUpdate,
 } from "@/src/usuarios/schemasUsuarios";
@@ -163,6 +164,44 @@ export default class UsuariosController {
     } catch (error) {
       console.error("Error al actualizar el usuario:", error);
       res.status(500).json({ error: "Error interno del servidor" });
+    }
+  };
+
+  updateUsuarioPassword: RequestHandler = async (req, res) => {
+    try {
+      const idUsuario = req.params.idUsuario;
+      const password: string = req.body.password;
+      const result = validatePassword(password);
+
+      if (!UUID_REGEX.test(idUsuario)) {
+        res.status(400).json({ error: "El ID del usuario debe ser válido" });
+        return;
+      }
+
+      if (!result.success) {
+        res.status(400).json({ error: result.error });
+        return;
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const usuarioUpdate = await this.usuariosModel.updatePassword(
+        idUsuario,
+        hashedPassword
+      );
+
+      if (!usuarioUpdate) {
+        res.status(404).json({ error: "El usuario no se ha encontrado" });
+        return;
+      }
+
+      res.status(200).json(usuarioUpdate);
+    } catch (error: any) {
+      if (error.message === "User not found") {
+        res.status(404).json({ error: "El usuario no se ha encontrado" });
+      } else {
+        console.error("Error al actualizar el usuario:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+      }
     }
   };
 

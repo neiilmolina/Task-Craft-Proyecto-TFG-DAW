@@ -10,7 +10,8 @@ const createUsuariosRoute = (usuariosDAO: IUsuariosDAO) => {
   router.get("/:idUsuario", usuariosController.getUsuarioById);
   router.post("/validateUser", usuariosController.getUsuarioByCredentials);
   router.post("/create", usuariosController.createUsuario);
-  router.put("/:idUsuario", usuariosController.updateUsuario);
+  router.put("/update/:idUsuario", usuariosController.updateUsuario);
+  router.put("/updatePassword/:idUsuario", usuariosController.updateUsuarioPassword);
   router.delete("/:idUsuario", usuariosController.deleteUsuario);
 
   return router;

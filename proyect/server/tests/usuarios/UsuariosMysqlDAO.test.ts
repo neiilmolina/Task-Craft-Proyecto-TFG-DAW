@@ -780,6 +780,87 @@ describe("UsuariosMysqlDAO", () => {
     });
   });
 
+  describe("usuariosDAO - updatePassword", () => {
+    it("should successfully update an existing user", async () => {
+      // Preparar datos de prueba
+      const userId = "1";
+      const newPassword: string = "nueva_contraseña";
+
+      // Configurar el mock de la conexión
+      const mockConnection = mysql.createConnection();
+      const mockQuery = mockConnection.query as jest.Mock;
+
+      // Mockear la implementación del query
+      mockQuery.mockImplementation((query, params, callback) => {
+        // Simular un ResultSetHeader con affectedRows
+        const mockResults = {
+          affectedRows: 1,
+        } as ResultSetHeader;
+
+        callback(null, mockResults);
+      });
+
+      // Ejecutar el método y verificar
+      const result = await usuariosDAO.updatePassword(userId, newPassword);
+
+      // Verificaciones
+      expect(result).toEqual(true);
+
+      // Verificar que la query fue llamada con los parámetros correctos
+      expect(mockQuery).toHaveBeenCalledWith(
+        expect.stringContaining("UPDATE"),
+        [newPassword, userId],
+        expect.any(Function)
+      );
+    });
+
+    it("should throw an error if user is not found", async () => {
+      // Preparar datos de prueba
+      const userId = "999";
+      const newPassword: string = "nueva_contraseña";
+
+      // Configurar el mock de la conexión
+      const mockConnection = mysql.createConnection();
+      const mockQuery = mockConnection.query as jest.Mock;
+
+      // Mockear la implementación del query para simular 0 filas afectadas
+      mockQuery.mockImplementation((query, params, callback) => {
+        const mockResults = {
+          affectedRows: 0,
+        } as ResultSetHeader;
+
+        callback(null, mockResults);
+      });
+
+      // Ejecutar el método y verificar que lanza un error
+      await expect(
+        usuariosDAO.updatePassword(userId, newPassword)
+      ).rejects.toThrow("User not found");
+    });
+
+    it("should throw an error if database query fails", async () => {
+      // Preparar datos de prueba
+      const userId = "1";
+      const newPassword: string = "nueva_contraseña";
+
+      const mockError = new Error("Database update error");
+
+      // Configurar el mock de la conexión
+      const mockConnection = mysql.createConnection();
+      const mockQuery = mockConnection.query as jest.Mock;
+
+      // Mockear la implementación del query para simular un error
+      mockQuery.mockImplementation((query, params, callback) => {
+        callback(mockError, null);
+      });
+
+      // Ejecutar el método y verificar que lanza un error
+      await expect(
+        usuariosDAO.updatePassword(userId, newPassword)
+      ).rejects.toThrow("Database update error: Database update error");
+    });
+  });
+
   describe("UsuariosMysqlDAO - delete", () => {
     it("should return true when the user is successfully deleted", () => {
       // Preparar datos de prueba

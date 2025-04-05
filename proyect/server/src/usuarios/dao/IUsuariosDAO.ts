@@ -14,5 +14,6 @@ export default interface IUsuariosDAO {
     usuario: UsuarioCreate
   ): Promise<UsuarioReturn | null>;
   update(id: string, usuario: UsuarioUpdate): Promise<UsuarioReturn | null>;
+  updatePassword(id: string, password: string): Promise<Boolean>;
   delete(id: string): Promise<boolean>;
 }
