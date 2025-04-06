@@ -1,11 +1,11 @@
 import { ResultSetHeader } from "mysql2";
 import mysql from "@/tests/__mocks__/mysql";
-import UsuariosMysqlDAO from "@/src/usuarios/dao/UsuariosMysqlDAO";
+import UsuariosMysqlDAO from "@/src/users/model/dao/UsuariosMysqlDAO";
 import {
   Usuario,
   UsuarioBD,
   UsuarioUpdate,
-} from "@/src/usuarios/interfacesUsuarios";
+} from "@/src/users/model/interfaces/interfacesUsers";
 import bcrypt from "bcryptjs";
 
 jest.mock("mysql2", () => ({

@@ -3,7 +3,7 @@ import EstadosMysqlDAO from "@/src/estados/dao/EstadosMysqlDAO";
 // import UsuariosSupabaseDAO from "@/src/usuarios/dao/UsuariosSupabaseDAO";
 import TiposSupabaseDAO from "@/src/tipos/dao/TiposSupabaseDAO";
 import RolesMysqlDAO from "@/src/roles/dao/RolesMysqlDAO";
-import UsuariosMysqlDAO from "@/src/usuarios/dao/UsuariosMysqlDAO";
+import UsuariosMysqlDAO from "@/src/users/model/dao/UsuariosMysqlDAO";
 
 // Create the model instance with the DAO
 const estadosMysqlDAO = new EstadosMysqlDAO();

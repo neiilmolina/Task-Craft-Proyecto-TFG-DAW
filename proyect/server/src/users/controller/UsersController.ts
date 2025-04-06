@@ -1,27 +1,27 @@
-import UsuariosModel from "@/src/usuarios/UsuariosModel";
-import IUsuariosDAO from "@/src/usuarios/dao/IUsuariosDAO";
+import UsersRepository from "@/src/users/model/UsersRepository";
+import IUsuariosDAO from "@/src/users/model/dao/IUsersDAO";
 import { RequestHandler } from "express";
 import {
   validatePassword,
   validateUsuarioCreate,
   validateUsuarioUpdate,
-} from "@/src/usuarios/schemasUsuarios";
+} from "@/src/users/model/interfaces/schemasUsuarios";
 import {
   UsuarioCreate,
   UsuarioUpdate,
-} from "@/src/usuarios/interfacesUsuarios";
+} from "@/src/users/model/interfaces/interfacesUsers";
 import { randomUUID } from "crypto";
 import bcrypt from "bcryptjs";
 import { UUID_REGEX } from "@/src/core/constants";
 
 export default class UsuariosController {
-  private usuariosModel: UsuariosModel;
+  private usersRepository: UsersRepository;
 
   constructor(usuariosDAO: IUsuariosDAO) {
-    this.usuariosModel = new UsuariosModel(usuariosDAO);
+    this.usersRepository = new UsersRepository(usuariosDAO);
   }
 
-  getUsuarios: RequestHandler = async (req, res) => {
+  getUsers: RequestHandler = async (req, res) => {
     try {
       const idRol = req.query.idRol
         ? parseInt(req.query.idRol as string)
@@ -32,11 +32,11 @@ export default class UsuariosController {
           .json({ error: "El ID del rol debe ser un número válido" });
         return;
       }
-      const usuarios = await this.usuariosModel.getAll(idRol);
-      res.status(200).json(usuarios);
+      const users = await this.usersRepository.getAll(idRol);
+      res.status(200).json(users);
       return;
     } catch (error) {
-      console.error("Error al cargar los usuarios:", error);
+      console.error("Error al cargar los users:", error);
       res.status(500).json({ error: "Error interno del servidor" });
       return;
     }
@@ -50,7 +50,7 @@ export default class UsuariosController {
         return;
       }
 
-      const usuario = await this.usuariosModel.getById(idUsuario);
+      const usuario = await this.usersRepository.getById(idUsuario);
 
       if (!usuario) {
         res.status(404).json({ error: "Usuario no encontrado" });
@@ -77,7 +77,7 @@ export default class UsuariosController {
         return;
       }
 
-      const usuario = await this.usuariosModel.getByCredentials(
+      const usuario = await this.usersRepository.getByCredentials(
         email,
         password
       );
@@ -117,7 +117,7 @@ export default class UsuariosController {
         password: hashedPassword,
       };
 
-      const newUsuario = await this.usuariosModel.create(
+      const newUsuario = await this.usersRepository.create(
         idUsuario,
         usuarioConPasswordEncriptado
       );
@@ -150,7 +150,7 @@ export default class UsuariosController {
         return;
       }
 
-      const usuarioUpdate = await this.usuariosModel.update(
+      const usuarioUpdate = await this.usersRepository.update(
         idUsuario,
         usuarioData
       );
@@ -184,7 +184,7 @@ export default class UsuariosController {
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
-      const usuarioUpdate = await this.usuariosModel.updatePassword(
+      const usuarioUpdate = await this.usersRepository.updatePassword(
         idUsuario,
         hashedPassword
       );
@@ -221,7 +221,7 @@ export default class UsuariosController {
         return;
       }
 
-      const usuario = await this.usuariosModel.delete(idUsuario);
+      const usuario = await this.usersRepository.delete(idUsuario);
 
       if (!usuario) {
         res.status(404).json({ error: "Usuario no encontrado" });

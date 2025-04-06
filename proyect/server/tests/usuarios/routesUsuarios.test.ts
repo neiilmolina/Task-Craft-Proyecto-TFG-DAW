@@ -1,4 +1,4 @@
-import createRouteUsuarios from "@/src/usuarios/routesUsuarios";
+import createRouteUsuarios from "@/src/users/controller/routesUsers";
 import express from "express";
 import request from "supertest";
 import {
@@ -6,8 +6,8 @@ import {
   UsuarioCreate,
   UsuarioReturn,
   UsuarioUpdate,
-} from "@/src/usuarios/interfacesUsuarios";
-import IUsuariosDAO from "@/src/usuarios/dao/IUsuariosDAO";
+} from "@/src/users/model/interfaces/interfacesUsers";
+import IUsuariosDAO from "@/src/users/model/dao/IUsersDAO";
 
 const originalConsoleError = console.error;
 beforeAll(() => {

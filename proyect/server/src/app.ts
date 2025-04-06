@@ -8,8 +8,8 @@ import { corsMiddleware, errorHandler } from "@/config/middleware";
 import IRolesDAO from "@/src/roles/dao/IRolesDAO";
 import IEstadosDAO from "@/src/estados/dao/IEstadosDAO";
 import ITiposDAO from "@/src/tipos/dao/ITiposDAO";
-import createUsuariosRoute from "@/src/usuarios/routesUsuarios";
-import IUsuariosDAO from "@/src/usuarios/dao/IUsuariosDAO";
+import createUsuariosRoute from "@/src/users/controller/routesUsers";
+import IUsersDAO from "@/src/users/model/dao/IUsersDAO";
 import createAuthRoute from "./auth/routesAuth";
 import cookieParser from "cookie-parser";
 
@@ -20,7 +20,7 @@ const createApp = (
   // usuariosDAO: IUsuariosDAO,
   tiposDAO: ITiposDAO,
   rolesDAO: IRolesDAO,
-  usuariosDAO: IUsuariosDAO
+  usuariosDAO: IUsersDAO
 ) => {
   const app = express();
   const port = process.env.PORT || 3000;

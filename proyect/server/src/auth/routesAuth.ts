@@ -1,9 +1,9 @@
-import IUsuariosDAO from "@/src/usuarios/dao/IUsuariosDAO";
+import IUsersDAO from "@/src/users/model/dao/IUsersDAO";
 import AuthController from "@/src/auth/AuthController";
 import { Router } from "express";
 import authMiddleware from "@/src/auth/authMiddleware";
 
-const createAuthRoute = (usuariosDAO: IUsuariosDAO) => {
+const createAuthRoute = (usuariosDAO: IUsersDAO) => {
   const router = Router();
   const authController = new AuthController(usuariosDAO);
 
@@ -11,7 +11,7 @@ const createAuthRoute = (usuariosDAO: IUsuariosDAO) => {
     authController.register(req, res, next)
   );
   router.post("/login", (req, res) => authController.login(req, res));
-  
+
   router.use(authMiddleware);
   router.get("/", (req, res) => {
     authController.getAuthenticatedUser(req, res);

@@ -1,19 +1,19 @@
 import { Request, RequestHandler, Response } from "express";
 import jwt from "jsonwebtoken";
 import cookies from "cookie-parser";
-import IUsuariosDAO from "@/src/usuarios/dao/IUsuariosDAO";
-import UsuariosModel from "@/src/usuarios/UsuariosModel";
-import UsuariosController from "@/src/usuarios/UsuariosController";
-import { Usuario } from "../usuarios/interfacesUsuarios";
+import IUsersDAO from "@/src/users/model/dao/IUsersDAO";
+import UsuariosController from "@/src/users/controller/UsersController";
+import { Usuario } from "@/src/users/model/interfaces/interfacesUsers";
+import UsersRepository from "@/src/users/model/UsersRepository";
 
 const secretKey = process.env.JWT_SECRET as string;
 const KEY_ACCESS_COOKIE = "access_token";
 export default class AuthController {
-  private usuariosModel: UsuariosModel;
+  private usuariosModel: UsersRepository;
   private usuariosController: UsuariosController;
 
-  constructor(usuariosDAO: IUsuariosDAO) {
-    this.usuariosModel = new UsuariosModel(usuariosDAO);
+  constructor(usuariosDAO: IUsersDAO) {
+    this.usuariosModel = new UsersRepository(usuariosDAO);
     this.usuariosController = new UsuariosController(usuariosDAO);
   }
 

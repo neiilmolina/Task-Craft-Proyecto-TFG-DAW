@@ -3,8 +3,8 @@ import {
   UsuarioCreate,
   UsuarioReturn,
   UsuarioUpdate,
-} from "@/src/usuarios/interfacesUsuarios";
-import IUsuariosDAO from "@/src/usuarios/dao/IUsuariosDAO";
+} from "@/src/users/model/interfaces/interfacesUsers";
+import IUsersDAO from "@/src/users/model/dao/IUsersDAO";
 import connection from "@/config/mysql";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import bcrypt from "bcryptjs";
@@ -19,7 +19,7 @@ const FIELDS = {
   idRol: "idRol",
 };
 
-export default class UsuariosMysqlDAO implements IUsuariosDAO {
+export default class UsuariosMysqlDAO implements IUsersDAO {
   async getAll(idRol?: Number): Promise<Usuario[]> {
     return new Promise<Usuario[]>((resolve, reject) => {
       let query = `SELECT u.${FIELDS.idUsuario}, u.${FIELDS.nombreUsuario}, u.${FIELDS.email}, 

@@ -3,9 +3,9 @@ import {
   UsuarioCreate,
   UsuarioReturn,
   UsuarioUpdate,
-} from "@/src/usuarios/interfacesUsuarios";
+} from "@/src/users/model/interfaces/interfacesUsers";
 
-export default interface IUsuariosDAO {
+export default interface IUsersDAO {
   getAll(idRol?: number): Promise<Usuario[]>;
   getById(id: string): Promise<Usuario | null>;
   getByCredentials(email: string, password: string): Promise<Usuario | null>;
