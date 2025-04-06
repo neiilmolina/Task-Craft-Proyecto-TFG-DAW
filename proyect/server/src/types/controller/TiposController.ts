@@ -1,16 +1,16 @@
 import { RequestHandler } from "express";
-import TiposModel from "@/src/tipos/TiposModel";
-import { TipoCreate } from "@/src/tipos/interfacesTipos";
+import { TipoCreate } from "@/src/types/model/interfaces/interfacesTypes";
 import {
   validateTipoCreate,
   validateTipoUpdate,
-} from "@/src/tipos/schemasTipos";
-import ITiposDAO from "@/src/tipos/dao/ITiposDAO";
+} from "@/src/types/model/interfaces/schemasTypes";
+import ITiposDAO from "@/src/types/model/dao/ITiposDAO";
+import TypesRepository from "@/src/types/model/TypesRepository";
 
 export default class TiposController {
-  private tiposModel: TiposModel;
+  private tiposModel: TypesRepository;
   constructor(tiposDAO: ITiposDAO) {
-    this.tiposModel = new TiposModel(tiposDAO);
+    this.tiposModel = new TypesRepository(tiposDAO);
   }
 
   getTipos: RequestHandler = async (req, res) => {

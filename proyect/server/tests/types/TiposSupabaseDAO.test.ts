@@ -1,4 +1,4 @@
-import TiposSupabaseDAO from "@/src/tipos/dao/TiposSupabaseDAO";
+import TiposSupabaseDAO from "@/src/types/model/dao/TiposSupabaseDAO";
 import supabase from "@/tests/__mocks__/supabase";
 import { Tipo, TipoCreate, TipoUpdate } from "@/src/tipos/interfacesTipos"; // Usamos la interfaz Tipo
 

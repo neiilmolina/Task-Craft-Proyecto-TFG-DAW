@@ -1,4 +1,4 @@
-import { Tipo, TipoCreate, TipoUpdate } from "@/src/tipos/interfacesTipos";
+import { Tipo, TipoCreate, TipoUpdate } from "@/src/types/model/interfaces/interfacesTipos";
 
 export default interface ITiposDAO {
   getAll(idUsuario?: string, userDetails?: boolean): Promise<Tipo[] | null>;

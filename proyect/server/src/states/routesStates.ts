@@ -1,8 +1,8 @@
 // src/routes/createEstadosRoute.ts
 import { Router } from "express";
-import EstadosController from "@/src/estados/EstadosController";
-import EstadosModel from "@/src/estados/EstadosModel";
-import IEstadosDAO from "./dao/IEstadosDAO";
+import EstadosController from "@/src/states/StatesController";
+import EstadosModel from "@/src/states/StatesRepository";
+import IEstadosDAO from "./dao/IStatesDAO";
 
 export const createEstadosRoute = (estadosDAO: IEstadosDAO) => {
   const router = Router();

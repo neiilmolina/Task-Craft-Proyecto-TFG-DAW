@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { TipoCreate, TipoUpdate } from "./interfacesTipos";
+import { TipoCreate, TipoUpdate } from "./interfacesTypes";
 
 const tipoSchema = z.object({
   idTipo: z.number(),

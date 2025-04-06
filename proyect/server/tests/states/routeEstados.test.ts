@@ -1,4 +1,4 @@
-import createEstadosRoute from "@/src/estados/routesEstados";
+import createEstadosRoute from "@/src/states/routesStates";
 import express from "express";
 import request from "supertest";
 

@@ -1,10 +1,10 @@
 import { ResultSetHeader } from "mysql2";
 import mysql from "@/tests/__mocks__/mysql";
-import UsuariosMysqlDAO from "@/src/users/model/dao/UsuariosMysqlDAO";
+import UsersMysqlDAO from "@/src/users/model/dao/UsersMysqlDAO";
 import {
-  Usuario,
-  UsuarioBD,
-  UsuarioUpdate,
+  User,
+  UserBD,
+  UserUpdate,
 } from "@/src/users/model/interfaces/interfacesUsers";
 import bcrypt from "bcryptjs";
 
@@ -12,11 +12,11 @@ jest.mock("mysql2", () => ({
   createConnection: mysql.createConnection,
 }));
 
-describe("UsuariosMysqlDAO", () => {
-  let usuariosDAO: UsuariosMysqlDAO;
+describe("UsersMysqlDAO", () => {
+  let usersDAO: UsersMysqlDAO;
 
   beforeEach(() => {
-    usuariosDAO = new UsuariosMysqlDAO();
+    usersDAO = new UsersMysqlDAO();
 
     jest.clearAllMocks();
   });
@@ -26,31 +26,31 @@ describe("UsuariosMysqlDAO", () => {
   });
 
   describe("getAll", () => {
-    const mockResultsList: UsuarioBD[] = [
+    const mockResultsList: UserBD[] = [
       {
-        idUsuario: "1",
-        nombreUsuario: "John Doe",
+        idUser: "1",
+        userName: "John Doe",
         email: "john@example.com",
         password: "hashedpassword",
-        urlImagen: null,
+        urlImg: null,
         idRol: 1,
         rol: "admin",
       },
       {
-        idUsuario: "2",
-        nombreUsuario: "Jane Doe",
+        idUser: "2",
+        userName: "Jane Doe",
         email: "jane@example.com",
         password: "hashedpassword",
-        urlImagen: "url.img",
+        urlImg: "url.img",
         idRol: 2,
         rol: "user",
       },
       {
-        idUsuario: "3",
-        nombreUsuario: "Manolo Gonzalez",
+        idUser: "3",
+        userName: "Manolo Gonzalez",
         email: "manolo@example.com",
         password: "hashedpassword",
-        urlImagen: null,
+        urlImg: null,
         idRol: 2,
         rol: "user",
       },
@@ -74,12 +74,12 @@ describe("UsuariosMysqlDAO", () => {
         }
       );
 
-      const usuarios = await usuariosDAO.getAll();
+      const usuarios = await usersDAO.getAll();
 
-      const expectedResults: Usuario[] = [
+      const expectedResults: User[] = [
         {
-          idUsuario: "1",
-          nombreUsuario: "John Doe",
+          idUser: "1",
+          userName: "John Doe",
           email: "john@example.com",
           urlImg: null,
           rol: {
@@ -88,8 +88,8 @@ describe("UsuariosMysqlDAO", () => {
           },
         },
         {
-          idUsuario: "2",
-          nombreUsuario: "Jane Doe",
+          idUser: "2",
+          userName: "Jane Doe",
           email: "jane@example.com",
           urlImg: "url.img",
           rol: {
@@ -98,8 +98,8 @@ describe("UsuariosMysqlDAO", () => {
           },
         },
         {
-          idUsuario: "3",
-          nombreUsuario: "Manolo Gonzalez",
+          idUser: "3",
+          userName: "Manolo Gonzalez",
           email: "manolo@example.com",
           urlImg: null,
           rol: {
@@ -130,7 +130,7 @@ describe("UsuariosMysqlDAO", () => {
       );
 
       // Verificamos que se lance el error esperado
-      await expect(usuariosDAO.getAll()).rejects.toThrow(mockError);
+      await expect(usersDAO.getAll()).rejects.toThrow(mockError);
     });
 
     it("should throw an error if results are not an array", async () => {
@@ -150,13 +150,13 @@ describe("UsuariosMysqlDAO", () => {
       );
 
       // Verificamos que se lanza el error esperado
-      await expect(usuariosDAO.getAll()).rejects.toThrow(
+      await expect(usersDAO.getAll()).rejects.toThrow(
         "Expected array of results but got something else."
       );
     });
 
     it("should return an empty array if no users are found", async () => {
-      const mockResults: Usuario[] = [];
+      const mockResults: User[] = [];
       const mockConnection = mysql.createConnection();
 
       // Mockeamos query para devolver un array vacío
@@ -171,10 +171,10 @@ describe("UsuariosMysqlDAO", () => {
       );
 
       // Llamada a la función getAll y comprobación del resultado
-      const usuarios = await usuariosDAO.getAll();
+      const users = await usersDAO.getAll();
 
       // Comprobamos que el resultado es un array vacío
-      expect(usuarios).toEqual(mockResults);
+      expect(users).toEqual(mockResults);
     });
 
     it("should handle filtering users by idRol", async () => {
@@ -195,10 +195,10 @@ describe("UsuariosMysqlDAO", () => {
         }
       );
 
-      const expectedResults: Usuario[] = [
+      const expectedResults: User[] = [
         {
-          idUsuario: "2",
-          nombreUsuario: "Jane Doe",
+          idUser: "2",
+          userName: "Jane Doe",
           email: "jane@example.com",
           urlImg: "url.img", // Este es el valor correcto de urlImg para este usuario
           rol: {
@@ -207,8 +207,8 @@ describe("UsuariosMysqlDAO", () => {
           },
         },
         {
-          idUsuario: "3",
-          nombreUsuario: "Manolo Gonzalez",
+          idUser: "3",
+          userName: "Manolo Gonzalez",
           email: "manolo@example.com",
           urlImg: null, // Este es el valor correcto de urlImg para este usuario
           rol: {
@@ -218,7 +218,7 @@ describe("UsuariosMysqlDAO", () => {
         },
       ];
 
-      const usuarios = await usuariosDAO.getAll(2); // Filtrado por idRol
+      const usuarios = await usersDAO.getAll(2); // Filtrado por idRol
       expect(usuarios).toEqual(expectedResults);
     });
   });
@@ -226,10 +226,10 @@ describe("UsuariosMysqlDAO", () => {
   describe("getById", () => {
     it("should return a user when a valid ID is provided", async () => {
       // Preparar datos de prueba
-      const mockUsuarioId = "1";
-      const mockUsuario = {
-        idUsuario: "1",
-        nombreUsuario: "John Doe",
+      const mockUserId = "1";
+      const mockUser = {
+        idUser: "1",
+        userName: "John Doe",
         email: "john@example.com",
         urlImg: null,
         rol: {
@@ -247,12 +247,12 @@ describe("UsuariosMysqlDAO", () => {
         // Simular un resultado de base de datos
         const mockResults = [
           {
-            idUsuario: mockUsuario.idUsuario,
-            nombreUsuario: mockUsuario.nombreUsuario,
-            email: mockUsuario.email,
-            urlImg: mockUsuario.urlImg,
-            idRol: mockUsuario.rol.idRol,
-            rol: mockUsuario.rol.rol,
+            idUser: mockUser.idUser,
+            userName: mockUser.userName,
+            email: mockUser.email,
+            urlImg: mockUser.urlImg,
+            idRol: mockUser.rol.idRol,
+            rol: mockUser.rol.rol,
           },
         ];
 
@@ -260,15 +260,15 @@ describe("UsuariosMysqlDAO", () => {
       });
 
       // Ejecutar el método y verificar
-      const result = await usuariosDAO.getById(mockUsuarioId);
+      const result = await usersDAO.getById(mockUserId);
 
       // Verificaciones
-      expect(result).toEqual(mockUsuario);
+      expect(result).toEqual(mockUser);
     });
 
     it("should return null when no user is found", async () => {
       // Preparar datos de prueba
-      const mockUsuarioId = "999"; // ID que no existe
+      const mockUserId = "999"; // ID que no existe
 
       // Configurar el mock de la conexión
       const mockConnection = mysql.createConnection();
@@ -281,7 +281,7 @@ describe("UsuariosMysqlDAO", () => {
       });
 
       // Ejecutar el método y verificar
-      const result = await usuariosDAO.getById(mockUsuarioId);
+      const result = await usersDAO.getById(mockUserId);
 
       // Verificaciones
       expect(result).toBeNull();
@@ -289,7 +289,7 @@ describe("UsuariosMysqlDAO", () => {
 
     it("should throw an error if database query fails", async () => {
       // Preparar datos de prueba
-      const mockUsuarioId = "1";
+      const mockUserId = "1";
       const mockError = new Error("Database connection error");
 
       // Configurar el mock de la conexión
@@ -303,22 +303,20 @@ describe("UsuariosMysqlDAO", () => {
       });
 
       // Ejecutar el método y verificar
-      await expect(usuariosDAO.getById(mockUsuarioId)).rejects.toThrow(
-        mockError
-      );
+      await expect(usersDAO.getById(mockUserId)).rejects.toThrow(mockError);
     });
   });
 
   describe("getByCredentials", () => {
     it("should return a user when valid credentials are provided", async () => {
       // Datos de prueba
-      const mockNombreUsuario = "JohnDoe";
+      const mockUserName = "JohnDoe";
       const mockPassword = "password123";
       const hashedPassword = await bcrypt.hash(mockPassword, 10);
 
       const mockUsuario = {
-        idUsuario: "1",
-        nombreUsuario: mockNombreUsuario,
+        idUser: "1",
+        userName: mockUserName,
         email: "john@example.com",
         urlImg: null,
         password: hashedPassword,
@@ -336,8 +334,8 @@ describe("UsuariosMysqlDAO", () => {
       mockQuery.mockImplementation((query, params, callback) => {
         callback(null, [
           {
-            idUsuario: mockUsuario.idUsuario,
-            nombreUsuario: mockUsuario.nombreUsuario,
+            idUser: mockUsuario.idUser,
+            userName: mockUsuario.userName,
             email: mockUsuario.email,
             urlImg: mockUsuario.urlImg,
             password: mockUsuario.password,
@@ -348,14 +346,14 @@ describe("UsuariosMysqlDAO", () => {
       });
 
       // Ejecutar método y verificar
-      const result = await usuariosDAO.getByCredentials(
-        mockNombreUsuario,
+      const result = await usersDAO.getByCredentials(
+        mockUserName,
         mockPassword
       );
 
       expect(result).toEqual({
-        idUsuario: mockUsuario.idUsuario,
-        nombreUsuario: mockUsuario.nombreUsuario,
+        idUser: mockUsuario.idUser,
+        userName: mockUsuario.userName,
         email: mockUsuario.email,
         urlImg: mockUsuario.urlImg,
         rol: mockUsuario.rol,
@@ -363,7 +361,7 @@ describe("UsuariosMysqlDAO", () => {
     });
 
     it("should return null when the user is not found", async () => {
-      const mockNombreUsuario = "NonExistentUser";
+      const mockUserName = "NonExistentUser";
       const mockPassword = "password123";
 
       // Mock de la conexión
@@ -376,8 +374,8 @@ describe("UsuariosMysqlDAO", () => {
       });
 
       // Ejecutar método y verificar
-      const result = await usuariosDAO.getByCredentials(
-        mockNombreUsuario,
+      const result = await usersDAO.getByCredentials(
+        mockUserName,
         mockPassword
       );
 
@@ -385,13 +383,13 @@ describe("UsuariosMysqlDAO", () => {
     });
 
     it("should return null when the password is incorrect", async () => {
-      const mockNombreUsuario = "JohnDoe";
+      const mockUserName = "JohnDoe";
       const mockPassword = "wrongPassword";
       const hashedPassword = await bcrypt.hash("password123", 10); // Contraseña correcta
 
       const mockUsuario = {
-        idUsuario: "1",
-        nombreUsuario: mockNombreUsuario,
+        idUser: "1",
+        userName: mockUserName,
         email: "john@example.com",
         urlImg: null,
         password: hashedPassword,
@@ -409,8 +407,8 @@ describe("UsuariosMysqlDAO", () => {
       mockQuery.mockImplementation((query, params, callback) => {
         callback(null, [
           {
-            idUsuario: mockUsuario.idUsuario,
-            nombreUsuario: mockUsuario.nombreUsuario,
+            idUser: mockUsuario.idUser,
+            userName: mockUsuario.userName,
             email: mockUsuario.email,
             urlImg: mockUsuario.urlImg,
             password: mockUsuario.password,
@@ -421,8 +419,8 @@ describe("UsuariosMysqlDAO", () => {
       });
 
       // Ejecutar método y verificar
-      const result = await usuariosDAO.getByCredentials(
-        mockNombreUsuario,
+      const result = await usersDAO.getByCredentials(
+        mockUserName,
         mockPassword
       );
 
@@ -430,7 +428,7 @@ describe("UsuariosMysqlDAO", () => {
     });
 
     it("should throw an error if database query fails", async () => {
-      const mockNombreUsuario = "JohnDoe";
+      const mockUserName = "JohnDoe";
       const mockPassword = "password123";
       const mockError = new Error("Database connection error");
 
@@ -445,7 +443,7 @@ describe("UsuariosMysqlDAO", () => {
 
       // Ejecutar método y verificar
       await expect(
-        usuariosDAO.getByCredentials(mockNombreUsuario, mockPassword)
+        usersDAO.getByCredentials(mockUserName, mockPassword)
       ).rejects.toThrow(mockError);
     });
   });
@@ -458,8 +456,8 @@ describe("UsuariosMysqlDAO", () => {
       const hashedPassword = await bcrypt.hash(mockPassword, 10);
 
       const mockUsuario = {
-        idUsuario: "1",
-        nombreUsuario: "JohnDoe",
+        idUser: "1",
+        userName: "JohnDoe",
         email: mockEmail,
         urlImg: null,
         password: hashedPassword,
@@ -477,8 +475,8 @@ describe("UsuariosMysqlDAO", () => {
       mockQuery.mockImplementation((query, params, callback) => {
         callback(null, [
           {
-            idUsuario: mockUsuario.idUsuario,
-            nombreUsuario: mockUsuario.nombreUsuario,
+            idUser: mockUsuario.idUser,
+            userName: mockUsuario.userName,
             email: mockUsuario.email,
             urlImg: mockUsuario.urlImg,
             password: mockUsuario.password,
@@ -489,14 +487,11 @@ describe("UsuariosMysqlDAO", () => {
       });
 
       // Ejecutar método y verificar
-      const result = await usuariosDAO.getByCredentials(
-        mockEmail,
-        mockPassword
-      );
+      const result = await usersDAO.getByCredentials(mockEmail, mockPassword);
 
       expect(result).toEqual({
-        idUsuario: mockUsuario.idUsuario,
-        nombreUsuario: mockUsuario.nombreUsuario,
+        idUser: mockUsuario.idUser,
+        userName: mockUsuario.userName,
         email: mockUsuario.email,
         urlImg: mockUsuario.urlImg,
         rol: mockUsuario.rol,
@@ -517,10 +512,7 @@ describe("UsuariosMysqlDAO", () => {
       });
 
       // Ejecutar método y verificar
-      const result = await usuariosDAO.getByCredentials(
-        mockEmail,
-        mockPassword
-      );
+      const result = await usersDAO.getByCredentials(mockEmail, mockPassword);
 
       expect(result).toBeNull();
     });
@@ -531,8 +523,8 @@ describe("UsuariosMysqlDAO", () => {
       const hashedPassword = await bcrypt.hash("password123", 10); // Contraseña correcta
 
       const mockUsuario = {
-        idUsuario: "1",
-        nombreUsuario: "JohnDoe",
+        idUser: "1",
+        userName: "JohnDoe",
         email: mockEmail,
         urlImg: null,
         password: hashedPassword,
@@ -550,8 +542,8 @@ describe("UsuariosMysqlDAO", () => {
       mockQuery.mockImplementation((query, params, callback) => {
         callback(null, [
           {
-            idUsuario: mockUsuario.idUsuario,
-            nombreUsuario: mockUsuario.nombreUsuario,
+            idUser: mockUsuario.idUser,
+            userName: mockUsuario.userName,
             email: mockUsuario.email,
             urlImg: mockUsuario.urlImg,
             password: mockUsuario.password,
@@ -562,10 +554,7 @@ describe("UsuariosMysqlDAO", () => {
       });
 
       // Ejecutar método y verificar
-      const result = await usuariosDAO.getByCredentials(
-        mockEmail,
-        mockPassword
-      );
+      const result = await usersDAO.getByCredentials(mockEmail, mockPassword);
 
       expect(result).toBeNull();
     });
@@ -586,7 +575,7 @@ describe("UsuariosMysqlDAO", () => {
 
       // Ejecutar método y verificar
       await expect(
-        usuariosDAO.getByCredentials(mockEmail, mockPassword)
+        usersDAO.getByCredentials(mockEmail, mockPassword)
       ).rejects.toThrow(mockError);
     });
   });
@@ -594,13 +583,13 @@ describe("UsuariosMysqlDAO", () => {
   describe("create", () => {
     it("should insert a user and return the inserted user", async () => {
       const mockUsuario = {
-        nombreUsuario: "john_doe",
+        userName: "john_doe",
         email: "john@example.com",
         password: "hashed_password",
         urlImg: "https://example.com/image.jpg",
         idRol: 2,
       };
-      const mockIdUsuario = "123";
+      const mockidUser = "123";
 
       const mockConnection = mysql.createConnection();
       const mockQuery = mockConnection.query as jest.Mock;
@@ -609,11 +598,11 @@ describe("UsuariosMysqlDAO", () => {
         callback(null, { affectedRows: 1 });
       });
 
-      const result = await usuariosDAO.create(mockIdUsuario, mockUsuario);
+      const result = await usersDAO.create(mockidUser, mockUsuario);
 
       expect(result).toEqual({
-        idUsuario: mockIdUsuario,
-        nombreUsuario: mockUsuario.nombreUsuario,
+        idUser: mockidUser,
+        userName: mockUsuario.userName,
         email: mockUsuario.email,
         urlImg: mockUsuario.urlImg,
         idRol: mockUsuario.idRol,
@@ -625,7 +614,7 @@ describe("UsuariosMysqlDAO", () => {
         email: "john@example.com",
         password: "hashed_password",
       };
-      const mockIdUsuario = "456";
+      const mockidUser = "456";
 
       const mockConnection = mysql.createConnection();
       const mockQuery = mockConnection.query as jest.Mock;
@@ -634,14 +623,11 @@ describe("UsuariosMysqlDAO", () => {
         callback(null, { affectedRows: 1 });
       });
 
-      const result = await usuariosDAO.create(
-        mockIdUsuario,
-        mockUsuario as any
-      );
+      const result = await usersDAO.create(mockidUser, mockUsuario as any);
 
       expect(result).toEqual({
-        idUsuario: mockIdUsuario,
-        nombreUsuario: "",
+        idUser: mockidUser,
+        userName: "",
         email: mockUsuario.email,
         urlImg: "",
         idRol: 1,
@@ -650,13 +636,13 @@ describe("UsuariosMysqlDAO", () => {
 
     it("should throw an error if the database insertion fails", async () => {
       const mockUsuario = {
-        nombreUsuario: "john_doe",
+        userName: "john_doe",
         email: "john@example.com",
         password: "hashed_password",
         urlImg: "https://example.com/image.jpg",
         idRol: 2,
       };
-      const mockIdUsuario = "789";
+      const mockidUser = "789";
 
       const mockConnection = mysql.createConnection();
       const mockQuery = mockConnection.query as jest.Mock;
@@ -666,18 +652,18 @@ describe("UsuariosMysqlDAO", () => {
         callback(mockError, null);
       });
 
-      await expect(
-        usuariosDAO.create(mockIdUsuario, mockUsuario)
-      ).rejects.toThrow("Database insertion error");
+      await expect(usersDAO.create(mockidUser, mockUsuario)).rejects.toThrow(
+        "Database insertion error"
+      );
     });
   });
 
-  describe("UsuariosMysqlDAO - update", () => {
+  describe("UsersMysqlDAO - update", () => {
     it("should successfully update an existing user", async () => {
       // Preparar datos de prueba
       const userId = "1";
-      const userToUpdate: UsuarioUpdate = {
-        nombreUsuario: "usuario_actualizado",
+      const userToUpdate: UserUpdate = {
+        userName: "usuario_actualizado",
         email: "usuario@actualizado.com",
         urlImg: "https://nueva-imagen.com",
         idRol: 2,
@@ -698,12 +684,12 @@ describe("UsuariosMysqlDAO", () => {
       });
 
       // Ejecutar el método y verificar
-      const result = await usuariosDAO.update(userId, userToUpdate);
+      const result = await usersDAO.update(userId, userToUpdate);
 
       // Verificaciones
       expect(result).toEqual({
-        idUsuario: userId,
-        nombreUsuario: userToUpdate.nombreUsuario,
+        idUser: userId,
+        userName: userToUpdate.userName,
         email: userToUpdate.email,
         urlImg: userToUpdate.urlImg,
         idRol: userToUpdate.idRol,
@@ -713,7 +699,7 @@ describe("UsuariosMysqlDAO", () => {
       expect(mockQuery).toHaveBeenCalledWith(
         expect.stringContaining("UPDATE"),
         [
-          userToUpdate.nombreUsuario,
+          userToUpdate.userName,
           userToUpdate.email,
           userToUpdate.urlImg,
           userToUpdate.idRol,
@@ -726,8 +712,8 @@ describe("UsuariosMysqlDAO", () => {
     it("should throw an error if user is not found", async () => {
       // Preparar datos de prueba
       const userId = "999"; // ID que no existe
-      const userToUpdate: UsuarioUpdate = {
-        nombreUsuario: "usuario_inexistente",
+      const userToUpdate: UserUpdate = {
+        userName: "usuario_inexistente",
         email: "usuario@inexistente.com",
         urlImg: "https://inexistente.com",
         idRol: 1,
@@ -747,7 +733,7 @@ describe("UsuariosMysqlDAO", () => {
       });
 
       // Ejecutar el método y verificar que lanza un error
-      await expect(usuariosDAO.update(userId, userToUpdate)).rejects.toThrow(
+      await expect(usersDAO.update(userId, userToUpdate)).rejects.toThrow(
         "User not found"
       );
     });
@@ -755,8 +741,8 @@ describe("UsuariosMysqlDAO", () => {
     it("should throw an error if database query fails", async () => {
       // Preparar datos de prueba
       const userId = "1";
-      const userToUpdate: UsuarioUpdate = {
-        nombreUsuario: "usuario_actualizado",
+      const userToUpdate: UserUpdate = {
+        userName: "usuario_actualizado",
         email: "usuario@actualizado.com",
         urlImg: "https://nueva-imagen.com",
         idRol: 2,
@@ -773,13 +759,13 @@ describe("UsuariosMysqlDAO", () => {
       });
 
       // Ejecutar el método y verificar que lanza un error
-      await expect(usuariosDAO.update(userId, userToUpdate)).rejects.toThrow(
+      await expect(usersDAO.update(userId, userToUpdate)).rejects.toThrow(
         "Database update error: Database update error"
       );
     });
   });
 
-  describe("usuariosDAO - updatePassword", () => {
+  describe("usersDAO - updatePassword", () => {
     it("should successfully update an existing user", async () => {
       // Preparar datos de prueba
       const userId = "1";
@@ -800,7 +786,7 @@ describe("UsuariosMysqlDAO", () => {
       });
 
       // Ejecutar el método y verificar
-      const result = await usuariosDAO.updatePassword(userId, newPassword);
+      const result = await usersDAO.updatePassword(userId, newPassword);
 
       // Verificaciones
       expect(result).toEqual(true);
@@ -833,7 +819,7 @@ describe("UsuariosMysqlDAO", () => {
 
       // Ejecutar el método y verificar que lanza un error
       await expect(
-        usuariosDAO.updatePassword(userId, newPassword)
+        usersDAO.updatePassword(userId, newPassword)
       ).rejects.toThrow("User not found");
     });
 
@@ -855,12 +841,12 @@ describe("UsuariosMysqlDAO", () => {
 
       // Ejecutar el método y verificar que lanza un error
       await expect(
-        usuariosDAO.updatePassword(userId, newPassword)
+        usersDAO.updatePassword(userId, newPassword)
       ).rejects.toThrow("Database update error: Database update error");
     });
   });
 
-  describe("UsuariosMysqlDAO - delete", () => {
+  describe("UsersMysqlDAO - delete", () => {
     it("should return true when the user is successfully deleted", () => {
       // Preparar datos de prueba
       const mockUserId = "1";
@@ -876,7 +862,7 @@ describe("UsuariosMysqlDAO", () => {
       });
 
       // Ejecutar el método y verificar
-      return expect(usuariosDAO.delete(mockUserId)).resolves.toBe(true);
+      return expect(usersDAO.delete(mockUserId)).resolves.toBe(true);
     });
 
     it("should throw an error if user is not found", () => {
@@ -894,7 +880,7 @@ describe("UsuariosMysqlDAO", () => {
       });
 
       // Ejecutar el método y verificar que lanza un error
-      return expect(usuariosDAO.delete(mockUserId)).rejects.toThrow(
+      return expect(usersDAO.delete(mockUserId)).rejects.toThrow(
         "Usuario no encontrado"
       );
     });
@@ -914,7 +900,7 @@ describe("UsuariosMysqlDAO", () => {
       });
 
       // Ejecutar el método y verificar que lanza un error
-      return expect(usuariosDAO.delete(mockUserId)).rejects.toThrow(mockError);
+      return expect(usersDAO.delete(mockUserId)).rejects.toThrow(mockError);
     });
   });
 });

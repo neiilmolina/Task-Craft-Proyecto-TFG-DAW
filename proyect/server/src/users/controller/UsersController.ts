@@ -1,24 +1,24 @@
 import UsersRepository from "@/src/users/model/UsersRepository";
-import IUsuariosDAO from "@/src/users/model/dao/IUsersDAO";
+import IUsersDAO from "@/src/users/model/dao/IUsersDAO";
 import { RequestHandler } from "express";
 import {
   validatePassword,
-  validateUsuarioCreate,
-  validateUsuarioUpdate,
-} from "@/src/users/model/interfaces/schemasUsuarios";
+  validateUserCreate,
+  validateUserUpdate,
+} from "@/src/users/model/interfaces/schemasUsers";
 import {
-  UsuarioCreate,
-  UsuarioUpdate,
+  UserCreate,
+  UserUpdate,
 } from "@/src/users/model/interfaces/interfacesUsers";
 import { randomUUID } from "crypto";
 import bcrypt from "bcryptjs";
 import { UUID_REGEX } from "@/src/core/constants";
 
-export default class UsuariosController {
+export default class UsersController {
   private usersRepository: UsersRepository;
 
-  constructor(usuariosDAO: IUsuariosDAO) {
-    this.usersRepository = new UsersRepository(usuariosDAO);
+  constructor(usersDAO: IUsersDAO) {
+    this.usersRepository = new UsersRepository(usersDAO);
   }
 
   getUsers: RequestHandler = async (req, res) => {
@@ -42,31 +42,31 @@ export default class UsuariosController {
     }
   };
 
-  getUsuarioById: RequestHandler = async (req, res) => {
+  getUserById: RequestHandler = async (req, res) => {
     try {
-      const idUsuario = req.params.idUsuario;
-      if (!UUID_REGEX.test(idUsuario)) {
-        res.status(400).json({ error: "El ID del usuario debe ser válido" });
+      const idUser = req.params.idUser;
+      if (!UUID_REGEX.test(idUser)) {
+        res.status(400).json({ error: "El ID del user debe ser válido" });
         return;
       }
 
-      const usuario = await this.usersRepository.getById(idUsuario);
+      const user = await this.usersRepository.getById(idUser);
 
-      if (!usuario) {
-        res.status(404).json({ error: "Usuario no encontrado" });
+      if (!user) {
+        res.status(404).json({ error: "User no encontrado" });
         return;
       }
 
-      res.status(200).json(usuario);
+      res.status(200).json(user);
       return;
     } catch (error) {
-      console.error("Error al cargar el usuario:", error);
+      console.error("Error al cargar el user:", error);
       res.status(500).json({ error: "Error interno del servidor" });
       return;
     }
   };
 
-  getUsuarioByCredentials: RequestHandler = async (req, res) => {
+  getUserByCredentials: RequestHandler = async (req, res) => {
     try {
       const { email, password } = req.body;
 
@@ -77,28 +77,25 @@ export default class UsuariosController {
         return;
       }
 
-      const usuario = await this.usersRepository.getByCredentials(
-        email,
-        password
-      );
+      const user = await this.usersRepository.getByCredentials(email, password);
 
-      if (!usuario) {
-        res.status(404).json({ error: "Usuario no encontrado" });
+      if (!user) {
+        res.status(404).json({ error: "User no encontrado" });
         return;
       }
 
-      res.status(200).json(usuario);
+      res.status(200).json(user);
     } catch (error) {
-      console.error("Error al autenticar el usuario:", error);
+      console.error("Error al autenticar el user:", error);
       res.status(500).json({ error: "Error interno del servidor" });
     }
   };
 
-  createUsuario: RequestHandler = async (req, res) => {
+  createUser: RequestHandler = async (req, res) => {
     try {
-      const usuarioData: UsuarioCreate = req.body;
+      const userData: UserCreate = req.body;
 
-      const result = validateUsuarioCreate(usuarioData);
+      const result = validateUserCreate(userData);
 
       // Validar campos obligatorios antes de continuar
       if (!result.success) {
@@ -106,42 +103,42 @@ export default class UsuariosController {
         return;
       }
 
-      const { password } = usuarioData;
-      const idUsuario = randomUUID(); // Generamos el UUID sin necesidad de validarlo con regex
+      const { password } = userData;
+      const idUser = randomUUID(); // Generamos el UUID sin necesidad de validarlo con regex
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      const usuarioConPasswordEncriptado = {
-        ...usuarioData,
-        idUsuario,
+      const userConPasswordEncriptado = {
+        ...userData,
+        idUser,
         password: hashedPassword,
       };
 
-      const newUsuario = await this.usersRepository.create(
-        idUsuario,
-        usuarioConPasswordEncriptado
+      const newUser = await this.usersRepository.create(
+        idUser,
+        userConPasswordEncriptado
       );
 
-      if (!newUsuario) {
-        res.status(500).json({ error: "El usuario no se ha podido crear" });
+      if (!newUser) {
+        res.status(500).json({ error: "El user no se ha podido crear" });
         return;
       }
 
-      res.status(200).json(newUsuario);
+      res.status(200).json(newUser);
     } catch (error) {
-      console.error("Error al crear el usuario:", error);
+      console.error("Error al crear el user:", error);
       res.status(500).json({ error: "Error interno del servidor" });
     }
   };
 
-  updateUsuario: RequestHandler = async (req, res) => {
+  updateUser: RequestHandler = async (req, res) => {
     try {
-      const idUsuario = req.params.idUsuario;
-      const usuarioData: UsuarioUpdate = req.body;
-      const result = validateUsuarioUpdate(usuarioData);
+      const idUser = req.params.idUser;
+      const userData: UserUpdate = req.body;
+      const result = validateUserUpdate(userData);
 
-      if (!UUID_REGEX.test(idUsuario)) {
-        res.status(400).json({ error: "El ID del usuario debe ser válido" });
+      if (!UUID_REGEX.test(idUser)) {
+        res.status(400).json({ error: "El ID del user debe ser válido" });
         return;
       }
 
@@ -150,31 +147,28 @@ export default class UsuariosController {
         return;
       }
 
-      const usuarioUpdate = await this.usersRepository.update(
-        idUsuario,
-        usuarioData
-      );
+      const userUpdate = await this.usersRepository.update(idUser, userData);
 
-      if (!usuarioUpdate) {
-        res.status(404).json({ error: "El usuario no se ha encontrado" });
+      if (!userUpdate) {
+        res.status(404).json({ error: "El user no se ha encontrado" });
         return;
       }
 
-      res.status(200).json(usuarioUpdate);
+      res.status(200).json(userUpdate);
     } catch (error) {
-      console.error("Error al actualizar el usuario:", error);
+      console.error("Error al actualizar el user:", error);
       res.status(500).json({ error: "Error interno del servidor" });
     }
   };
 
-  updateUsuarioPassword: RequestHandler = async (req, res) => {
+  updateUserPassword: RequestHandler = async (req, res) => {
     try {
-      const idUsuario = req.params.idUsuario;
+      const idUser = req.params.idUser;
       const password: string = req.body.password;
       const result = validatePassword(password);
 
-      if (!UUID_REGEX.test(idUsuario)) {
-        res.status(400).json({ error: "El ID del usuario debe ser válido" });
+      if (!UUID_REGEX.test(idUser)) {
+        res.status(400).json({ error: "El ID del user debe ser válido" });
         return;
       }
 
@@ -184,53 +178,53 @@ export default class UsuariosController {
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
-      const usuarioUpdate = await this.usersRepository.updatePassword(
-        idUsuario,
+      const userUpdate = await this.usersRepository.updatePassword(
+        idUser,
         hashedPassword
       );
 
-      if (!usuarioUpdate) {
-        res.status(404).json({ error: "El usuario no se ha encontrado" });
+      if (!userUpdate) {
+        res.status(404).json({ error: "El user no se ha encontrado" });
         return;
       }
 
-      res.status(200).json(usuarioUpdate);
+      res.status(200).json(userUpdate);
     } catch (error: any) {
       if (error.message === "User not found") {
-        res.status(404).json({ error: "El usuario no se ha encontrado" });
+        res.status(404).json({ error: "El user no se ha encontrado" });
       } else {
-        console.error("Error al actualizar el usuario:", error);
+        console.error("Error al actualizar el user:", error);
         res.status(500).json({ error: "Error interno del servidor" });
       }
     }
   };
 
-  deleteUsuario: RequestHandler = async (req, res) => {
+  deleteUser: RequestHandler = async (req, res) => {
     try {
-      const idUsuario = req.params.idUsuario;
+      const idUser = req.params.idUser;
 
-      // Verificar si el idUsuario está presente
-      if (!idUsuario) {
-        res.status(400).json({ error: "ID de usuario es requerido" });
+      // Verificar si el idUser está presente
+      if (!idUser) {
+        res.status(400).json({ error: "ID de user es requerido" });
         return;
       }
 
-      // Verificar si el idUsuario es un UUID válido
-      if (!UUID_REGEX.test(idUsuario)) {
-        res.status(400).json({ error: "El ID del usuario debe ser válido" });
+      // Verificar si el idUser es un UUID válido
+      if (!UUID_REGEX.test(idUser)) {
+        res.status(400).json({ error: "El ID del user debe ser válido" });
         return;
       }
 
-      const usuario = await this.usersRepository.delete(idUsuario);
+      const user = await this.usersRepository.delete(idUser);
 
-      if (!usuario) {
-        res.status(404).json({ error: "Usuario no encontrado" });
+      if (!user) {
+        res.status(404).json({ error: "User no encontrado" });
         return;
       }
 
-      res.status(200).json(usuario);
+      res.status(200).json(user);
     } catch (error) {
-      console.error("Error al eliminar el usuario:", error);
+      console.error("Error al eliminar el user:", error);
       res.status(500).json({ error: "Error interno del servidor" });
     }
   };

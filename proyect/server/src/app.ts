@@ -1,13 +1,13 @@
 import "dotenv/config";
-import createEstadosRoute from "@/src/estados/routesEstados";
-import createTiposRoute from "@/src/tipos/routesTipos";
+import createEstadosRoute from "@/src/states/routesStates";
+import createTiposRoute from "@/src/types/controller/routesTipos";
 import createRolesRoute from "@/src/roles/routesRoles";
 import express, { json } from "express";
 import dotenv from "dotenv";
 import { corsMiddleware, errorHandler } from "@/config/middleware";
 import IRolesDAO from "@/src/roles/dao/IRolesDAO";
-import IEstadosDAO from "@/src/estados/dao/IEstadosDAO";
-import ITiposDAO from "@/src/tipos/dao/ITiposDAO";
+import IEstadosDAO from "@/src/states/dao/IStatesDAO";
+import ITiposDAO from "@/src/types/model/dao/ITiposDAO";
 import createUsuariosRoute from "@/src/users/controller/routesUsers";
 import IUsersDAO from "@/src/users/model/dao/IUsersDAO";
 import createAuthRoute from "./auth/routesAuth";
@@ -40,7 +40,7 @@ const createApp = (
   app.use("/estados", createEstadosRoute(estadosDAO));
   app.use("/tipos", createTiposRoute(tiposDAO));
   app.use("/roles", createRolesRoute(rolesDAO));
-  app.use("/usuarios", createUsuariosRoute(usuariosDAO));
+  app.use("/users", createUsuariosRoute(usuariosDAO));
   app.use("/auth", createAuthRoute(usuariosDAO));
 
   // Usar el middleware de manejo de errores al final de todas las rutas

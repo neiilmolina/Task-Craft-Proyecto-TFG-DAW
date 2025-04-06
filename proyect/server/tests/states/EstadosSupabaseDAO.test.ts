@@ -1,8 +1,8 @@
 jest.mock("@/config/supabase", () => require("@/tests/__mocks__/supabase"));
 
-import EstadosSupabaseDAO from "@/src/estados/dao/EstadosSupabaseDAO";
+import EstadosSupabaseDAO from "@/src/states/dao/EstadosSupabaseDAO";
 import supabase from "@/tests/__mocks__/supabase";
-import { Estado, EstadoNoId } from "@/src/estados/interfacesEstados";
+import { Estado, EstadoNoId } from "@/src/states/interfacesStates";
 
 describe("EstadosSupabaseDAO", () => {
   let estadosDAO: EstadosSupabaseDAO = new EstadosSupabaseDAO();

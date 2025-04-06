@@ -1,7 +1,7 @@
-import ITiposDAO from "@/src/tipos/dao/ITiposDAO";
-import { TipoCreate, TipoUpdate } from "@/src/tipos/interfacesTipos";
+import ITiposDAO from "@/src/types/model/dao/ITiposDAO";
+import { TipoCreate, TipoUpdate } from "@/src/types/model/interfaces/interfacesTypes";
 
-export default class TiposModel {
+export default class TypesRepository {
   constructor(private tiposDAO: ITiposDAO) {}
 
   // Obtener todos los tipos

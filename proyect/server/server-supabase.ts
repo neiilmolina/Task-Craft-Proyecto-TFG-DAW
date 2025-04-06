@@ -1,10 +1,10 @@
 import createApp from "@/src/app";
-import EstadosModel from "@/src/estados/EstadosModel";
-import EstadosSupabaseDAO from "@/src/estados/dao/EstadosSupabaseDAO";
+import EstadosModel from "@/src/states/StatesRepository";
+import EstadosSupabaseDAO from "@/src/states/dao/EstadosSupabaseDAO";
 import UsuariosModel from "@/src/usuarios/UsuariosModel";
 import UsuariosSupabaseDAO from "@/src/usuarios/dao/UsuariosSupabaseDAO";
-import TiposModel from "./src/tipos/TiposModel";
-import TiposSupabaseDAO from "./src/tipos/dao/TiposSupabaseDAO";
+import TiposModel from "./src/types/TiposModel";
+import TiposSupabaseDAO from "./src/types/model/dao/TiposSupabaseDAO";
 
 // Create the model instance with the DAO
 const estadosModel = new EstadosModel(new EstadosSupabaseDAO());

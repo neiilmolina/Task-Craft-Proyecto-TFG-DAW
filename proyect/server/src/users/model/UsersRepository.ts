@@ -1,5 +1,5 @@
 import IUsersDAO from "@/src/users/model/dao/IUsersDAO";
-import { UsuarioCreate, UsuarioUpdate } from "@/src/users/model/interfaces/interfacesUsers";
+import { UserCreate, UserUpdate } from "@/src/users/model/interfaces/interfacesUsers";
 
 export default class UsersRepository {
   constructor(private usersDAO: IUsersDAO) {}
@@ -16,11 +16,11 @@ export default class UsersRepository {
     return this.usersDAO.getById(id);
   }
 
-  async create(idUsuario: string, usuario: UsuarioCreate) {
+  async create(idUsuario: string, usuario: UserCreate) {
     return this.usersDAO.create(idUsuario, usuario);
   }
 
-  async update(id: string, usuario: UsuarioUpdate) {
+  async update(id: string, usuario: UserUpdate) {
     return this.usersDAO.update(id, usuario);
   }
 

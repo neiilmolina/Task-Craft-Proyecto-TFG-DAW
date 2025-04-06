@@ -1,19 +1,19 @@
 import {
-  Usuario,
-  UsuarioCreate,
-  UsuarioReturn,
-  UsuarioUpdate,
+  User,
+  UserCreate,
+  UserReturn,
+  UserUpdate,
 } from "@/src/users/model/interfaces/interfacesUsers";
 
 export default interface IUsersDAO {
-  getAll(idRol?: number): Promise<Usuario[]>;
-  getById(id: string): Promise<Usuario | null>;
-  getByCredentials(email: string, password: string): Promise<Usuario | null>;
+  getAll(idRol?: number): Promise<User[]>;
+  getById(id: string): Promise<User | null>;
+  getByCredentials(email: string, password: string): Promise<User | null>;
   create(
-    idUsuario: string,
-    usuario: UsuarioCreate
-  ): Promise<UsuarioReturn | null>;
-  update(id: string, usuario: UsuarioUpdate): Promise<UsuarioReturn | null>;
+    idUser: string,
+    user: UserCreate
+  ): Promise<UserReturn | null>;
+  update(id: string, user: UserUpdate): Promise<UserReturn | null>;
   updatePassword(id: string, password: string): Promise<Boolean>;
   delete(id: string): Promise<boolean>;
 }

@@ -1,8 +1,7 @@
-import IEstadosDAO from "@/src/estados/dao/IEstadosDAO";
-import { Estado, EstadoNoId } from "../interfacesEstados";
+import IEstadosDAO from "@/src/states/dao/IStatesDAO";
+import { State, StateNoId } from "../interfacesStates";
 import connection from "@/config/mysql";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
-
 const TABLE_NAME = "estados";
 const FIELDS = {
   idEstado: "idEstado",
@@ -10,28 +9,30 @@ const FIELDS = {
 };
 
 export default class EstadosMysqlDAO implements IEstadosDAO {
-  async getAll(): Promise<Estado[]> {
-    return new Promise<Estado[]>((resolve, reject) => {
+  async getAll(): Promise<State[]> {
+    return new Promise<State[]>((resolve, reject) => {
       const query = `SELECT * FROM ${TABLE_NAME}`;
       connection.query(query, (err, results) => {
         if (err) {
           return reject(err);
         }
         if (Array.isArray(results)) {
-          const estados: Estado[] = results.map((row: any) => ({
+          const estados: State[] = results.map((row: any) => ({
             idEstado: row[FIELDS.idEstado],
             estado: row[FIELDS.estado],
           }));
           resolve(estados);
         } else {
-          reject(new Error("Expected array of results but got something else."));
+          reject(
+            new Error("Expected array of results but got something else.")
+          );
         }
       });
     });
   }
 
-  async getById(id: number): Promise<Estado | null> {
-    return new Promise<Estado | null>((resolve, reject) => {
+  async getById(id: number): Promise<State | null> {
+    return new Promise<State | null>((resolve, reject) => {
       const query = `SELECT * FROM ${TABLE_NAME} WHERE ${FIELDS.idEstado} = ?`;
       connection.query(query, [id], (err, results) => {
         if (err) {
@@ -39,7 +40,7 @@ export default class EstadosMysqlDAO implements IEstadosDAO {
         }
         if (Array.isArray(results) && results.length > 0) {
           const row = results[0] as RowDataPacket;
-          const estado: Estado = {
+          const estado: State = {
             idEstado: row[FIELDS.idEstado],
             estado: row[FIELDS.estado],
           };
@@ -51,7 +52,7 @@ export default class EstadosMysqlDAO implements IEstadosDAO {
     });
   }
 
-  async create(estado: EstadoNoId): Promise<Estado | null> {
+  async create(estado: StateNoId): Promise<State | null> {
     return new Promise<Estado>((resolve, reject) => {
       const query = `INSERT INTO ${TABLE_NAME} (${FIELDS.estado}) VALUES (?)`;
       connection.query(query, [estado.estado], (err, results) => {
@@ -60,13 +61,16 @@ export default class EstadosMysqlDAO implements IEstadosDAO {
           return reject(null);
         }
         const resultSet = results as ResultSetHeader;
-        const newEstado: Estado = { idEstado: resultSet.insertId, estado: estado.estado };
+        const newEstado: Estado = {
+          idEstado: resultSet.insertId,
+          estado: estado.estado,
+        };
         resolve(newEstado);
       });
     });
   }
 
-  async update(id: number, estado: EstadoNoId): Promise<Estado | null> {
+  async update(id: number, estado: StateNoId): Promise<State | null> {
     return new Promise<Estado>((resolve, reject) => {
       const query = `UPDATE ${TABLE_NAME} SET ${FIELDS.estado} = ? WHERE ${FIELDS.idEstado} = ?`;
       connection.query(query, [estado.estado, id], (err, results) => {

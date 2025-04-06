@@ -1,8 +1,8 @@
 import {
-  Usuario,
-  UsuarioCreate,
-  UsuarioReturn,
-  UsuarioUpdate,
+  User,
+  UserCreate,
+  UserReturn,
+  UserUpdate,
 } from "@/src/users/model/interfaces/interfacesUsers";
 import IUsersDAO from "@/src/users/model/dao/IUsersDAO";
 import connection from "@/config/mysql";
@@ -11,18 +11,18 @@ import bcrypt from "bcryptjs";
 
 const TABLE_NAME = "usuarios";
 const FIELDS = {
-  idUsuario: "idUsuario",
-  nombreUsuario: "nombreUsuario",
+  idUser: "idUsuario",
+  userName: "nombreUsuario",
   email: "email",
   password: "password",
   urlImg: "urlImagen",
   idRol: "idRol",
 };
 
-export default class UsuariosMysqlDAO implements IUsersDAO {
-  async getAll(idRol?: Number): Promise<Usuario[]> {
-    return new Promise<Usuario[]>((resolve, reject) => {
-      let query = `SELECT u.${FIELDS.idUsuario}, u.${FIELDS.nombreUsuario}, u.${FIELDS.email}, 
+export default class UsersMysqlDAO implements IUsersDAO {
+  async getAll(idRol?: Number): Promise<User[]> {
+    return new Promise<User[]>((resolve, reject) => {
+      let query = `SELECT u.${FIELDS.idUser}, u.${FIELDS.userName}, u.${FIELDS.email}, 
                             u.${FIELDS.urlImg}, 
                             r.idRol AS idRol, r.rol AS rol 
                      FROM ${TABLE_NAME} u 
@@ -46,10 +46,10 @@ export default class UsuariosMysqlDAO implements IUsersDAO {
             );
           }
 
-          const usuarios: Usuario[] = results.map((row) => {
+          const user: User[] = results.map((row) => {
             return {
-              idUsuario: row[FIELDS.idUsuario],
-              nombreUsuario: row[FIELDS.nombreUsuario],
+              idUser: row[FIELDS.idUser],
+              userName: row[FIELDS.userName],
               email: row[FIELDS.email],
               urlImg: row[FIELDS.urlImg] || null,
               rol: {
@@ -59,18 +59,18 @@ export default class UsuariosMysqlDAO implements IUsersDAO {
             };
           });
 
-          resolve(usuarios);
+          resolve(user);
         }
       );
     });
   }
 
-  async getById(id: string): Promise<Usuario | null> {
-    return new Promise<Usuario | null>((resolve, reject) => {
-      const query = `SELECT u.${FIELDS.idUsuario}, u.${FIELDS.nombreUsuario}, u.${FIELDS.email}, u.${FIELDS.urlImg}, r.idRol, r.rol 
+  async getById(id: string): Promise<User | null> {
+    return new Promise<User | null>((resolve, reject) => {
+      const query = `SELECT u.${FIELDS.idUser}, u.${FIELDS.userName}, u.${FIELDS.email}, u.${FIELDS.urlImg}, r.idRol, r.rol 
                      FROM ${TABLE_NAME} u 
                      JOIN roles r ON u.${FIELDS.idRol} = r.idRol 
-                     WHERE u.${FIELDS.idUsuario} = ?`;
+                     WHERE u.${FIELDS.idUser} = ?`;
 
       connection.query(query, [id], (err, results: RowDataPacket[]) => {
         if (err) {
@@ -85,9 +85,9 @@ export default class UsuariosMysqlDAO implements IUsersDAO {
 
         if (results.length > 0) {
           const row = results[0];
-          const usuario: Usuario = {
-            idUsuario: row[FIELDS.idUsuario],
-            nombreUsuario: row[FIELDS.nombreUsuario],
+          const usuario: User = {
+            idUser: row[FIELDS.idUser],
+            userName: row[FIELDS.userName],
             email: row[FIELDS.email],
             urlImg: row[FIELDS.urlImg] || null,
             rol: {
@@ -106,9 +106,9 @@ export default class UsuariosMysqlDAO implements IUsersDAO {
   async getByCredentials(
     email: string,
     password: string
-  ): Promise<Usuario | null> {
-    return new Promise<Usuario | null>((resolve, reject) => {
-      const query = `SELECT u.${FIELDS.idUsuario}, u.${FIELDS.nombreUsuario}, u.${FIELDS.email}, u.${FIELDS.urlImg}, 
+  ): Promise<User | null> {
+    return new Promise<User | null>((resolve, reject) => {
+      const query = `SELECT u.${FIELDS.idUser}, u.${FIELDS.userName}, u.${FIELDS.email}, u.${FIELDS.urlImg}, 
                             u.password, r.idRol, r.rol 
                      FROM ${TABLE_NAME} u 
                      JOIN roles r ON u.${FIELDS.idRol} = r.idRol 
@@ -138,9 +138,9 @@ export default class UsuariosMysqlDAO implements IUsersDAO {
               return resolve(null); // Contraseña incorrecta
             }
 
-            const usuario: Usuario = {
-              idUsuario: row[FIELDS.idUsuario],
-              nombreUsuario: row[FIELDS.nombreUsuario],
+            const usuario: User = {
+              idUser: row[FIELDS.idUser],
+              userName: row[FIELDS.userName],
               email: row[FIELDS.email],
               urlImg: row[FIELDS.urlImg] || null,
               rol: {
@@ -157,63 +157,53 @@ export default class UsuariosMysqlDAO implements IUsersDAO {
     });
   }
 
-  async create(
-    idUsuario: string,
-    usuario: UsuarioCreate
-  ): Promise<UsuarioReturn | null> {
-    return new Promise<UsuarioReturn>((resolve, reject) => {
-      const query = `INSERT INTO ${TABLE_NAME} (${FIELDS.idUsuario}, ${FIELDS.nombreUsuario}, ${FIELDS.email}, ${FIELDS.password}, ${FIELDS.urlImg}, ${FIELDS.idRol}) VALUES (?, ?, ?, ?, ?, ?)`;
+  async create(idUser: string, user: UserCreate): Promise<UserReturn | null> {
+    return new Promise<UserReturn>((resolve, reject) => {
+      const query = `INSERT INTO ${TABLE_NAME} (${FIELDS.idUser}, ${FIELDS.userName}, ${FIELDS.email}, ${FIELDS.password}, ${FIELDS.urlImg}, ${FIELDS.idRol}) VALUES (?, ?, ?, ?, ?, ?)`;
 
       connection.query(
         query,
         [
-          idUsuario,
-          usuario.nombreUsuario || "", // Si `nombreUsuario` es `undefined`, lo asignamos como una cadena vacía
-          usuario.email,
-          usuario.password,
-          usuario.urlImg || "", // Si `urlImg` es `undefined`, lo asignamos como una cadena vacía
-          usuario.idRol || 1, // Si `idRol` es `undefined`, lo asignamos como 1
+          idUser,
+          user.userName || "", // Si `nombreUsuario` es `undefined`, lo asignamos como una cadena vacía
+          user.email,
+          user.password,
+          user.urlImg || "", // Si `urlImg` es `undefined`, lo asignamos como una cadena vacía
+          user.idRol || 1, // Si `idRol` es `undefined`, lo asignamos como 1
         ],
         (err, results) => {
           if (err) {
             return reject(new Error("Database insertion error")); // Lanza un error específico
           }
           resolve({
-            nombreUsuario: usuario.nombreUsuario ?? "",
-            email: usuario.email,
-            urlImg: usuario.urlImg ?? "",
-            idRol: usuario.idRol || 1,
-            idUsuario: idUsuario,
+            userName: user.userName ?? "",
+            email: user.email,
+            urlImg: user.urlImg ?? "",
+            idRol: user.idRol || 1,
+            idUser: idUser,
           });
         }
       );
     });
   }
 
-  async update(
-    id: string,
-    usuario: UsuarioUpdate
-  ): Promise<UsuarioReturn | null> {
-    return new Promise<UsuarioReturn>((resolve, reject) => {
+  async update(id: string, user: UserUpdate): Promise<UserReturn | null> {
+    return new Promise<UserReturn>((resolve, reject) => {
       const query = `UPDATE ${TABLE_NAME} SET
-                      ${FIELDS.nombreUsuario} = ?, 
+                      ${FIELDS.userName} = ?, 
                       ${FIELDS.email} = ?, 
                       ${FIELDS.urlImg} = ?, 
                       ${FIELDS.idRol} = ? 
-                      WHERE ${FIELDS.idUsuario} = ?`;
+                      WHERE ${FIELDS.idUser} = ?`;
 
       connection.query(
         query,
-        [
-          usuario.nombreUsuario,
-          usuario.email,
-          usuario.urlImg,
-          usuario.idRol,
-          id,
-        ],
+        [user.userName, user.email, user.urlImg, user.idRol, id],
         (err, results) => {
           if (err) {
-            return reject(new Error("Database update error: " + err.message)); // Lanza un error con mensaje detallado
+            return reject(
+              new Error(`Database update error:  + ${err.message}`)
+            ); // Lanza un error con mensaje detallado
           }
 
           const resultSet = results as ResultSetHeader;
@@ -224,12 +214,12 @@ export default class UsuariosMysqlDAO implements IUsersDAO {
 
           // Resolver con el resultado
           resolve({
-            idUsuario: id,
-            nombreUsuario: usuario.nombreUsuario,
-            email: usuario.email,
-            urlImg: usuario.urlImg,
-            idRol: usuario.idRol,
-          } as UsuarioReturn);
+            idUser: id,
+            userName: user.userName,
+            email: user.email,
+            urlImg: user.urlImg,
+            idRol: user.idRol,
+          } as UserReturn);
         }
       );
     });
@@ -239,11 +229,11 @@ export default class UsuariosMysqlDAO implements IUsersDAO {
     return new Promise<Boolean>((resolve, reject) => {
       const query = `UPDATE ${TABLE_NAME} SET
       ${FIELDS.password} = ?
-      WHERE ${FIELDS.idUsuario} = ?`;
+      WHERE ${FIELDS.idUser} = ?`;
 
       connection.query(query, [password, id], (err, results) => {
         if (err) {
-          return reject(new Error("Database update error: " + err.message)); // Lanza un error con mensaje detallado
+          return reject(new Error(`Database update error:  + ${err.message}`)); // Lanza un error con mensaje detallado
         }
 
         const resultSet = results as ResultSetHeader;
@@ -260,7 +250,7 @@ export default class UsuariosMysqlDAO implements IUsersDAO {
 
   async delete(id: string): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
-      const query = `DELETE FROM ${TABLE_NAME} WHERE ${FIELDS.idUsuario} = ?`;
+      const query = `DELETE FROM ${TABLE_NAME} WHERE ${FIELDS.idUser} = ?`;
       connection.query(query, [id], (err, results) => {
         if (err) {
           return reject(err);

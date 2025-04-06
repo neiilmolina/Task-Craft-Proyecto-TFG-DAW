@@ -1,9 +1,9 @@
 // src/estados/EstadosController.ts
 import { RequestHandler } from "express";
-import { validateEstadoNoId } from "@/src/estados/schemasEstados";
-import EstadosModel from "@/src/estados/EstadosModel";
-import { EstadoNoId } from "@/src/estados/interfacesEstados";
-import IEstadosDAO from "@/src/estados/dao/IEstadosDAO";
+import { validateEstadoNoId } from "@/src/states/schemasStates";
+import EstadosModel from "@/src/states/StatesRepository";
+import { EstadoNoId } from "@/src/states/interfacesStates";
+import IEstadosDAO from "@/src/states/dao/IStatesDAO";
 
 export default class EstadosController {
   private estadosModel: EstadosModel;

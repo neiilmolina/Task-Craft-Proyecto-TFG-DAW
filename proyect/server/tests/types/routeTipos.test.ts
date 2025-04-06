@@ -1,4 +1,4 @@
-import createTiposRoute from "@/src/tipos/routesTipos";
+import createTiposRoute from "@/src/types/controller/routesTipos";
 import express from "express";
 import request from "supertest";
 import TiposModel from "@/src/tipos/TiposModel";

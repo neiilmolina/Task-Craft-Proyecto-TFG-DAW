@@ -1,20 +1,20 @@
-import IUsuariosDAO from "@/src/users/model/dao/IUsersDAO";
-import UsuariosController from "@/src/users/controller/UsersController";
+import IUsersDAO from "@/src/users/model/dao/IUsersDAO";
+import UsersController from "@/src/users/controller/UsersController";
 import { Router } from "express";
 
-const createUsuariosRoute = (usuariosDAO: IUsuariosDAO) => {
+const createUsersRoute = (usersDAO: IUsersDAO) => {
   const router = Router();
-  const usuariosController = new UsuariosController(usuariosDAO);
+  const usersController = new UsersController(usersDAO);
 
-  router.get("/", usuariosController.getUsers);
-  router.get("/:idUser", usuariosController.getUsuarioById);
-  router.post("/validateUser", usuariosController.getUsuarioByCredentials);
-  router.post("/create", usuariosController.createUsuario);
-  router.put("/update/:idUser", usuariosController.updateUsuario);
-  router.put("/updatePassword/:idUser", usuariosController.updateUsuarioPassword);
-  router.delete("/:idUser", usuariosController.deleteUsuario);
+  router.get("/", usersController.getUsers);
+  router.get("/:idUser", usersController.getUserById);
+  router.post("/validateUser", usersController.getUserByCredentials);
+  router.post("/create", usersController.createUser);
+  router.put("/update/:idUser", usersController.updateUser);
+  router.put("/updatePassword/:idUser", usersController.updateUserPassword);
+  router.delete("/:idUser", usersController.deleteUser);
 
   return router;
 };
 
-export default createUsuariosRoute;
+export default createUsersRoute;

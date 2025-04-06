@@ -1,41 +1,41 @@
 import { Rol } from "@/src/roles/interfacesRoles";
 
-export interface UsuarioBD {
-  idUsuario: string;
-  nombreUsuario: string;
+export interface UserBD {
+  idUser: string;
+  userName: string;
   email: string;
-  password: string; // Incluimos el campo password ya que estaba en el objeto
-  urlImagen: string | null; // Se permite null para la URL de la imagen
-  idRol: number; // Asumiendo que el idRol es un número
+  password: string;
+  urlImg: string | null;
+  idRol: number;
   rol?: string;
 }
 
-export interface Usuario {
-  idUsuario: string;
-  nombreUsuario: string;
+export interface User {
+  idUser: string;
+  userName: string;
   email: string;
   urlImg: string | null;
   rol: Rol;
 }
 
-export interface UsuarioCreate {
-  nombreUsuario?: string;
+export interface UserCreate {
+  userName?: string;
   email: string;
   password: string;
   urlImg?: string | null;
   idRol?: number;
 }
 
-export interface UsuarioUpdate {
-  nombreUsuario: string;
+export interface UserUpdate {
+  userName: string;
   email?: string;
   urlImg?: string | null;
   idRol?: number;
 }
 
-export interface UsuarioReturn {
-  idUsuario: string;
-  nombreUsuario?: string;
+export interface UserReturn {
+  idUser: string;
+  userName?: string;
   email: string;
   urlImg?: string | null;
   idRol: number;

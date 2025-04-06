@@ -1,7 +1,7 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import request from "supertest";
-import IUsuariosDAO from "@/src/usuarios/dao/IUsuariosDAO";
+import IUsersDAO from "@/src/users/model/dao/IUsersDAO";
 import createAuthRoute from "@/src/auth/routesAuth";
 const KEY_ACCESS_COOKIE = "access_token";
 
@@ -20,10 +20,10 @@ jest.mock("jsonwebtoken", () => ({
 
 describe("Auth Routes", () => {
   let app: express.Application;
-  let mockUsuariosModel: jest.Mocked<IUsuariosDAO>;
+  let mockUsersModel: jest.Mocked<IUsersDAO>;
   let secretKey: string;
   beforeEach(() => {
-    mockUsuariosModel = {
+    mockUsersModel = {
       getAll: jest.fn(),
       getByCredentials: jest.fn(),
       getById: jest.fn(),
@@ -31,13 +31,13 @@ describe("Auth Routes", () => {
       update: jest.fn(),
       updatePassword: jest.fn(),
       delete: jest.fn(),
-    } as unknown as jest.Mocked<IUsuariosDAO>;
+    } as unknown as jest.Mocked<IUsersDAO>;
 
     secretKey = process.env.JWT_SECRET as string;
 
     app = express();
     app.use(express.json());
-    app.use("/auth", createAuthRoute(mockUsuariosModel)); // Ajusta la ruta si es necesario
+    app.use("/auth", createAuthRoute(mockUsersModel)); // Ajusta la ruta si es necesario
   });
 
   describe("POST /login", () => {
@@ -47,9 +47,9 @@ describe("Auth Routes", () => {
         password: "correct_password",
       };
 
-      const mockUsuario = {
-        idUsuario: "1",
-        nombreUsuario: "john_doe",
+      const mockUser = {
+        idUser: "1",
+        userName: "john_doe",
         email: "john@example.com",
         urlImg: null,
         rol: {
@@ -59,7 +59,7 @@ describe("Auth Routes", () => {
       };
 
       const mockToken = "mockToken123";
-      mockUsuariosModel.getByCredentials.mockResolvedValue(mockUsuario);
+      mockUsersModel.getByCredentials.mockResolvedValue(mockUser);
       jwt.sign = jest.fn().mockReturnValue(mockToken);
 
       const response = await request(app)
@@ -79,12 +79,12 @@ describe("Auth Routes", () => {
 
       expect(cookieExiste).toBe(true);
 
-      expect(mockUsuariosModel.getByCredentials).toHaveBeenCalledWith(
+      expect(mockUsersModel.getByCredentials).toHaveBeenCalledWith(
         mockCredentials.email,
         mockCredentials.password
       );
 
-      expect(jwt.sign).toHaveBeenCalledWith(mockUsuario, secretKey, {
+      expect(jwt.sign).toHaveBeenCalledWith(mockUser, secretKey, {
         expiresIn: "1h",
       });
     });
@@ -95,7 +95,7 @@ describe("Auth Routes", () => {
       };
 
       // Simula la respuesta del controlador `getByCredentials`
-      mockUsuariosModel.getByCredentials.mockResolvedValue(null);
+      mockUsersModel.getByCredentials.mockResolvedValue(null);
 
       const response = await request(app)
         .post("/auth/login")
@@ -105,7 +105,7 @@ describe("Auth Routes", () => {
       expect(response.body).toEqual({
         error: "Usuario no encontrado o credenciales incorrectas",
       });
-      expect(mockUsuariosModel.getByCredentials).toHaveBeenCalledWith(
+      expect(mockUsersModel.getByCredentials).toHaveBeenCalledWith(
         mockCredentials.email,
         mockCredentials.password
       );
@@ -118,7 +118,7 @@ describe("Auth Routes", () => {
       };
 
       // Simula un error en el controlador
-      mockUsuariosModel.getByCredentials.mockRejectedValue(
+      mockUsersModel.getByCredentials.mockRejectedValue(
         new Error("Error interno")
       );
 
@@ -128,7 +128,7 @@ describe("Auth Routes", () => {
 
       expect(response.status).toBe(500);
       expect(response.body).toEqual({ error: "Error interno del servidor" });
-      expect(mockUsuariosModel.getByCredentials).toHaveBeenCalledWith(
+      expect(mockUsersModel.getByCredentials).toHaveBeenCalledWith(
         mockCredentials.email,
         mockCredentials.password
       );

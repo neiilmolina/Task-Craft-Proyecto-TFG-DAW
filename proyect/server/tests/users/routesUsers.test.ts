@@ -1,13 +1,13 @@
-import createRouteUsuarios from "@/src/users/controller/routesUsers";
+import createRouteUsers from "@/src/users/controller/routesUsers";
 import express from "express";
 import request from "supertest";
 import {
-  Usuario,
-  UsuarioCreate,
-  UsuarioReturn,
-  UsuarioUpdate,
+  User,
+  UserCreate,
+  UserReturn,
+  UserUpdate,
 } from "@/src/users/model/interfaces/interfacesUsers";
-import IUsuariosDAO from "@/src/users/model/dao/IUsersDAO";
+import IUsersDAO from "@/src/users/model/dao/IUsersDAO";
 
 const originalConsoleError = console.error;
 beforeAll(() => {
@@ -17,12 +17,12 @@ afterAll(() => {
   console.error = originalConsoleError;
 });
 
-describe("Usuarios Routes", () => {
+describe("Users Routes", () => {
   let app: express.Application;
-  let mockUsuariosModel: jest.Mocked<IUsuariosDAO>;
+  let mockUsersModel: jest.Mocked<IUsersDAO>;
 
   beforeEach(() => {
-    mockUsuariosModel = {
+    mockUsersModel = {
       getAll: jest.fn(),
       getByCredentials: jest.fn(),
       getById: jest.fn(),
@@ -30,150 +30,150 @@ describe("Usuarios Routes", () => {
       update: jest.fn(),
       updatePassword: jest.fn(),
       delete: jest.fn(),
-    } as unknown as jest.Mocked<IUsuariosDAO>;
+    } as unknown as jest.Mocked<IUsersDAO>;
 
     app = express();
     app.use(express.json());
-    app.use("/usuarios", createRouteUsuarios(mockUsuariosModel));
+    app.use("/users", createRouteUsers(mockUsersModel));
   });
 
-  describe("GET /usuarios", () => {
-    it("debe devolver un array de usuarios cuando la base de datos tiene datos", async () => {
-      const mockUsuarios: Usuario[] = [
+  describe("GET /users", () => {
+    it("debe devolver un array de users cuando la base de datos tiene datos", async () => {
+      const mockUsers: User[] = [
         {
-          idUsuario: "1",
-          nombreUsuario: "usuario1",
-          email: "usuario1@example.com",
-          urlImg: "https://imagen.com/usuario1.png",
+          idUser: "1",
+          userName: "user1",
+          email: "user1@example.com",
+          urlImg: "https://imagen.com/user1.png",
           rol: { idRol: 2, rol: "Admin" },
         },
         {
-          idUsuario: "2",
-          nombreUsuario: "usuario2",
-          email: "usuario2@example.com",
+          idUser: "2",
+          userName: "user2",
+          email: "user2@example.com",
           urlImg: null,
           rol: { idRol: 3, rol: "Editor" },
         },
       ];
 
-      mockUsuariosModel.getAll.mockResolvedValue(mockUsuarios);
+      mockUsersModel.getAll.mockResolvedValue(mockUsers);
 
-      const response = await request(app).get("/usuarios");
+      const response = await request(app).get("/users");
 
       expect(response.status).toBe(200);
-      expect(response.body).toEqual(mockUsuarios);
-      expect(mockUsuariosModel.getAll).toHaveBeenCalled();
+      expect(response.body).toEqual(mockUsers);
+      expect(mockUsersModel.getAll).toHaveBeenCalled();
     });
 
     it("debe devolver un array vacío cuando la base de datos no tiene datos", async () => {
-      mockUsuariosModel.getAll.mockResolvedValue([]);
+      mockUsersModel.getAll.mockResolvedValue([]);
 
-      const response = await request(app).get("/usuarios");
+      const response = await request(app).get("/users");
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual([]);
-      expect(mockUsuariosModel.getAll).toHaveBeenCalled();
+      expect(mockUsersModel.getAll).toHaveBeenCalled();
     });
 
     it("debe devolver un error 500 si falla la obtención de datos", async () => {
-      mockUsuariosModel.getAll.mockRejectedValue(
+      mockUsersModel.getAll.mockRejectedValue(
         new Error("Error en la base de datos")
       );
 
-      const response = await request(app).get("/usuarios");
+      const response = await request(app).get("/users");
 
       expect(response.status).toBe(500);
       expect(response.body).toEqual({ error: "Error interno del servidor" });
-      expect(mockUsuariosModel.getAll).toHaveBeenCalled();
+      expect(mockUsersModel.getAll).toHaveBeenCalled();
     });
 
-    it("debe filtrar usuarios por idRol cuando se proporciona un id válido", async () => {
+    it("debe filtrar users por idRol cuando se proporciona un id válido", async () => {
       const idRol = 2;
-      const mockUsuarios: Usuario[] = [
+      const mockUsers: User[] = [
         {
-          idUsuario: "1",
-          nombreUsuario: "usuario1",
-          email: "usuario1@example.com",
-          urlImg: "https://imagen.com/usuario1.png",
+          idUser: "1",
+          userName: "user1",
+          email: "user1@example.com",
+          urlImg: "https://imagen.com/user1.png",
           rol: { idRol: 2, rol: "Admin" },
         },
       ];
 
-      mockUsuariosModel.getAll.mockResolvedValue(mockUsuarios);
+      mockUsersModel.getAll.mockResolvedValue(mockUsers);
 
-      const response = await request(app).get(`/usuarios`).query({ idRol });
+      const response = await request(app).get(`/users`).query({ idRol });
       expect(response.status).toBe(200);
-      expect(response.body).toEqual(mockUsuarios);
-      expect(mockUsuariosModel.getAll).toHaveBeenCalledWith(idRol);
+      expect(response.body).toEqual(mockUsers);
+      expect(mockUsersModel.getAll).toHaveBeenCalledWith(idRol);
     });
   });
 
-  describe("GET /usuarios/:idUsuario", () => {
-    it("debe devolver un usuario cuando el idUsuario existe", async () => {
-      const mockUsuario: Usuario = {
-        idUsuario: "e86ec149-0f13-4d77-aefa-849ab3992b6e",
-        nombreUsuario: "usuario1",
-        email: "usuario1@example.com",
-        urlImg: "https://imagen.com/usuario1.png",
+  describe("GET /users/:idUser", () => {
+    it("debe devolver un user cuando el idUser existe", async () => {
+      const mockUser: User = {
+        idUser: "e86ec149-0f13-4d77-aefa-849ab3992b6e",
+        userName: "user1",
+        email: "user1@example.com",
+        urlImg: "https://imagen.com/user1.png",
         rol: { idRol: 2, rol: "Admin" },
       };
 
-      mockUsuariosModel.getById.mockResolvedValue(mockUsuario);
+      mockUsersModel.getById.mockResolvedValue(mockUser);
 
       const response = await request(app).get(
-        `/usuarios/e86ec149-0f13-4d77-aefa-849ab3992b6e`
+        `/users/e86ec149-0f13-4d77-aefa-849ab3992b6e`
       );
 
       expect(response.status).toBe(200);
-      expect(response.body).toEqual(mockUsuario);
-      expect(mockUsuariosModel.getById).toHaveBeenCalledWith(
+      expect(response.body).toEqual(mockUser);
+      expect(mockUsersModel.getById).toHaveBeenCalledWith(
         "e86ec149-0f13-4d77-aefa-849ab3992b6e"
       );
     });
 
-    it("debe devolver un error 404 cuando el idUsuario no existe", async () => {
+    it("debe devolver un error 404 cuando el idUser no existe", async () => {
       const uid = "e86ec149-0f13-4d77-aefa-849ab3992b6e";
-      mockUsuariosModel.getById.mockResolvedValue(null);
+      mockUsersModel.getById.mockResolvedValue(null);
 
-      const response = await request(app).get(`/usuarios/${uid}`);
+      const response = await request(app).get(`/users/${uid}`);
 
       expect(response.status).toBe(404);
-      expect(response.body).toEqual({ error: "Usuario no encontrado" });
-      expect(mockUsuariosModel.getById).toHaveBeenCalledWith(uid);
+      expect(response.body).toEqual({ error: "User no encontrado" });
+      expect(mockUsersModel.getById).toHaveBeenCalledWith(uid);
     });
 
     it("debe devolver un error 500 si ocurre un fallo en la base de datos", async () => {
-      mockUsuariosModel.getById.mockRejectedValue(new Error("DB error"));
+      mockUsersModel.getById.mockRejectedValue(new Error("DB error"));
       const uid = "e86ec149-0f13-4d77-aefa-849ab3992b6e";
 
-      const response = await request(app).get(`/usuarios/${uid}`);
+      const response = await request(app).get(`/users/${uid}`);
 
       expect(response.status).toBe(500);
       expect(response.body).toEqual({ error: "Error interno del servidor" });
-      expect(mockUsuariosModel.getById).toHaveBeenCalledWith(uid);
+      expect(mockUsersModel.getById).toHaveBeenCalledWith(uid);
     });
 
-    it("debe manejar correctamente un idUsuario inválido (NaN)", async () => {
-      const response = await request(app).get(`/usuarios/abc`);
+    it("debe manejar correctamente un idUser inválido (NaN)", async () => {
+      const response = await request(app).get(`/users/abc`);
 
       expect(response.status).toBe(400);
       expect(response.body).toEqual({
-        error: "El ID del usuario debe ser válido",
+        error: "El ID del user debe ser válido",
       });
     });
   });
 
   describe("POST /validateUser", () => {
-    it("debe devolver un usuario cuando las credenciales son correctas", async () => {
+    it("debe devolver un user cuando las credenciales son correctas", async () => {
       // Mock de las credenciales correctas
       const mockCredentials = {
         email: "john@example.com",
         password: "correct_password",
       };
 
-      const mockUsuario = {
-        idUsuario: "1",
-        nombreUsuario: "john_doe",
+      const mockUser = {
+        idUser: "1",
+        userName: "john_doe",
         email: "john@example.com",
         urlImg: null,
         rol: {
@@ -183,38 +183,38 @@ describe("Usuarios Routes", () => {
       };
 
       // Simula la respuesta del controlador `getByCredentials`
-      mockUsuariosModel.getByCredentials.mockResolvedValue(mockUsuario);
+      mockUsersModel.getByCredentials.mockResolvedValue(mockUser);
 
       // Realiza la petición al endpoint
       const response = await request(app)
-        .post("/usuarios/validateUser")
+        .post("/users/validateUser")
         .send(mockCredentials);
 
       // Verificaciones
       expect(response.status).toBe(200);
-      expect(response.body).toEqual(mockUsuario);
-      expect(mockUsuariosModel.getByCredentials).toHaveBeenCalledWith(
+      expect(response.body).toEqual(mockUser);
+      expect(mockUsersModel.getByCredentials).toHaveBeenCalledWith(
         mockCredentials.email,
         mockCredentials.password
       );
     });
 
-    it("debe devolver un error 404 si el usuario no existe", async () => {
+    it("debe devolver un error 404 si el user no existe", async () => {
       const mockCredentials = {
         email: "nonexistent@example.com",
         password: "password123",
       };
 
       // Simula la respuesta del controlador `getByCredentials`
-      mockUsuariosModel.getByCredentials.mockResolvedValue(null);
+      mockUsersModel.getByCredentials.mockResolvedValue(null);
 
       const response = await request(app)
-        .post("/usuarios/validateUser")
+        .post("/users/validateUser")
         .send(mockCredentials);
 
       expect(response.status).toBe(404);
-      expect(response.body).toEqual({ error: "Usuario no encontrado" });
-      expect(mockUsuariosModel.getByCredentials).toHaveBeenCalledWith(
+      expect(response.body).toEqual({ error: "User no encontrado" });
+      expect(mockUsersModel.getByCredentials).toHaveBeenCalledWith(
         mockCredentials.email,
         mockCredentials.password
       );
@@ -227,17 +227,17 @@ describe("Usuarios Routes", () => {
       };
 
       // Simula un error en el controlador
-      mockUsuariosModel.getByCredentials.mockRejectedValue(
+      mockUsersModel.getByCredentials.mockRejectedValue(
         new Error("Error interno")
       );
 
       const response = await request(app)
-        .post("/usuarios/validateUser")
+        .post("/users/validateUser")
         .send(mockCredentials);
 
       expect(response.status).toBe(500);
       expect(response.body).toEqual({ error: "Error interno del servidor" });
-      expect(mockUsuariosModel.getByCredentials).toHaveBeenCalledWith(
+      expect(mockUsersModel.getByCredentials).toHaveBeenCalledWith(
         mockCredentials.email,
         mockCredentials.password
       );
@@ -246,7 +246,7 @@ describe("Usuarios Routes", () => {
     it("debe devolver un error 400 si los datos de entrada no son válidos", async () => {
       // Datos de entrada no válidos
       const response = await request(app)
-        .post("/usuarios/validateUser")
+        .post("/users/validateUser")
         .send({ email: "", password: "" });
 
       expect(response.status).toBe(400);
@@ -256,39 +256,37 @@ describe("Usuarios Routes", () => {
     });
   });
 
-  describe("POST /usuarios/create", () => {
-    it("debe crear un usuario cuando los datos son válidos", async () => {
-      const nuevoUsuario: UsuarioCreate = {
-        nombreUsuario: "nuevoUsuario",
+  describe("POST /users/create", () => {
+    it("debe crear un user cuando los datos son válidos", async () => {
+      const nuevoUser: UserCreate = {
+        userName: "nuevoUser",
         email: "nuevo@example.com",
         urlImg: "https://imagen.com/nuevo.png",
         idRol: 1,
         password: "password123",
       };
 
-      const usuarioReturn: UsuarioReturn = {
-        idUsuario: "550e8400-e29b-41d4-a716-446655440000",
-        nombreUsuario: nuevoUsuario.nombreUsuario,
-        email: nuevoUsuario.email,
-        urlImg: nuevoUsuario.urlImg,
-        idRol: nuevoUsuario.idRol || 1,
+      const userReturn: UserReturn = {
+        idUser: "550e8400-e29b-41d4-a716-446655440000",
+        userName: nuevoUser.userName,
+        email: nuevoUser.email,
+        urlImg: nuevoUser.urlImg,
+        idRol: nuevoUser.idRol || 1,
       };
 
-      mockUsuariosModel.create.mockResolvedValue(usuarioReturn);
+      mockUsersModel.create.mockResolvedValue(userReturn);
 
-      const response = await request(app)
-        .post("/usuarios/create")
-        .send(nuevoUsuario);
+      const response = await request(app).post("/users/create").send(nuevoUser);
 
       expect(response.status).toBe(200);
-      expect(response.body).toEqual(usuarioReturn);
-      expect(mockUsuariosModel.create).toHaveBeenCalledWith(
-        expect.any(String), // El idUsuario se genera dinámicamente
+      expect(response.body).toEqual(userReturn);
+      expect(mockUsersModel.create).toHaveBeenCalledWith(
+        expect.any(String), // El idUser se genera dinámicamente
         expect.objectContaining({
-          nombreUsuario: nuevoUsuario.nombreUsuario,
-          email: nuevoUsuario.email,
-          urlImg: nuevoUsuario.urlImg,
-          idRol: nuevoUsuario.idRol,
+          userName: nuevoUser.userName,
+          email: nuevoUser.email,
+          urlImg: nuevoUser.urlImg,
+          idRol: nuevoUser.idRol,
           password: expect.any(String), // La contraseña es encriptada
         })
       );
@@ -298,7 +296,7 @@ describe("Usuarios Routes", () => {
       const datosInvalidos = {}; // Faltan campos requeridos
 
       const response = await request(app)
-        .post("/usuarios/create")
+        .post("/users/create")
         .send(datosInvalidos);
 
       expect(response.status).toBe(400);
@@ -308,14 +306,14 @@ describe("Usuarios Routes", () => {
       );
 
       // Asegurar que `create` no se llama
-      expect(mockUsuariosModel.create).not.toHaveBeenCalled();
+      expect(mockUsersModel.create).not.toHaveBeenCalled();
     });
 
     it("debe devolver 500 si hay un error interno", async () => {
-      mockUsuariosModel.create.mockRejectedValue(new Error("Error en la BD"));
+      mockUsersModel.create.mockRejectedValue(new Error("Error en la BD"));
 
-      const usuarioValido: UsuarioCreate = {
-        nombreUsuario: "usuarioError",
+      const userValido: UserCreate = {
+        userName: "userError",
         email: "error@example.com",
         urlImg: "https://imagen.com/error.png",
         idRol: 2,
@@ -323,8 +321,8 @@ describe("Usuarios Routes", () => {
       };
 
       const response = await request(app)
-        .post("/usuarios/create")
-        .send(usuarioValido);
+        .post("/users/create")
+        .send(userValido);
 
       expect(response.status).toBe(500);
       expect(response.body).toHaveProperty(
@@ -334,35 +332,35 @@ describe("Usuarios Routes", () => {
     });
   });
 
-  describe("PUT /usuarios/update/:idUsuario", () => {
-    const idUsuarioValido = "550e8400-e29b-41d4-a716-446655440000";
+  describe("PUT /users/update/:idUser", () => {
+    const idUserValido = "550e8400-e29b-41d4-a716-446655440000";
 
-    it("debe actualizar un usuario cuando los datos son válidos", async () => {
-      const datosActualizados: UsuarioUpdate = {
-        nombreUsuario: "usuarioActualizado",
+    it("debe actualizar un user cuando los datos son válidos", async () => {
+      const datosActualizados: UserUpdate = {
+        userName: "userActualizado",
         email: "actualizado@example.com",
         urlImg: "https://imagen.com/actualizado.png",
         idRol: 2,
       };
 
-      const usuarioActualizado: UsuarioReturn = {
-        idUsuario: idUsuarioValido,
-        nombreUsuario: datosActualizados.nombreUsuario,
+      const userActualizado: UserReturn = {
+        idUser: idUserValido,
+        userName: datosActualizados.userName,
         email: datosActualizados.email || "default@example.com",
         urlImg: datosActualizados.urlImg,
         idRol: datosActualizados.idRol ?? 1,
       };
 
-      mockUsuariosModel.update.mockResolvedValue(usuarioActualizado);
+      mockUsersModel.update.mockResolvedValue(userActualizado);
 
       const response = await request(app)
-        .put(`/usuarios/update/${idUsuarioValido}`)
+        .put(`/users/update/${idUserValido}`)
         .send(datosActualizados);
 
       expect(response.status).toBe(200);
-      expect(response.body).toEqual(usuarioActualizado);
-      expect(mockUsuariosModel.update).toHaveBeenCalledWith(
-        idUsuarioValido,
+      expect(response.body).toEqual(userActualizado);
+      expect(mockUsersModel.update).toHaveBeenCalledWith(
+        idUserValido,
         datosActualizados
       );
     });
@@ -371,32 +369,32 @@ describe("Usuarios Routes", () => {
       const datosInvalidos = { email: "correo-invalido" };
 
       const response = await request(app)
-        .put(`/usuarios/update/${idUsuarioValido}`)
+        .put(`/users/update/${idUserValido}`)
         .send(datosInvalidos);
 
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty("error");
-      expect(mockUsuariosModel.update).not.toHaveBeenCalled();
+      expect(mockUsersModel.update).not.toHaveBeenCalled();
     });
 
-    it("debe devolver 404 si el usuario no existe", async () => {
+    it("debe devolver 404 si el user no existe", async () => {
       const response = await request(app)
-        .put(`/usuarios/update/550e8400-e29b-41d4-a716-446655440000`)
-        .send({ nombreUsuario: "NuevoNombre" }); // Aquí no se está enviando `idUsuario`, solo `nombreUsuario`
+        .put(`/users/update/550e8400-e29b-41d4-a716-446655440000`)
+        .send({ userName: "NuevoNombre" }); // Aquí no se está enviando `idUser`, solo `userName`
 
       expect(response.status).toBe(404);
       expect(response.body).toHaveProperty(
         "error",
-        "El usuario no se ha encontrado"
+        "El user no se ha encontrado"
       );
     });
 
     it("debe devolver 500 si ocurre un error en el servidor", async () => {
-      mockUsuariosModel.update.mockRejectedValue(new Error("Error en la BD"));
+      mockUsersModel.update.mockRejectedValue(new Error("Error en la BD"));
 
       const response = await request(app)
-        .put(`/usuarios/update/${idUsuarioValido}`)
-        .send({ nombreUsuario: "UsuarioError" });
+        .put(`/users/update/${idUserValido}`)
+        .send({ userName: "UserError" });
 
       expect(response.status).toBe(500);
       expect(response.body).toHaveProperty(
@@ -406,34 +404,34 @@ describe("Usuarios Routes", () => {
     });
 
     it("debería devolver un estado 400 si el id no es un UUID válido", async () => {
-      const idUsuario = "invalid-id";
+      const idUser = "invalid-id";
 
-      const response = await request(app).put(`/usuarios/update/${idUsuario}`);
+      const response = await request(app).put(`/users/update/${idUser}`);
 
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty(
         "error",
-        "El ID del usuario debe ser válido"
+        "El ID del user debe ser válido"
       );
     });
   });
 
-  describe("PUT /usuarios/updatePassword/:idUsuario", () => {
-    const idUsuarioValido = "550e8400-e29b-41d4-a716-446655440000";
+  describe("PUT /users/updatePassword/:idUser", () => {
+    const idUserValido = "550e8400-e29b-41d4-a716-446655440000";
     const contraseñaValida = "Contraseña123";
 
-    it("debe actualizar la contraseña del usuario cuando los datos son válidos", async () => {
+    it("debe actualizar la contraseña del user cuando los datos son válidos", async () => {
       // Simulamos que la actualización de la contraseña es exitosa
-      mockUsuariosModel.updatePassword.mockResolvedValue(true);
+      mockUsersModel.updatePassword.mockResolvedValue(true);
 
       const response = await request(app)
-        .put(`/usuarios/updatePassword/${idUsuarioValido}`)
+        .put(`/users/updatePassword/${idUserValido}`)
         .send({ password: contraseñaValida });
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual(true); // Verifica que la respuesta sea `true`
-      expect(mockUsuariosModel.updatePassword).toHaveBeenCalledWith(
-        idUsuarioValido,
+      expect(mockUsersModel.updatePassword).toHaveBeenCalledWith(
+        idUserValido,
         expect.any(String) // Asegurándose que la contraseña es hasheada internamente
       );
     });
@@ -442,37 +440,37 @@ describe("Usuarios Routes", () => {
       const contraseñaInvalida = "123";
 
       const response = await request(app)
-        .put(`/usuarios/updatePassword/${idUsuarioValido}`)
+        .put(`/users/updatePassword/${idUserValido}`)
         .send({ password: contraseñaInvalida });
 
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty("error");
-      expect(mockUsuariosModel.updatePassword).not.toHaveBeenCalled();
+      expect(mockUsersModel.updatePassword).not.toHaveBeenCalled();
     });
 
-    it("debe devolver 404 si el usuario no existe", async () => {
-      mockUsuariosModel.updatePassword.mockRejectedValue(
+    it("debe devolver 404 si el user no existe", async () => {
+      mockUsersModel.updatePassword.mockRejectedValue(
         new Error("User not found")
       );
 
       const response = await request(app)
-        .put(`/usuarios/updatePassword/${idUsuarioValido}`)
+        .put(`/users/updatePassword/${idUserValido}`)
         .send({ password: contraseñaValida });
 
       expect(response.status).toBe(404);
       expect(response.body).toHaveProperty(
         "error",
-        "El usuario no se ha encontrado"
+        "El user no se ha encontrado"
       );
     });
 
     it("debe devolver 500 si ocurre un error en el servidor", async () => {
-      mockUsuariosModel.updatePassword.mockRejectedValue(
+      mockUsersModel.updatePassword.mockRejectedValue(
         new Error("Error en la BD")
       );
 
       const response = await request(app)
-        .put(`/usuarios/updatePassword/${idUsuarioValido}`)
+        .put(`/users/updatePassword/${idUserValido}`)
         .send({ password: contraseñaValida });
 
       expect(response.status).toBe(500);
@@ -486,46 +484,46 @@ describe("Usuarios Routes", () => {
       const idInvalido = "id-no-valido";
 
       const response = await request(app)
-        .put(`/usuarios/updatePassword/${idInvalido}`)
+        .put(`/users/updatePassword/${idInvalido}`)
         .send({ password: contraseñaValida });
 
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty(
         "error",
-        "El ID del usuario debe ser válido"
+        "El ID del user debe ser válido"
       );
     });
   });
 
-  describe("DELETE /usuarios/:idUsuario", () => {
-    const idUsuario = "550e8400-e29b-41d4-a716-446655440000";
-    it("debería eliminar un usuario existente y devolver un estado 200", async () => {
+  describe("DELETE /users/:idUser", () => {
+    const idUser = "550e8400-e29b-41d4-a716-446655440000";
+    it("debería eliminar un user existente y devolver un estado 200", async () => {
       // Simula una respuesta exitosa del modelo
-      mockUsuariosModel.delete = jest.fn().mockResolvedValue({ idUsuario });
+      mockUsersModel.delete = jest.fn().mockResolvedValue({ idUser });
 
-      const response = await request(app).delete(`/usuarios/${idUsuario}`);
+      const response = await request(app).delete(`/users/${idUser}`);
 
       expect(response.status).toBe(200);
-      expect(response.body).toEqual({ idUsuario });
+      expect(response.body).toEqual({ idUser });
     });
 
-    it("debería devolver un estado 404 si el usuario no existe", async () => {
-      // Simula que no se encuentra el usuario
-      mockUsuariosModel.delete = jest.fn().mockResolvedValue(null);
+    it("debería devolver un estado 404 si el user no existe", async () => {
+      // Simula que no se encuentra el user
+      mockUsersModel.delete = jest.fn().mockResolvedValue(null);
 
-      const response = await request(app).delete(`/usuarios/${idUsuario}`);
+      const response = await request(app).delete(`/users/${idUser}`);
 
       expect(response.status).toBe(404);
-      expect(response.body).toHaveProperty("error", "Usuario no encontrado");
+      expect(response.body).toHaveProperty("error", "User no encontrado");
     });
 
     it("debería devolver un estado 500 si ocurre un error interno", async () => {
       // Simula un error en la base de datos
-      mockUsuariosModel.delete = jest
+      mockUsersModel.delete = jest
         .fn()
         .mockRejectedValue(new Error("Error interno"));
 
-      const response = await request(app).delete(`/usuarios/${idUsuario}`);
+      const response = await request(app).delete(`/users/${idUser}`);
 
       expect(response.status).toBe(500);
       expect(response.body).toHaveProperty(
@@ -535,14 +533,14 @@ describe("Usuarios Routes", () => {
     });
 
     it("debería devolver un estado 400 si el id no es un UUID válido", async () => {
-      const idUsuario = "invalid-id";
+      const idUser = "invalid-id";
 
-      const response = await request(app).delete(`/usuarios/${idUsuario}`);
+      const response = await request(app).delete(`/users/${idUser}`);
 
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty(
         "error",
-        "El ID del usuario debe ser válido"
+        "El ID del user debe ser válido"
       );
     });
   });

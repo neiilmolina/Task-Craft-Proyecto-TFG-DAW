@@ -2,19 +2,19 @@ import { Request, RequestHandler, Response } from "express";
 import jwt from "jsonwebtoken";
 import cookies from "cookie-parser";
 import IUsersDAO from "@/src/users/model/dao/IUsersDAO";
-import UsuariosController from "@/src/users/controller/UsersController";
-import { Usuario } from "@/src/users/model/interfaces/interfacesUsers";
+import UsersController from "@/src/users/controller/UsersController";
+import { User } from "@/src/users/model/interfaces/interfacesUsers";
 import UsersRepository from "@/src/users/model/UsersRepository";
 
 const secretKey = process.env.JWT_SECRET as string;
 const KEY_ACCESS_COOKIE = "access_token";
 export default class AuthController {
-  private usuariosModel: UsersRepository;
-  private usuariosController: UsuariosController;
+  private usersModel: UsersRepository;
+  private usersController: UsersController;
 
-  constructor(usuariosDAO: IUsersDAO) {
-    this.usuariosModel = new UsersRepository(usuariosDAO);
-    this.usuariosController = new UsuariosController(usuariosDAO);
+  constructor(usersDAO: IUsersDAO) {
+    this.usersModel = new UsersRepository(usersDAO);
+    this.usersController = new UsersController(usersDAO);
   }
 
   async getAuthenticatedUser(req: any, res: Response): Promise<void> {
@@ -29,7 +29,7 @@ export default class AuthController {
   }
 
   register: RequestHandler = (req, res, next) =>
-    this.usuariosController.createUsuario(req, res, next);
+    this.usersController.createUser(req, res, next);
 
   async login(req: Request, res: Response): Promise<void> {
     try {
@@ -43,20 +43,17 @@ export default class AuthController {
         return;
       }
 
-      const usuario = await this.usuariosModel.getByCredentials(
-        email,
-        password
-      );
+      const user = await this.usersModel.getByCredentials(email, password);
 
-      if (!usuario) {
+      if (!user) {
         res
           .status(404)
-          .json({ error: "Usuario no encontrado o credenciales incorrectas" });
+          .json({ error: "User no encontrado o credenciales incorrectas" });
         return;
       }
 
       // Generar el JWT
-      const token = jwt.sign({ ...usuario }, secretKey, { expiresIn: "1h" });
+      const token = jwt.sign({ ...user }, secretKey, { expiresIn: "1h" });
 
       // Guardar el token en una cookie
       res.cookie(KEY_ACCESS_COOKIE, token, {
@@ -88,7 +85,7 @@ export default class AuthController {
 
   async protected(req: any, res: Response): Promise<void> {
     try {
-      const user: Usuario | null = req.session?.user ?? null;
+      const user: User | null = req.session?.user ?? null;
 
       if (!user) {
         res.status(401).json({ error: "No autenticado" });

@@ -1,5 +1,5 @@
 import ITiposDAO from "./ITiposDAO";
-import { Tipo, TipoCreate, TipoUpdate } from "@/src/tipos/interfacesTipos";
+import { Tipo, TipoCreate, TipoUpdate } from "@/src/types/model/interfaces/interfacesTypes";
 import supabase from "@/config/supabase"; // Asegúrate de que tu archivo de configuración de Supabase esté correctamente configurado
 
 // Constantes para los nombres de la tabla y los campos
