@@ -1,4 +1,4 @@
-import { Rol } from "@/src/roles/model/interfaces/interfacesRoles";
+import { Role } from "@/src/roles/model/interfaces/interfacesRoles";
 
 export interface UserBD {
   idUser: string;
@@ -7,7 +7,7 @@ export interface UserBD {
   password: string;
   urlImg: string | null;
   idRol: number;
-  rol?: string;
+  role?: string;
 }
 
 export interface User {
@@ -15,7 +15,7 @@ export interface User {
   userName: string;
   email: string;
   urlImg: string | null;
-  rol: Rol;
+  role: Role;
 }
 
 export interface UserCreate {
@@ -23,14 +23,14 @@ export interface UserCreate {
   email: string;
   password: string;
   urlImg?: string | null;
-  idRol?: number;
+  idRole?: number;
 }
 
 export interface UserUpdate {
   userName: string;
   email?: string;
   urlImg?: string | null;
-  idRol?: number;
+  idRole?: number;
 }
 
 export interface UserReturn {
@@ -38,5 +38,5 @@ export interface UserReturn {
   userName?: string;
   email: string;
   urlImg?: string | null;
-  idRol: number;
+  idRole: number;
 }

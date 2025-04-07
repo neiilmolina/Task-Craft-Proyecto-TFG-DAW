@@ -16,7 +16,7 @@ const FIELDS = {
   email: "email",
   password: "password",
   urlImg: "urlImagen",
-  idRol: "idRol",
+  idRole: "idRol",
 };
 
 export default class UsersMysqlDAO implements IUsersDAO {
@@ -31,14 +31,14 @@ export default class UsersMysqlDAO implements IUsersDAO {
           r.idRol AS idRol, 
           r.rol AS rol 
         FROM ${TABLE_NAME} u
-        JOIN roles r ON u.${FIELDS.idRol} = r.idRol
+        JOIN roles r ON u.${FIELDS.idRole} = r.idRol
       `;
 
       const conditions: string[] = [];
       const params: any[] = [];
 
       if (idRol) {
-        conditions.push(`u.${FIELDS.idRol} = ?`);
+        conditions.push(`u.${FIELDS.idRole} = ?`);
         params.push(idRol);
       }
 
@@ -71,9 +71,9 @@ export default class UsersMysqlDAO implements IUsersDAO {
           userName: row[FIELDS.userName],
           email: row[FIELDS.email],
           urlImg: row[FIELDS.urlImg] || null,
-          rol: {
-            idRol: row.idRol,
-            rol: row.rol,
+          role: {
+            idRole: row.idRol,
+            role: row.rol,
           },
         }));
 
@@ -86,7 +86,7 @@ export default class UsersMysqlDAO implements IUsersDAO {
     return new Promise<User | null>((resolve, reject) => {
       const query = `SELECT u.${FIELDS.idUser}, u.${FIELDS.userName}, u.${FIELDS.email}, u.${FIELDS.urlImg}, r.idRol, r.rol 
                      FROM ${TABLE_NAME} u 
-                     JOIN roles r ON u.${FIELDS.idRol} = r.idRol 
+                     JOIN roles r ON u.${FIELDS.idRole} = r.idRol 
                      WHERE u.${FIELDS.idUser} = ?`;
 
       connection.query(query, [id], (err: any, results: RowDataPacket[]) => {
@@ -107,9 +107,9 @@ export default class UsersMysqlDAO implements IUsersDAO {
             userName: row[FIELDS.userName],
             email: row[FIELDS.email],
             urlImg: row[FIELDS.urlImg] || null,
-            rol: {
-              idRol: row.idRol,
-              rol: row.rol,
+            role: {
+              idRole: row.idRol,
+              role: row.rol,
             },
           };
           resolve(usuario);
@@ -128,7 +128,7 @@ export default class UsersMysqlDAO implements IUsersDAO {
       const query = `SELECT u.${FIELDS.idUser}, u.${FIELDS.userName}, u.${FIELDS.email}, u.${FIELDS.urlImg}, 
                             u.password, r.idRol, r.rol 
                      FROM ${TABLE_NAME} u 
-                     JOIN roles r ON u.${FIELDS.idRol} = r.idRol 
+                     JOIN roles r ON u.${FIELDS.idRole} = r.idRol 
                      WHERE u.${FIELDS.email} = ?`;
 
       connection.query(
@@ -160,9 +160,9 @@ export default class UsersMysqlDAO implements IUsersDAO {
               userName: row[FIELDS.userName],
               email: row[FIELDS.email],
               urlImg: row[FIELDS.urlImg] || null,
-              rol: {
-                idRol: row.idRol,
-                rol: row.rol,
+              role: {
+                idRole: row.idRol,
+                role: row.rol,
               },
             };
             resolve(usuario);
@@ -176,7 +176,7 @@ export default class UsersMysqlDAO implements IUsersDAO {
 
   async create(idUser: string, user: UserCreate): Promise<UserReturn | null> {
     return new Promise<UserReturn>((resolve, reject) => {
-      const query = `INSERT INTO ${TABLE_NAME} (${FIELDS.idUser}, ${FIELDS.userName}, ${FIELDS.email}, ${FIELDS.password}, ${FIELDS.urlImg}, ${FIELDS.idRol}) VALUES (?, ?, ?, ?, ?, ?)`;
+      const query = `INSERT INTO ${TABLE_NAME} (${FIELDS.idUser}, ${FIELDS.userName}, ${FIELDS.email}, ${FIELDS.password}, ${FIELDS.urlImg}, ${FIELDS.idRole}) VALUES (?, ?, ?, ?, ?, ?)`;
 
       connection.query(
         query,
@@ -186,7 +186,7 @@ export default class UsersMysqlDAO implements IUsersDAO {
           user.email,
           user.password,
           user.urlImg || "", // Si `urlImg` es `undefined`, lo asignamos como una cadena vacía
-          user.idRol || 1, // Si `idRol` es `undefined`, lo asignamos como 1
+          user.idRole || 1, // Si `idRol` es `undefined`, lo asignamos como 1
         ],
         (err: any, results: any) => {
           if (err) {
@@ -196,7 +196,7 @@ export default class UsersMysqlDAO implements IUsersDAO {
             userName: user.userName ?? "",
             email: user.email,
             urlImg: user.urlImg ?? "",
-            idRol: user.idRol || 1,
+            idRole: user.idRole || 1,
             idUser: idUser,
           });
         }
@@ -210,12 +210,12 @@ export default class UsersMysqlDAO implements IUsersDAO {
                       ${FIELDS.userName} = ?, 
                       ${FIELDS.email} = ?, 
                       ${FIELDS.urlImg} = ?, 
-                      ${FIELDS.idRol} = ? 
+                      ${FIELDS.idRole} = ? 
                       WHERE ${FIELDS.idUser} = ?`;
 
       connection.query(
         query,
-        [user.userName, user.email, user.urlImg, user.idRol, id],
+        [user.userName, user.email, user.urlImg, user.idRole, id],
         (err: any, results: any) => {
           if (err) {
             return reject(
@@ -235,7 +235,7 @@ export default class UsersMysqlDAO implements IUsersDAO {
             userName: user.userName,
             email: user.email,
             urlImg: user.urlImg,
-            idRol: user.idRol,
+            idRole: user.idRole,
           } as UserReturn);
         }
       );

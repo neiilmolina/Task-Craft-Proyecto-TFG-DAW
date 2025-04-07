@@ -92,7 +92,7 @@ export default class AuthController {
         return;
       }
 
-      if (user.rol.idRol !== 2) {
+      if (user.role.idRole !== 2) {
         res.status(403).json({ error: "Acceso denegado" }); // Mejor usar 403 si está autenticado pero no autorizado
         return;
       }

@@ -3,7 +3,6 @@ import {
   UserCreate,
   UserUpdate,
 } from "@/src/users/model/interfaces/interfacesUsers";
-import e from "express";
 
 const passwordSchema = z
   .string()
