@@ -2,7 +2,7 @@ import createApp from "@/src/app";
 import StatesMysqlDAO from "@/src/states/model/dao/StatesMysqlDAO";
 // import UsuariosSupabaseDAO from "@/src/usuarios/dao/UsuariosSupabaseDAO";
 import TypesMysqlDAO from "@/src/types/model/dao/TypesMysqlDAO";
-import RolesMysqlDAO from "@/src/roles/dao/RolesMysqlDAO";
+import RolesMysqlDAO from "@/src/roles/model/dao/RolesMysqlDAO";
 import UsersMysqlDAO from "@/src/users/model/dao/UsersMysqlDAO";
 
 // Create the model instance with the DAO

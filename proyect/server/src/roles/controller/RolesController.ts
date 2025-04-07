@@ -1,21 +1,21 @@
 import { RequestHandler } from "express";
-import RolesModel from "@/src/roles/RolesModel";
-import { validateRolNoId } from "@/src/roles/schemasRoles";
-import { RolNoId } from "./interfacesRoles";
-import IRolesDAO from "./dao/IRolesDAO";
+import RolesRepository from "@/src/roles/model/RolesRepository";
+import { validateRoleNoId } from "@/src/roles/model/interfaces/schemasRoles";
+import { RoleNoId } from "@/src/roles/model/interfaces/interfacesRoles";
+import IRolesDAO from "@/src/roles/model/dao/IRolesDAO";
 
 export default class RolesController {
-  private rolesModel: RolesModel;
+  private rolesRepository: RolesRepository;
 
   constructor(rolesDAO: IRolesDAO) {
-    this.rolesModel = new RolesModel(rolesDAO);
+    this.rolesRepository = new RolesRepository(rolesDAO);
   }
 
   // Método para obtener todos los roles
   getRoles: RequestHandler = async (req, res) => {
     try {
       // Obtiene todos los roles utilizando el modelo
-      const roles = await this.rolesModel.getAll();
+      const roles = await this.rolesRepository.getAll();
 
       // Devuelve los roles con un status 200
       res.status(200).json(roles);
@@ -27,7 +27,7 @@ export default class RolesController {
   };
 
   // Obtener un rol por su ID
-  getRolById: RequestHandler = async (req, res) => {
+  getRoleById: RequestHandler = async (req, res) => {
     try {
       const idRol = parseInt(req.params.idRol);
 
@@ -40,7 +40,7 @@ export default class RolesController {
       }
 
       // Llama al modelo para obtener el rol por ID
-      const rol = await this.rolesModel.getById(idRol);
+      const rol = await this.rolesRepository.getById(idRol);
 
       if (rol) {
         res.status(200).json(rol);
@@ -50,27 +50,27 @@ export default class RolesController {
         return;
       }
     } catch (error) {
-      console.error("Error al cargar el rol:", error);
+      console.error("Error al cargar el role:", error);
       res.status(500).json({ error: "Error interno del servidor" });
       return;
     }
   };
 
-  createRol: RequestHandler = async (req, res) => {
+  createRole: RequestHandler = async (req, res) => {
     try {
-      const rolData: RolNoId = {
-        rol: req.body.rol || (req.query.rol as string),
+      const rolData: RoleNoId = {
+        role: req.body.role || (req.query.rol as string),
       };
 
       // Validar la entrada con el esquema de validación
-      const result = validateRolNoId(rolData);
+      const result = validateRoleNoId(rolData);
       if (!result.success) {
         res.status(400).json({ error: result.error });
         return;
       }
 
       // Crear el nuevo rol usando el modelo
-      const newRol = await this.rolesModel.create(rolData);
+      const newRol = await this.rolesRepository.create(rolData);
 
       if (!newRol) {
         res.status(500).json({ error: "No se pudo crear el rol" });
@@ -79,7 +79,7 @@ export default class RolesController {
 
       res.status(201).json(newRol);
     } catch (error: any) {
-      console.error("Error al crear el rol:", error);
+      console.error("Error al crear el role:", error);
 
       if (error.message && error.message.includes("already exists")) {
         res.status(400).json({ error: "El rol ya existe" });
@@ -90,11 +90,11 @@ export default class RolesController {
     }
   };
 
-  updateRol: RequestHandler = async (req, res) => {
+  updateRole: RequestHandler = async (req, res) => {
     try {
       // Validate the input data
-      const rolData: RolNoId = req.body;
-      const validationResult = validateRolNoId(rolData);
+      const rolData: RoleNoId = req.body;
+      const validationResult = validateRoleNoId(rolData);
 
       if (!validationResult.success) {
         res.status(400).json({ error: validationResult.error });
@@ -109,7 +109,7 @@ export default class RolesController {
       }
 
       // Attempt to update the role
-      const updatedRol = await this.rolesModel.update(idRol, rolData);
+      const updatedRol = await this.rolesRepository.update(idRol, rolData);
 
       if (!updatedRol) {
         res.status(404).json({ error: "Rol no encontrado" });
@@ -126,7 +126,7 @@ export default class RolesController {
     }
   };
 
-  deleteRol: RequestHandler = async (req, res) => {
+  deleteRole: RequestHandler = async (req, res) => {
     try {
       const idRol = parseInt(req.params.idRol, 10);
 
@@ -135,7 +135,7 @@ export default class RolesController {
         return;
       }
 
-      const result = await this.rolesModel.delete(idRol);
+      const result = await this.rolesRepository.delete(idRol);
 
       if (result) {
         res.status(200).json({ message: "Rol eliminado correctamente" });
@@ -145,7 +145,7 @@ export default class RolesController {
         return;
       }
     } catch (error) {
-      console.error("Error al eliminar el rol:", error);
+      console.error("Error al eliminar el role:", error);
       res.status(500).json({ error: "Error interno del servidor" });
       return;
     }

@@ -1,7 +1,7 @@
 import createTiposRoute from "@/src/types/controller/routesTypes";
 import express from "express";
 import request from "supertest";
-import { Type } from "@/src/types/model/interfaces/interfacesTypes";
+import { Type, TypeUpdate } from "@/src/types/model/interfaces/interfacesTypes";
 import ITypesDAO from "@/src/types/model/dao/ITypesDAO";
 
 const originalConsoleError = console.error;
@@ -71,6 +71,51 @@ describe("Tipos Routes", () => {
       expect(response.status).toBe(500);
       expect(response.body).toEqual({ error: "Error interno del servidor" });
     });
+
+    it("debe devolver los tipos asociados al idUser proporcionado", async () => {
+      // Arrange
+      const idUser = "e7d69568-d521-48fb-9505-eb822cb1c79a";
+      const mockTipos: Type[] = [
+        { idType: 1, type: "Personal", color: "#FF5733", idUser },
+        { idType: 2, type: "Trabajo", color: "#3377FF", idUser },
+      ];
+      mockTypesDAO.getAll.mockResolvedValue(mockTipos);
+
+      // Act
+      const response = await request(app).get(`/types?idUser=${idUser}`);
+
+      // Assert
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(mockTipos);
+      expect(mockTypesDAO.getAll).toHaveBeenCalledWith(idUser);
+    });
+
+    it("debe devolver error 400 si el idUser es inválido", async () => {
+      // Arrange
+      const invalidIdUser = "invalid-id";
+
+      // Act
+      const response = await request(app).get(`/types?idUser=${invalidIdUser}`);
+
+      // Assert
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({
+        error: "El ID del user debe ser válido",
+      });
+    });
+
+    it("debe devolver error 500 en caso de error interno del servidor", async () => {
+      // Arrange
+      const idUser = "e7d69568-d521-48fb-9505-eb822cb1c79a";
+      mockTypesDAO.getAll.mockRejectedValue(new Error("Error interno"));
+
+      // Act
+      const response = await request(app).get(`/types?idUser=${idUser}`);
+
+      // Assert
+      expect(response.status).toBe(500);
+      expect(response.body).toEqual({ error: "Error interno del servidor" });
+    });
   });
 
   describe("GET /types/:idTipo", () => {
@@ -99,23 +144,6 @@ describe("Tipos Routes", () => {
         type: "Personal",
         color: "#FF5733",
         idUser: "user1",
-        userDetails: {
-          id: "1",
-          email: "user1@example.com",
-          role: "admin",
-          created_at: "2025-03-08T00:00:00Z",
-          updated_at: "2025-03-08T00:00:00Z",
-          app_metadata: {
-            provider: "email",
-            providers: ["email"],
-          },
-          user_metadata: {
-            first_name: "Admin User",
-            last_name: "Admin Last Name",
-            avatar_url: "https://example.com/admin-avatar.jpg",
-          },
-          aud: "authenticated",
-        },
       };
       mockTypesDAO.getById.mockResolvedValue(mockType);
 
@@ -158,8 +186,10 @@ describe("Tipos Routes", () => {
       const response = await request(app).get("/types/abc");
 
       // Assert
-      expect(response.status).toBe(404);
-      expect(response.body).toEqual({ error: "tipo no encontrado" });
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({
+        error: "idType debe ser un número válido",
+      });
     });
   });
 
@@ -229,12 +259,17 @@ describe("Tipos Routes", () => {
     it("debe actualizar un tipo cuando los datos son válidos", async () => {
       // Arrange
       const idType = 1; // Ensure idTipo is a number
-      const updatedData = {
+      const updatedData: TypeUpdate = {
         type: "Actualizado",
         color: "#FFFFFF",
         idUser: "user1",
       };
-      mockTypesDAO.update.mockResolvedValue({ idType, ...updatedData });
+      mockTypesDAO.update.mockResolvedValue({
+        idType,
+        type: updatedData.type,
+        color: updatedData.color,
+        idUser: updatedData.idUser ?? "",
+      });
 
       // Act
       const response = await request(app)

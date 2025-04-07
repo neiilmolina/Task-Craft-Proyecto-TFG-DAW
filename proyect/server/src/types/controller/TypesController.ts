@@ -1,11 +1,15 @@
 import { RequestHandler } from "express";
-import { TypeCreate } from "@/src/types/model/interfaces/interfacesTypes";
+import {
+  TypeCreate,
+  TypeUpdate,
+} from "@/src/types/model/interfaces/interfacesTypes";
 import {
   validateTypeCreate,
   validateTypeUpdate,
 } from "@/src/types/model/interfaces/schemasTypes";
 import ITypesDAO from "@/src/types/model/dao/ITypesDAO";
 import TypesRepository from "@/src/types/model/TypesRepository";
+import { UUID_REGEX } from "@/src/core/constants";
 
 export default class TypesController {
   private typesRepository: TypesRepository;
@@ -15,7 +19,13 @@ export default class TypesController {
 
   getTypes: RequestHandler = async (req, res) => {
     try {
-      const idUser = req.params.idUser;
+      const idUser = req.query.idUser
+        ? (req.query.idUser as string)
+        : undefined;
+      if (idUser && !UUID_REGEX.test(idUser)) {
+        res.status(400).json({ error: "El ID del user debe ser válido" });
+        return;
+      }
 
       // Pasar los parámetros a la función getAll
       const types = await this.typesRepository.getAll(idUser);
@@ -30,8 +40,11 @@ export default class TypesController {
 
   getTypeById: RequestHandler = async (req, res) => {
     try {
-      const idTypes = parseInt(req.params.idTypes);
-
+      const idTypes = parseInt(req.params.idType);
+      if (isNaN(idTypes)) {
+        res.status(400).json({ error: "idType debe ser un número válido" });
+        return;
+      }
       const type = await this.typesRepository.getById(idTypes);
 
       if (type) {
@@ -51,7 +64,7 @@ export default class TypesController {
   createType: RequestHandler = async (req, res) => {
     try {
       const typeData: TypeCreate = {
-        type: req.body.tipo || (req.query.tipo as string),
+        type: req.body.type || (req.query.type as string),
         idUser: req.body.idUser || (req.query.idUser as string),
         color: decodeURIComponent(
           req.body.color || (req.query.color as string)
@@ -86,22 +99,23 @@ export default class TypesController {
 
   updateType: RequestHandler = async (req, res) => {
     try {
-      // Validación de la entrada
-      const { success, error } = validateTypeUpdate(req.body);
+      const typeData: TypeUpdate = req.body;
+
+      const { success, error } = validateTypeUpdate(typeData);
       if (!success) {
         res.status(400).json({ error });
         return;
       }
 
       // Obtener el ID desde los parámetros
-      const id = parseInt(req.params.idTypes, 10);
+      const id = parseInt(req.params.idType, 10);
       if (isNaN(id)) {
         res.status(400).json({ error: "idTypes debe ser un número válido" });
         return;
       }
 
       // Llamada al modelo para actualizar el tipo
-      const updateType = await this.typesRepository.update(id, req.body);
+      const updateType = await this.typesRepository.update(id, typeData);
 
       if (!updateType) {
         res.status(404).json({ error: "Tipo no encontrado" });
@@ -119,7 +133,7 @@ export default class TypesController {
 
   deleteType: RequestHandler = async (req, res) => {
     try {
-      const id = parseInt(req.params.idTypes); // Asegurar que use "idTypes" si ese es el parámetro correcto
+      const id = parseInt(req.params.idType); // Asegurar que use "idTypes" si ese es el parámetro correcto
 
       if (isNaN(id)) {
         // Validar si el ID no es un número válido

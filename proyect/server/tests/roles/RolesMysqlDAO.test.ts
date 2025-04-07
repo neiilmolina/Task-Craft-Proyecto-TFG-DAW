@@ -1,6 +1,6 @@
 import mysql from "@/tests/__mocks__/mysql";
-import RolesMysqlDAO from "@/src/roles/dao/RolesMysqlDAO";
-import { Rol, RolNoId } from "@/src/roles/interfacesRoles";
+import RolesMysqlDAO from "@/src/roles/model/dao/RolesMysqlDAO";
+import { Role, RoleNoId } from "@/src/roles/model/interfaces/interfacesRoles";
 import { ResultSetHeader } from "mysql2";
 
 // Reemplaza mysql2 con el mock de conexión
@@ -26,9 +26,9 @@ describe("RolesMysqlDAO", () => {
   describe("RolesMysqlDAO - getAll", () => {
     it("should return an array of roles when query is successful", async () => {
       // Simula una respuesta exitosa de la base de datos
-      const mockResults: Rol[] = [
-        { idRol: 1, rol: "admin" },
-        { idRol: 2, rol: "user" },
+      const mockResults: Role[] = [
+        { idRole: 1, role: "admin" },
+        { idRole: 2, role: "user" },
       ];
 
       // Configura el mock para resolver con los resultados esperados
@@ -38,7 +38,7 @@ describe("RolesMysqlDAO", () => {
       mockConnection.query.mockImplementation(
         (
           sql: string,
-          callback: (err: Error | null, results?: Rol[]) => void
+          callback: (err: Error | null, results?: Role[]) => void
         ) => {
           callback(null, mockResults);
         }
@@ -106,10 +106,10 @@ describe("RolesMysqlDAO", () => {
   describe("RolesMysqlDAO - getById", () => {
     it("should return a role when a valid ID is provided", async () => {
       // Preparar datos de prueba
-      const mockRolId = 1;
+      const mockRoleId = 1;
       const mockRole = {
-        idRol: 1,
-        rol: "admin",
+        idRole: 1,
+        role: "admin",
       };
 
       // Configurar el mock de la conexión
@@ -121,8 +121,8 @@ describe("RolesMysqlDAO", () => {
         // Simular un resultado de base de datos
         const mockResults = [
           {
-            idRol: mockRolId,
-            rol: "admin",
+            idRole: mockRoleId,
+            role: "admin",
           },
         ];
 
@@ -130,20 +130,20 @@ describe("RolesMysqlDAO", () => {
       });
 
       // Ejecutar el método y verificar
-      const result = await rolesDAO.getById(mockRolId);
+      const result = await rolesDAO.getById(mockRoleId);
 
       // Verificaciones
       expect(result).toEqual(mockRole);
       expect(mockQuery).toHaveBeenCalledWith(
         expect.stringContaining("SELECT * FROM"),
-        [mockRolId],
+        [mockRoleId],
         expect.any(Function)
       );
     });
 
     it("should return null when no role is found", async () => {
       // Preparar datos de prueba
-      const mockRolId = 999; // ID que no existe
+      const mockRoleId = 999; // ID que no existe
 
       // Configurar el mock de la conexión
       const mockConnection = mysql.createConnection();
@@ -156,7 +156,7 @@ describe("RolesMysqlDAO", () => {
       });
 
       // Ejecutar el método y verificar
-      const result = await rolesDAO.getById(mockRolId);
+      const result = await rolesDAO.getById(mockRoleId);
 
       // Verificaciones
       expect(result).toBeNull();
@@ -164,7 +164,7 @@ describe("RolesMysqlDAO", () => {
 
     it("should throw an error if database query fails", async () => {
       // Preparar datos de prueba
-      const mockRolId = 1;
+      const mockRoleId = 1;
       const mockError = new Error("Database connection error");
 
       // Configurar el mock de la conexión
@@ -178,14 +178,14 @@ describe("RolesMysqlDAO", () => {
       });
 
       // Ejecutar el método y verificar
-      await expect(rolesDAO.getById(mockRolId)).rejects.toThrow(mockError);
+      await expect(rolesDAO.getById(mockRoleId)).rejects.toThrow(mockError);
     });
   });
 
   describe("RolesMysqlDAO - create", () => {
     it("should successfully create a new role", async () => {
       // Preparar datos de prueba
-      const roleToCreate: RolNoId = { rol: "nuevo_rol" };
+      const roleToCreate: RoleNoId = { role: "nuevo_rol" };
       const mockInsertId = 5;
 
       // Configurar el mock de la conexión
@@ -208,21 +208,21 @@ describe("RolesMysqlDAO", () => {
 
       // Verificaciones
       expect(result).toEqual({
-        idRol: mockInsertId,
-        rol: roleToCreate.rol,
+        idRole: mockInsertId,
+        role: roleToCreate.role,
       });
 
       // Verificar que la query fue llamada con los parámetros correctos
       expect(mockQuery).toHaveBeenCalledWith(
         expect.stringContaining("INSERT INTO"),
-        [roleToCreate.rol],
+        [roleToCreate.role],
         expect.any(Function)
       );
     });
 
     it("should throw an error if database query fails", async () => {
       // Preparar datos de prueba
-      const roleToCreate: RolNoId = { rol: "nuevo_rol" };
+      const roleToCreate: RoleNoId = { role: "nuevo_rol" };
       const mockError = new Error("Database insertion error");
 
       // Configurar el mock de la conexión
@@ -243,7 +243,7 @@ describe("RolesMysqlDAO", () => {
     it("should successfully update an existing role", async () => {
       // Preparar datos de prueba
       const roleId = 1;
-      const roleToUpdate: RolNoId = { rol: "rol_actualizado" };
+      const roleToUpdate: RoleNoId = { role: "rol_actualizado" };
 
       // Configurar el mock de la conexión
       const mockConnection = mysql.createConnection();
@@ -265,14 +265,14 @@ describe("RolesMysqlDAO", () => {
 
       // Verificaciones
       expect(result).toEqual({
-        idRol: roleId,
-        rol: roleToUpdate.rol,
+        idRole: roleId,
+        role: roleToUpdate.role,
       });
 
       // Verificar que la query fue llamada con los parámetros correctos
       expect(mockQuery).toHaveBeenCalledWith(
         expect.stringContaining("UPDATE"),
-        [roleToUpdate.rol, roleId],
+        [roleToUpdate.role, roleId],
         expect.any(Function)
       );
     });
@@ -280,7 +280,7 @@ describe("RolesMysqlDAO", () => {
     it("should throw an error if role is not found", async () => {
       // Preparar datos de prueba
       const roleId = 999;
-      const roleToUpdate: RolNoId = { rol: "rol_actualizado" };
+      const roleToUpdate: RoleNoId = { role: "rol_actualizado" };
 
       // Configurar el mock de la conexión
       const mockConnection = mysql.createConnection();
@@ -305,7 +305,7 @@ describe("RolesMysqlDAO", () => {
     it("should throw an error if database query fails", async () => {
       // Preparar datos de prueba
       const roleId = 1;
-      const roleToUpdate: RolNoId = { rol: "rol_actualizado" };
+      const roleToUpdate: RoleNoId = { role: "rol_actualizado" };
       const mockError = new Error("Database update error");
 
       // Configurar el mock de la conexión
@@ -327,7 +327,7 @@ describe("RolesMysqlDAO", () => {
   describe("RolesMysqlDAO - delete", () => {
     it("should return true when the role is successfully deleted", async () => {
       // Preparar datos de prueba
-      const mockRolId = 1;
+      const mockRoleId = 1;
       const mockResults = { affectedRows: 1 } as ResultSetHeader;
 
       // Configurar el mock de la conexión
@@ -340,20 +340,20 @@ describe("RolesMysqlDAO", () => {
       });
 
       // Ejecutar el método y verificar
-      const result = await rolesDAO.delete(mockRolId);
+      const result = await rolesDAO.delete(mockRoleId);
 
       // Verificaciones
       expect(result).toBe(true);
       expect(mockQuery).toHaveBeenCalledWith(
         expect.stringContaining("DELETE FROM"),
-        [mockRolId],
+        [mockRoleId],
         expect.any(Function)
       );
     });
 
     it("should throw an error if role is not found", async () => {
       // Preparar datos de prueba
-      const mockRolId = 999; // ID que no existe
+      const mockRoleId = 999; // ID que no existe
       const mockResults = { affectedRows: 0 } as ResultSetHeader;
 
       // Configurar el mock de la conexión
@@ -366,14 +366,14 @@ describe("RolesMysqlDAO", () => {
       });
 
       // Ejecutar el método y verificar que lanza un error
-      await expect(rolesDAO.delete(mockRolId)).rejects.toThrow(
+      await expect(rolesDAO.delete(mockRoleId)).rejects.toThrow(
         "Role not found"
       );
     });
 
     it("should throw an error if database query fails", async () => {
       // Preparar datos de prueba
-      const mockRolId = 1;
+      const mockRoleId = 1;
       const mockError = new Error("Database deletion error");
 
       // Configurar el mock de la conexión
@@ -386,7 +386,7 @@ describe("RolesMysqlDAO", () => {
       });
 
       // Ejecutar el método y verificar que lanza un error
-      await expect(rolesDAO.delete(mockRolId)).rejects.toThrow(mockError);
+      await expect(rolesDAO.delete(mockRoleId)).rejects.toThrow(mockError);
     });
   });
 });

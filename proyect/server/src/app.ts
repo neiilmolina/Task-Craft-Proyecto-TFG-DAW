@@ -1,17 +1,17 @@
-import "dotenv/config";
-import createStatesRoute from "@/src/states/controller/routesStates";
-import createTiposRoute from "@/src/types/controller/routesTypes";
-import createRolesRoute from "@/src/roles/routesRoles";
 import express, { json } from "express";
-import dotenv from "dotenv";
 import { corsMiddleware, errorHandler } from "@/config/middleware";
-import IRolesDAO from "@/src/roles/dao/IRolesDAO";
-import IStatesDAO from "@/src/states/model/dao/IStatesDAO";
-import ITiposDAO from "@/src/types/model/dao/ITypesDAO";
-import createUsuariosRoute from "@/src/users/controller/routesUsers";
-import IUsersDAO from "@/src/users/model/dao/IUsersDAO";
-import createAuthRoute from "./auth/routesAuth";
+import "dotenv/config";
+import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import IStatesDAO from "@/src/states/model/dao/IStatesDAO";
+import createStatesRoute from "@/src/states/controller/routesStates";
+import ITiposDAO from "@/src/types/model/dao/ITypesDAO";
+import createTiposRoute from "@/src/types/controller/routesTypes";
+import IRolesDAO from "@/src/roles/model/dao/IRolesDAO";
+import createRolesRoute from "@/src/roles/controller/routesRoles";
+import IUsersDAO from "@/src/users/model/dao/IUsersDAO";
+import createUsuariosRoute from "@/src/users/controller/routesUsers";
+import createAuthRoute from "./auth/routesAuth";
 
 dotenv.config();
 
@@ -37,7 +37,7 @@ const createApp = (
 
   // Rutas de la API
   app.use("/states", createStatesRoute(statesDAO));
-  app.use("/tipos", createTiposRoute(tiposDAO));
+  app.use("/types", createTiposRoute(tiposDAO));
   app.use("/roles", createRolesRoute(rolesDAO));
   app.use("/users", createUsuariosRoute(usersDAO));
   app.use("/auth", createAuthRoute(usersDAO));
