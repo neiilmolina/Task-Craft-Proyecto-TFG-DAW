@@ -1,27 +1,26 @@
 import { RequestHandler } from "express";
-import { TipoCreate } from "@/src/types/model/interfaces/interfacesTypes";
+import { TypeCreate } from "@/src/types/model/interfaces/interfacesTypes";
 import {
-  validateTipoCreate,
-  validateTipoUpdate,
+  validateTypeCreate,
+  validateTypeUpdate,
 } from "@/src/types/model/interfaces/schemasTypes";
-import ITiposDAO from "@/src/types/model/dao/ITiposDAO";
+import ITypesDAO from "@/src/types/model/dao/ITypesDAO";
 import TypesRepository from "@/src/types/model/TypesRepository";
 
-export default class TiposController {
-  private tiposModel: TypesRepository;
-  constructor(tiposDAO: ITiposDAO) {
-    this.tiposModel = new TypesRepository(tiposDAO);
+export default class TypesController {
+  private typesRepository: TypesRepository;
+  constructor(typesDAO: ITypesDAO) {
+    this.typesRepository = new TypesRepository(typesDAO);
   }
 
-  getTipos: RequestHandler = async (req, res) => {
+  getTypes: RequestHandler = async (req, res) => {
     try {
-      const idUsuario = req.params.idUsuario;
-      const userDetails = req.params.userDetails === "true";
+      const idUser = req.params.idUser;
 
       // Pasar los parámetros a la función getAll
-      const tipos = await this.tiposModel.getAll(idUsuario, userDetails);
+      const types = await this.typesRepository.getAll(idUser);
 
-      res.status(200).json(tipos);
+      res.status(200).json(types);
       return;
     } catch (e) {
       console.error("Error al cargar los tipos:", e);
@@ -29,53 +28,52 @@ export default class TiposController {
     }
   };
 
-  getTipoById: RequestHandler = async (req, res) => {
+  getTypeById: RequestHandler = async (req, res) => {
     try {
-      const idTipo = parseInt(req.params.idTipo);
+      const idTypes = parseInt(req.params.idTypes);
 
-      const userDetails = req.params.userDetails === "true";
-      const tipo = await this.tiposModel.getById(idTipo, userDetails);
+      const type = await this.typesRepository.getById(idTypes);
 
-      if (tipo) {
-        res.status(200).json(tipo);
+      if (type) {
+        res.status(200).json(type);
         return;
       } else {
         res.status(404).json({ error: "tipo no encontrado" });
         return;
       }
     } catch (error) {
-      console.error("Error al cargar el tipo:", error);
+      console.error("Error al cargar el type:", error);
       res.status(500).json({ error: "Error interno del servidor" });
       return;
     }
   };
 
-  createTipo: RequestHandler = async (req, res) => {
+  createType: RequestHandler = async (req, res) => {
     try {
-      const tipoData: TipoCreate = {
-        tipo: req.body.tipo || (req.query.tipo as string),
-        idUsuario: req.body.idUsuario || (req.query.idUsuario as string),
+      const typeData: TypeCreate = {
+        type: req.body.tipo || (req.query.tipo as string),
+        idUser: req.body.idUser || (req.query.idUser as string),
         color: decodeURIComponent(
           req.body.color || (req.query.color as string)
         ),
       };
 
-      const result = validateTipoCreate(tipoData);
+      const result = validateTypeCreate(typeData);
       if (!result.success) {
         res.status(400).json({ error: result.error });
         return;
       }
 
-      const newTipo = await this.tiposModel.create(tipoData);
+      const newType = await this.typesRepository.create(typeData);
 
-      if (!newTipo) {
+      if (!newType) {
         res.status(500).json({ error: "No se pudo crear el tipo" });
         return;
       }
 
-      res.status(201).json(newTipo);
+      res.status(201).json(newType);
     } catch (error: any) {
-      console.error("Error al crear el Tipo:", error);
+      console.error("Error al crear el type:", error);
 
       if (error.message && error.message.includes("already exists")) {
         res.status(400).json({ error: "El Tipo ya existe" });
@@ -86,31 +84,31 @@ export default class TiposController {
     }
   };
 
-  updateTipo: RequestHandler = async (req, res) => {
+  updateType: RequestHandler = async (req, res) => {
     try {
       // Validación de la entrada
-      const { success, error } = validateTipoUpdate(req.body);
+      const { success, error } = validateTypeUpdate(req.body);
       if (!success) {
         res.status(400).json({ error });
         return;
       }
 
       // Obtener el ID desde los parámetros
-      const id = parseInt(req.params.idTipo, 10);
+      const id = parseInt(req.params.idTypes, 10);
       if (isNaN(id)) {
-        res.status(400).json({ error: "idTipo debe ser un número válido" });
+        res.status(400).json({ error: "idTypes debe ser un número válido" });
         return;
       }
 
       // Llamada al modelo para actualizar el tipo
-      const updatedTipo = await this.tiposModel.update(id, req.body);
+      const updateType = await this.typesRepository.update(id, req.body);
 
-      if (!updatedTipo) {
+      if (!updateType) {
         res.status(404).json({ error: "Tipo no encontrado" });
         return;
       }
 
-      res.status(200).json(updatedTipo);
+      res.status(200).json(updateType);
       return;
     } catch (error) {
       console.error("Error interno del servidor:", error);
@@ -119,9 +117,9 @@ export default class TiposController {
     }
   };
 
-  deleteTipo: RequestHandler = async (req, res) => {
+  deleteType: RequestHandler = async (req, res) => {
     try {
-      const id = parseInt(req.params.idTipo); // Asegurar que use "idTipo" si ese es el parámetro correcto
+      const id = parseInt(req.params.idTypes); // Asegurar que use "idTypes" si ese es el parámetro correcto
 
       if (isNaN(id)) {
         // Validar si el ID no es un número válido
@@ -129,7 +127,7 @@ export default class TiposController {
         return;
       }
 
-      const result = await this.tiposModel.delete(id);
+      const result = await this.typesRepository.delete(id);
 
       if (result) {
         res.status(200).json({ message: "Tipo eliminado correctamente" });
@@ -139,7 +137,7 @@ export default class TiposController {
         return;
       }
     } catch (error) {
-      console.error("Error al eliminar el tipo:", error);
+      console.error("Error al eliminar el type:", error);
       res.status(500).json({ error: "Error interno del servidor" });
       return;
     }

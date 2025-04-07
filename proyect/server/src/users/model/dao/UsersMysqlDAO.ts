@@ -20,48 +20,65 @@ const FIELDS = {
 };
 
 export default class UsersMysqlDAO implements IUsersDAO {
-  async getAll(idRol?: Number): Promise<User[]> {
+  async getAll(idRol?: number, stringSearch?: string): Promise<User[]> {
     return new Promise<User[]>((resolve, reject) => {
-      let query = `SELECT u.${FIELDS.idUser}, u.${FIELDS.userName}, u.${FIELDS.email}, 
-                            u.${FIELDS.urlImg}, 
-                            r.idRol AS idRol, r.rol AS rol 
-                     FROM ${TABLE_NAME} u 
-                     JOIN roles r ON u.${FIELDS.idRol} = r.idRol`;
+      let query = `
+        SELECT 
+          u.${FIELDS.idUser}, 
+          u.${FIELDS.userName}, 
+          u.${FIELDS.email}, 
+          u.${FIELDS.urlImg}, 
+          r.idRol AS idRol, 
+          r.rol AS rol 
+        FROM ${TABLE_NAME} u
+        JOIN roles r ON u.${FIELDS.idRol} = r.idRol
+      `;
+
+      const conditions: string[] = [];
+      const params: any[] = [];
 
       if (idRol) {
-        query += ` WHERE u.${FIELDS.idRol} = ?`;
+        conditions.push(`u.${FIELDS.idRol} = ?`);
+        params.push(idRol);
       }
 
-      connection.query(
-        query,
-        idRol ? [idRol] : [],
-        (err, results: RowDataPacket[]) => {
-          if (err) {
-            return reject(err);
-          }
+      if (stringSearch) {
+        conditions.push(
+          `(u.${FIELDS.userName} LIKE ? OR u.${FIELDS.email} LIKE ?)`
+        );
+        const likeValue = `%${stringSearch}%`;
+        params.push(likeValue, likeValue);
+      }
 
-          if (!Array.isArray(results)) {
-            return reject(
-              new Error("Expected array of results but got something else.")
-            );
-          }
+      if (conditions.length > 0) {
+        query += ` WHERE ` + conditions.join(" AND ");
+      }
 
-          const user: User[] = results.map((row) => {
-            return {
-              idUser: row[FIELDS.idUser],
-              userName: row[FIELDS.userName],
-              email: row[FIELDS.email],
-              urlImg: row[FIELDS.urlImg] || null,
-              rol: {
-                idRol: row.idRol,
-                rol: row.rol,
-              },
-            };
-          });
-
-          resolve(user);
+      connection.query(query, params, (err: any, results: RowDataPacket[]) => {
+        if (err) {
+          console.error("Error al obtener usuarios:", err);
+          return reject(err);
         }
-      );
+
+        if (!Array.isArray(results)) {
+          return reject(
+            new Error("Expected array of results but got something else.")
+          );
+        }
+
+        const users: User[] = results.map((row) => ({
+          idUser: row[FIELDS.idUser],
+          userName: row[FIELDS.userName],
+          email: row[FIELDS.email],
+          urlImg: row[FIELDS.urlImg] || null,
+          rol: {
+            idRol: row.idRol,
+            rol: row.rol,
+          },
+        }));
+
+        resolve(users);
+      });
     });
   }
 
@@ -72,7 +89,7 @@ export default class UsersMysqlDAO implements IUsersDAO {
                      JOIN roles r ON u.${FIELDS.idRol} = r.idRol 
                      WHERE u.${FIELDS.idUser} = ?`;
 
-      connection.query(query, [id], (err, results: RowDataPacket[]) => {
+      connection.query(query, [id], (err: any, results: RowDataPacket[]) => {
         if (err) {
           return reject(err);
         }
@@ -117,7 +134,7 @@ export default class UsersMysqlDAO implements IUsersDAO {
       connection.query(
         query,
         [email],
-        async (err, results: RowDataPacket[]) => {
+        async (err: any, results: RowDataPacket[]) => {
           if (err) {
             return reject(err);
           }
@@ -171,7 +188,7 @@ export default class UsersMysqlDAO implements IUsersDAO {
           user.urlImg || "", // Si `urlImg` es `undefined`, lo asignamos como una cadena vacía
           user.idRol || 1, // Si `idRol` es `undefined`, lo asignamos como 1
         ],
-        (err, results) => {
+        (err: any, results: any) => {
           if (err) {
             return reject(new Error("Database insertion error")); // Lanza un error específico
           }
@@ -199,7 +216,7 @@ export default class UsersMysqlDAO implements IUsersDAO {
       connection.query(
         query,
         [user.userName, user.email, user.urlImg, user.idRol, id],
-        (err, results) => {
+        (err: any, results: any) => {
           if (err) {
             return reject(
               new Error(`Database update error:  + ${err.message}`)
@@ -231,7 +248,7 @@ export default class UsersMysqlDAO implements IUsersDAO {
       ${FIELDS.password} = ?
       WHERE ${FIELDS.idUser} = ?`;
 
-      connection.query(query, [password, id], (err, results) => {
+      connection.query(query, [password, id], (err: any, results: any) => {
         if (err) {
           return reject(new Error(`Database update error:  + ${err.message}`)); // Lanza un error con mensaje detallado
         }
@@ -251,7 +268,7 @@ export default class UsersMysqlDAO implements IUsersDAO {
   async delete(id: string): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
       const query = `DELETE FROM ${TABLE_NAME} WHERE ${FIELDS.idUser} = ?`;
-      connection.query(query, [id], (err, results) => {
+      connection.query(query, [id], (err: any, results: any) => {
         if (err) {
           return reject(err);
         }

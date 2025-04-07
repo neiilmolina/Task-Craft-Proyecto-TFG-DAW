@@ -1,5 +1,5 @@
 import createApp from "@/src/app";
-import EstadosModel from "@/src/states/StatesRepository";
+import EstadosModel from "@/src/states/model/StatesRepository";
 import EstadosSupabaseDAO from "@/src/states/dao/EstadosSupabaseDAO";
 import UsuariosModel from "@/src/usuarios/UsuariosModel";
 import UsuariosSupabaseDAO from "@/src/usuarios/dao/UsuariosSupabaseDAO";

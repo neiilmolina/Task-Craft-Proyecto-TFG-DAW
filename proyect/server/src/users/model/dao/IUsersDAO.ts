@@ -6,7 +6,7 @@ import {
 } from "@/src/users/model/interfaces/interfacesUsers";
 
 export default interface IUsersDAO {
-  getAll(idRol?: number): Promise<User[]>;
+  getAll(idRol?: number, stringSearch?: string): Promise<User[]>;
   getById(id: string): Promise<User | null>;
   getByCredentials(email: string, password: string): Promise<User | null>;
   create(

@@ -1,24 +1,24 @@
 import { z } from "zod";
-import { TipoCreate, TipoUpdate } from "./interfacesTypes";
+import { TypeCreate, TypeUpdate } from "./interfacesTypes";
 
-const tipoSchema = z.object({
-  idTipo: z.number(),
-  tipo: z.string({
+const typeSchema = z.object({
+  idType: z.number(),
+  type: z.string({
     required_error: "Tipo es requerido",
     message: "Tipo debe ser un string",
   }),
   color: z.string().regex(/^#?([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/, {
     message: "Color debe ser un valor hexadecimal válido ",
   }),
-  idUsuario: z.string(),
+  idUser: z.string(),
 });
 
-const tipoCreateSchema = tipoSchema.omit({ idTipo: true });
+const typeCreateSchema = typeSchema.omit({ idType: true });
 
-const tipoUpdateSchema = tipoSchema.partial(); // Permite actualizar solo algunos campos
+const typeUpdateSchema = typeSchema.partial(); // Permite actualizar solo algunos campos
 
-export function validateTipoCreate(input: Partial<TipoCreate>) {
-  const result = tipoCreateSchema.safeParse(input);
+export function validateTypeCreate(input: Partial<TypeCreate>) {
+  const result = typeCreateSchema.safeParse(input);
 
   if (!result.success)
     return { success: false, error: result.error.errors[0].message };
@@ -26,8 +26,8 @@ export function validateTipoCreate(input: Partial<TipoCreate>) {
   return { success: true };
 }
 
-export function validateTipoUpdate(input: Partial<TipoUpdate>) {
-  const result = tipoUpdateSchema.safeParse(input);
+export function validateTypeUpdate(input: Partial<TypeUpdate>) {
+  const result = typeUpdateSchema.safeParse(input);
 
   if (!result.success)
     return { success: false, error: result.error.errors[0].message }; // Mensaje del primer error

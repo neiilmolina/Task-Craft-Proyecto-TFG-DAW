@@ -1,13 +1,13 @@
 import "dotenv/config";
-import createEstadosRoute from "@/src/states/routesStates";
-import createTiposRoute from "@/src/types/controller/routesTipos";
+import createStatesRoute from "@/src/states/controller/routesStates";
+import createTiposRoute from "@/src/types/controller/routesTypes";
 import createRolesRoute from "@/src/roles/routesRoles";
 import express, { json } from "express";
 import dotenv from "dotenv";
 import { corsMiddleware, errorHandler } from "@/config/middleware";
 import IRolesDAO from "@/src/roles/dao/IRolesDAO";
-import IEstadosDAO from "@/src/states/dao/IStatesDAO";
-import ITiposDAO from "@/src/types/model/dao/ITiposDAO";
+import IStatesDAO from "@/src/states/model/dao/IStatesDAO";
+import ITiposDAO from "@/src/types/model/dao/ITypesDAO";
 import createUsuariosRoute from "@/src/users/controller/routesUsers";
 import IUsersDAO from "@/src/users/model/dao/IUsersDAO";
 import createAuthRoute from "./auth/routesAuth";
@@ -16,11 +16,10 @@ import cookieParser from "cookie-parser";
 dotenv.config();
 
 const createApp = (
-  estadosDAO: IEstadosDAO,
-  // usuariosDAO: IUsuariosDAO,
+  statesDAO: IStatesDAO,
   tiposDAO: ITiposDAO,
   rolesDAO: IRolesDAO,
-  usuariosDAO: IUsersDAO
+  usersDAO: IUsersDAO
 ) => {
   const app = express();
   const port = process.env.PORT || 3000;
@@ -37,11 +36,11 @@ const createApp = (
   });
 
   // Rutas de la API
-  app.use("/estados", createEstadosRoute(estadosDAO));
+  app.use("/states", createStatesRoute(statesDAO));
   app.use("/tipos", createTiposRoute(tiposDAO));
   app.use("/roles", createRolesRoute(rolesDAO));
-  app.use("/users", createUsuariosRoute(usuariosDAO));
-  app.use("/auth", createAuthRoute(usuariosDAO));
+  app.use("/users", createUsuariosRoute(usersDAO));
+  app.use("/auth", createAuthRoute(usersDAO));
 
   // Usar el middleware de manejo de errores al final de todas las rutas
   app.use(errorHandler);

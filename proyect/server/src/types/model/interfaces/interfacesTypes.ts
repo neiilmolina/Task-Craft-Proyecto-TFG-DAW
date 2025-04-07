@@ -1,21 +1,21 @@
 import { User } from "@supabase/supabase-js";
 
-export interface Tipo {
-  idTipo: number;
-  tipo: string;
+export interface Type {
+  idType: number;
+  type: string;
   color: string;
-  idUsuario: string;
+  idUser: string;
   userDetails?: User;
 }
 
-export interface TipoCreate {
-  tipo: string;
+export interface TypeCreate {
+  type: string;
   color: string;
-  idUsuario: string;
+  idUser: string;
 }
 
-export interface TipoUpdate {
-  tipo: string;
+export interface TypeUpdate {
+  type: string;
   color: string;
-  idUsuario?: string;
+  idUser?: string;
 }

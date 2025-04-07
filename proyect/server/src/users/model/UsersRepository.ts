@@ -1,11 +1,14 @@
 import IUsersDAO from "@/src/users/model/dao/IUsersDAO";
-import { UserCreate, UserUpdate } from "@/src/users/model/interfaces/interfacesUsers";
+import {
+  UserCreate,
+  UserUpdate,
+} from "@/src/users/model/interfaces/interfacesUsers";
 
 export default class UsersRepository {
   constructor(private usersDAO: IUsersDAO) {}
 
-  async getAll(idRol?: number) {
-    return this.usersDAO.getAll(idRol);
+  async getAll(idRol?: number, stringSearch?: string) {
+    return this.usersDAO.getAll(idRol, stringSearch);
   }
 
   async getByCredentials(email: string, password: string) {

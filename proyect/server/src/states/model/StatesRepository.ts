@@ -1,8 +1,7 @@
-// src/States/StatesModel.ts
-import { State, StateNoId } from "./interfacesStates";
-import IStatesDAO from "./dao/IStatesDAO";
+import { State, StateNoId } from "@/src/states/model/interfaces/interfacesStates";
+import IStatesDAO from "@/src/states/model/dao/IStatesDAO";
 
-export default class StatesModel {
+export default class StatesRepository {
   constructor(private statesDAO: IStatesDAO) {}
 
   async getAll(): Promise<State[]> {

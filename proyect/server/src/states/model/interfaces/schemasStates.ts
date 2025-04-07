@@ -1,6 +1,6 @@
 // src/estados/schemasEstados.ts
 import { z } from "zod";
-import { State, StateNoId } from "@/src/states/interfacesStates";
+import { State, StateNoId } from "@/src/states/model/interfaces/interfacesStates";
 
 const statechema = z.object({
   idState: z.number().optional(), // Changed from id to idState and made it optional
@@ -11,7 +11,7 @@ const statechema = z.object({
 });
 
 // For validating a complete Estado object (with idState)
-export function validateEstado(input: Partial<State>) {
+export function validateState(input: Partial<State>) {
   return statechema.safeParse(input);
 }
 

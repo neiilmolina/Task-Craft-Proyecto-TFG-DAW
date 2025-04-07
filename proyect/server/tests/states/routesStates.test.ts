@@ -1,4 +1,4 @@
-import createEstadosRoute from "@/src/states/routesStates";
+import createEstadosRoute from "@/src/states/controller/routesStates";
 import express from "express";
 import request from "supertest";
 
@@ -13,10 +13,10 @@ afterAll(() => {
 
 describe("Estados Routes", () => {
   let app: express.Application;
-  let mockEstadosModel: any;
+  let mockStatesModel: any;
 
   beforeEach(() => {
-    mockEstadosModel = {
+    mockStatesModel = {
       getAll: jest.fn(),
       getById: jest.fn(),
       create: jest.fn(),
@@ -26,93 +26,93 @@ describe("Estados Routes", () => {
 
     app = express();
     app.use(express.json());
-    app.use("/estados", createEstadosRoute(mockEstadosModel));
+    app.use("/states", createEstadosRoute(mockStatesModel));
   });
 
-  describe("GET /estados", () => {
+  describe("GET /states", () => {
     it("debería devolver todos los estados", async () => {
-      const mockEstados = [
-        { idEstado: 1, estado: "Activo" },
-        { idEstado: 2, estado: "Inactivo" },
+      const mockStates = [
+        { idState: 1, state: "Activo" },
+        { idState: 2, state: "Inactivo" },
       ];
-      mockEstadosModel.getAll.mockResolvedValue(mockEstados);
+      mockStatesModel.getAll.mockResolvedValue(mockStates);
 
-      const response = await request(app).get("/estados");
+      const response = await request(app).get("/states");
 
       expect(response.status).toBe(200);
-      expect(response.body).toEqual(mockEstados);
-      expect(mockEstadosModel.getAll).toHaveBeenCalled();
+      expect(response.body).toEqual(mockStates);
+      expect(mockStatesModel.getAll).toHaveBeenCalled();
     });
 
     it("debería manejar errores al obtener estados", async () => {
-      mockEstadosModel.getAll.mockRejectedValue(
+      mockStatesModel.getAll.mockRejectedValue(
         new Error("Error al obtener estados")
       );
 
-      const response = await request(app).get("/estados");
+      const response = await request(app).get("/states");
 
       expect(response.status).toBe(500);
       expect(response.body).toHaveProperty("error");
     });
   });
 
-  describe("GET /estados/:idEstado", () => {
+  describe("GET /states/:idState", () => {
     it("debería devolver un estado por ID", async () => {
-      const mockEstado = { idEstado: 1, estado: "Activo" };
-      mockEstadosModel.getById.mockResolvedValue(mockEstado);
+      const mockState = { idState: 1, state: "Activo" };
+      mockStatesModel.getById.mockResolvedValue(mockState);
 
-      const response = await request(app).get("/estados/1");
+      const response = await request(app).get("/states/1");
 
       expect(response.status).toBe(200);
-      expect(response.body).toEqual(mockEstado);
-      expect(mockEstadosModel.getById).toHaveBeenCalledWith(1); // Now expects a number
+      expect(response.body).toEqual(mockState);
+      expect(mockStatesModel.getById).toHaveBeenCalledWith(1); // Now expects a number
     });
 
     it("debería devolver 404 si el estado no existe", async () => {
-      mockEstadosModel.getById.mockResolvedValue(null);
+      mockStatesModel.getById.mockResolvedValue(null);
 
-      const response = await request(app).get("/estados/999");
+      const response = await request(app).get("/states/999");
 
       expect(response.status).toBe(404);
       expect(response.body).toHaveProperty("message", "Estado no encontrado");
     });
 
     it("debería manejar errores al obtener un estado por ID", async () => {
-      mockEstadosModel.getById.mockRejectedValue(
+      mockStatesModel.getById.mockRejectedValue(
         new Error("Error al obtener estado")
       );
 
-      const response = await request(app).get("/estados/1");
+      const response = await request(app).get("/states/1");
 
       expect(response.status).toBe(500);
       expect(response.body).toHaveProperty("error");
     });
   });
 
-  describe("POST /estados", () => {
+  describe("POST /states", () => {
     it("debería crear un nuevo estado correctamente", async () => {
-      const nuevoEstado = { estado: "En proceso" };
-      const estadoCreado = { idEstado: 3, estado: "En proceso" };
-      mockEstadosModel.create.mockResolvedValue(estadoCreado);
+      const nuevoEstado = { state: "En proceso" };
+      const estadoCreado = { idState: 3, state: "En proceso" };
+      mockStatesModel.create.mockResolvedValue(estadoCreado);
 
       const response = await request(app)
-        .post("/estados")
+        .post("/states")
         .send(nuevoEstado)
         .set("Content-Type", "application/json");
 
       expect(response.status).toBe(201);
       expect(response.body).toEqual(estadoCreado);
-      expect(mockEstadosModel.create).toHaveBeenCalledWith(nuevoEstado);
+      expect(mockStatesModel.create).toHaveBeenCalledWith(nuevoEstado);
     });
 
     it("debería manejar errores al crear un estado", async () => {
-      const nuevoEstado = { estado: "En proceso" };
-      mockEstadosModel.create.mockRejectedValue(
+      const nuevoEstado = { state: "En proceso" };
+      mockStatesModel.create.mockRejectedValue(
         new Error("Error al crear estado")
       );
 
       const response = await request(app)
-        .post("/estados")
+        .post("/states")
         .send(nuevoEstado)
         .set("Content-Type", "application/json");
 
@@ -124,47 +124,44 @@ describe("Estados Routes", () => {
       const estadoInvalido = {}; // Sin estado
 
       // Mock the validation function
-      jest.mock("@/src/estados/schemasEstados", () => ({
+      jest.mock("@/src/states/schemasEstados", () => ({
         validateEstadoNoId: jest
           .fn()
           .mockReturnValue({ success: false, error: "Estado es requerido" }),
       }));
 
       const response = await request(app)
-        .post("/estados")
+        .post("/states")
         .send(estadoInvalido)
         .set("Content-Type", "application/json");
 
       expect(response.status).toBe(400);
-      expect(mockEstadosModel.create).not.toHaveBeenCalled();
+      expect(mockStatesModel.create).not.toHaveBeenCalled();
     });
   });
 
-  describe("PUT /estados/:idEstado", () => {
+  describe("PUT /states/:idState", () => {
     it("debería actualizar un estado correctamente", async () => {
-      const estadoActualizado = { estado: "Completado" };
-      const resultadoActualizado = { idEstado: 1, estado: "Completado" };
-      mockEstadosModel.update.mockResolvedValue(resultadoActualizado);
+      const estadoActualizado = { state: "Completado" };
+      const resultadoActualizado = { idState: 1, state: "Completado" };
+      mockStatesModel.update.mockResolvedValue(resultadoActualizado);
 
       const response = await request(app)
-        .put("/estados/1")
+        .put("/states/1")
         .send(estadoActualizado)
         .set("Content-Type", "application/json");
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual(resultadoActualizado);
-      expect(mockEstadosModel.update).toHaveBeenCalledWith(
-        1,
-        estadoActualizado
-      );
+      expect(mockStatesModel.update).toHaveBeenCalledWith(1, estadoActualizado);
     });
 
     it("debería devolver 404 si el estado a actualizar no existe", async () => {
-      const estadoActualizado = { estado: "Completado" };
-      mockEstadosModel.update.mockResolvedValue(null);
+      const estadoActualizado = { state: "Completado" };
+      mockStatesModel.update.mockResolvedValue(null);
 
       const response = await request(app)
-        .put("/estados/999")
+        .put("/states/999")
         .send(estadoActualizado)
         .set("Content-Type", "application/json");
 
@@ -173,13 +170,13 @@ describe("Estados Routes", () => {
     });
 
     it("debería manejar errores al actualizar un estado", async () => {
-      const estadoActualizado = { estado: "Completado" };
-      mockEstadosModel.update.mockRejectedValue(
+      const estadoActualizado = { state: "Completado" };
+      mockStatesModel.update.mockRejectedValue(
         new Error("Error al actualizar estado")
       );
 
       const response = await request(app)
-        .put("/estados/1")
+        .put("/states/1")
         .send(estadoActualizado)
         .set("Content-Type", "application/json");
 
@@ -188,35 +185,35 @@ describe("Estados Routes", () => {
     });
   });
 
-  describe("DELETE /estados/:idEstado", () => {
+  describe("DELETE /states/:idState", () => {
     it("debería eliminar un estado correctamente", async () => {
-      mockEstadosModel.delete.mockResolvedValue(true);
+      mockStatesModel.delete.mockResolvedValue(true);
 
-      const response = await request(app).delete("/estados/1");
+      const response = await request(app).delete("/states/1");
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty(
         "message",
         "Estado eliminado correctamente"
       );
-      expect(mockEstadosModel.delete).toHaveBeenCalledWith(1);
+      expect(mockStatesModel.delete).toHaveBeenCalledWith(1);
     });
 
     it("debería devolver 404 si el estado a eliminar no existe", async () => {
-      mockEstadosModel.delete.mockResolvedValue(false);
+      mockStatesModel.delete.mockResolvedValue(false);
 
-      const response = await request(app).delete("/estados/999");
+      const response = await request(app).delete("/states/999");
 
       expect(response.status).toBe(404);
       expect(response.body).toHaveProperty("message", "Estado no encontrado");
     });
 
     it("debería manejar errores al eliminar un estado", async () => {
-      mockEstadosModel.delete.mockRejectedValue(
+      mockStatesModel.delete.mockRejectedValue(
         new Error("Error al eliminar estado")
       );
 
-      const response = await request(app).delete("/estados/1");
+      const response = await request(app).delete("/states/1");
 
       expect(response.status).toBe(500);
       expect(response.body).toHaveProperty("error");

@@ -1,4 +1,4 @@
-import { State, StateNoId } from "@/src/states/interfacesStates";
+import { State, StateNoId } from "@/src/states/model/interfaces/interfacesStates";
 
 export default interface IStatesDAO {
   getAll(): Promise<State[]>;

@@ -1,31 +1,34 @@
-import ITiposDAO from "@/src/types/model/dao/ITiposDAO";
-import { TipoCreate, TipoUpdate } from "@/src/types/model/interfaces/interfacesTypes";
+import ITiposDAO from "@/src/types/model/dao/ITypesDAO";
+import {
+  TypeCreate,
+  TypeUpdate,
+} from "@/src/types/model/interfaces/interfacesTypes";
 
 export default class TypesRepository {
-  constructor(private tiposDAO: ITiposDAO) {}
+  constructor(private typesDAO: ITiposDAO) {}
 
   // Obtener todos los tipos
-  async getAll(idUsuario?: string, userDetails?: boolean) {
-    return this.tiposDAO.getAll(idUsuario, userDetails);
+  async getAll(idUsuario?: string) {
+    return this.typesDAO.getAll(idUsuario);
   }
 
   // Obtener tipo por ID
-  async getById(idTipo: number, userDetails?: boolean) {
-    return this.tiposDAO.getById(idTipo, userDetails);
+  async getById(idTipo: number) {
+    return this.typesDAO.getById(idTipo);
   }
 
   // Crear un tipo
-  async create(tipo: TipoCreate) {
-    return this.tiposDAO.create(tipo);
+  async create(tipo: TypeCreate) {
+    return this.typesDAO.create(tipo);
   }
 
   // Actualizar un tipo
-  async update(idTipo: number, tipo: TipoUpdate) {
-    return this.tiposDAO.update(idTipo, tipo);
+  async update(idTipo: number, tipo: TypeUpdate) {
+    return this.typesDAO.update(idTipo, tipo);
   }
 
   // Eliminar un tipo
   async delete(idTipo: number) {
-    return this.tiposDAO.delete(idTipo);
+    return this.typesDAO.delete(idTipo);
   }
 }

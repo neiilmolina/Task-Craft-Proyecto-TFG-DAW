@@ -1,8 +1,8 @@
-import createTiposRoute from "@/src/types/controller/routesTipos";
+import createTiposRoute from "@/src/types/controller/routesTypes";
 import express from "express";
 import request from "supertest";
-import TiposModel from "@/src/tipos/TiposModel";
-import { Tipo } from "@/src/tipos/interfacesTipos";
+import { Type } from "@/src/types/model/interfaces/interfacesTypes";
+import ITypesDAO from "@/src/types/model/dao/ITypesDAO";
 
 const originalConsoleError = console.error;
 beforeAll(() => {
@@ -14,32 +14,32 @@ afterAll(() => {
 
 describe("Tipos Routes", () => {
   let app: express.Application;
-  let mockTiposModel: jest.Mocked<TiposModel>;
+  let mockTypesDAO: jest.Mocked<ITypesDAO>;
 
   beforeEach(() => {
-    mockTiposModel = {
+    mockTypesDAO = {
       getAll: jest.fn(),
       getById: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
-    } as unknown as jest.Mocked<TiposModel>;
+    } as unknown as jest.Mocked<ITypesDAO>;
 
     app = express();
     app.use(express.json());
-    app.use("/tipos", createTiposRoute(mockTiposModel));
+    app.use("/types", createTiposRoute(mockTypesDAO));
   });
 
-  describe("GET /tipos", () => {
+  describe("GET /types", () => {
     it("debe devolver un array de tipos cuando la base de datos tiene datos", async () => {
       // Arrange
-      const mockTipos: Tipo[] = [
-        { idTipo: 1, tipo: "Personal", color: "#FF5733", idUsuario: "user1" },
+      const mockTipos: Type[] = [
+        { idType: 1, type: "Personal", color: "#FF5733", idUser: "user1" },
       ];
-      mockTiposModel.getAll.mockResolvedValue(mockTipos);
+      mockTypesDAO.getAll.mockResolvedValue(mockTipos);
 
       // Act
-      const response = await request(app).get("/tipos");
+      const response = await request(app).get("/types");
 
       // Assert
       expect(response.status).toBe(200);
@@ -48,10 +48,10 @@ describe("Tipos Routes", () => {
 
     it("debe devolver un array vacío cuando la base de datos no tiene datos", async () => {
       // Arrange
-      mockTiposModel.getAll.mockResolvedValue([]);
+      mockTypesDAO.getAll.mockResolvedValue([]);
 
       // Act
-      const response = await request(app).get("/tipos");
+      const response = await request(app).get("/types");
 
       // Assert
       expect(response.status).toBe(200);
@@ -60,12 +60,12 @@ describe("Tipos Routes", () => {
 
     it("debe devolver un error 500 si falla la obtención de datos", async () => {
       // Arrange
-      mockTiposModel.getAll.mockRejectedValue(
+      mockTypesDAO.getAll.mockRejectedValue(
         new Error("Error de base de datos")
       );
 
       // Act
-      const response = await request(app).get("/tipos");
+      const response = await request(app).get("/types");
 
       // Assert
       expect(response.status).toBe(500);
@@ -73,32 +73,32 @@ describe("Tipos Routes", () => {
     });
   });
 
-  describe("GET /tipos/:idTipo", () => {
+  describe("GET /types/:idTipo", () => {
     it("debe devolver un tipo cuando el idTipo existe", async () => {
       // Arrange
-      const mockTipo: Tipo = {
-        idTipo: 1,
-        tipo: "Personal",
+      const mockType: Type = {
+        idType: 1,
+        type: "Personal",
         color: "#FF5733",
-        idUsuario: "user1",
+        idUser: "user1",
       };
-      mockTiposModel.getById.mockResolvedValue(mockTipo);
+      mockTypesDAO.getById.mockResolvedValue(mockType);
 
       // Act
-      const response = await request(app).get("/tipos/1");
+      const response = await request(app).get("/types/1");
 
       // Assert
       expect(response.status).toBe(200);
-      expect(response.body).toEqual(mockTipo);
+      expect(response.body).toEqual(mockType);
     });
 
     it("debe devolver un tipo con detalles de usuario cuando userDetails es true", async () => {
       // Arrange
-      const mockTipo: Tipo = {
-        idTipo: 1,
-        tipo: "Personal",
+      const mockType: Type = {
+        idType: 1,
+        type: "Personal",
         color: "#FF5733",
-        idUsuario: "user1",
+        idUser: "user1",
         userDetails: {
           id: "1",
           email: "user1@example.com",
@@ -117,22 +117,22 @@ describe("Tipos Routes", () => {
           aud: "authenticated",
         },
       };
-      mockTiposModel.getById.mockResolvedValue(mockTipo);
+      mockTypesDAO.getById.mockResolvedValue(mockType);
 
       // Act
-      const response = await request(app).get("/tipos/1?userDetails=true");
+      const response = await request(app).get("/types/1?userDetails=true");
 
       // Assert
       expect(response.status).toBe(200);
-      expect(response.body).toEqual(mockTipo);
+      expect(response.body).toEqual(mockType);
     });
 
     it("debe devolver un error 404 cuando el idTipo no existe", async () => {
       // Arrange
-      mockTiposModel.getById.mockResolvedValue(null);
+      mockTypesDAO.getById.mockResolvedValue(null);
 
       // Act
-      const response = await request(app).get("/tipos/999");
+      const response = await request(app).get("/types/999");
 
       // Assert
       expect(response.status).toBe(404);
@@ -141,12 +141,12 @@ describe("Tipos Routes", () => {
 
     it("debe devolver un error 500 si ocurre un fallo en la base de datos", async () => {
       // Arrange
-      mockTiposModel.getById.mockRejectedValue(
+      mockTypesDAO.getById.mockRejectedValue(
         new Error("Error de base de datos")
       );
 
       // Act
-      const response = await request(app).get("/tipos/1");
+      const response = await request(app).get("/types/1");
 
       // Assert
       expect(response.status).toBe(500);
@@ -155,7 +155,7 @@ describe("Tipos Routes", () => {
 
     it("debe manejar correctamente un idTipo inválido (NaN)", async () => {
       // Act
-      const response = await request(app).get("/tipos/abc");
+      const response = await request(app).get("/types/abc");
 
       // Assert
       expect(response.status).toBe(404);
@@ -163,31 +163,31 @@ describe("Tipos Routes", () => {
     });
   });
 
-  describe("POST /tipos", () => {
+  describe("POST /types", () => {
     it("debe crear un tipo cuando los datos son válidos", async () => {
       // Arrange
       const newTipo = {
-        tipo: "Trabajo",
+        type: "Trabajo",
         color: "#FF0000",
-        idUsuario: "user123",
+        idUser: "user123",
       };
-      mockTiposModel.create.mockResolvedValue({ idTipo: 1, ...newTipo });
+      mockTypesDAO.create.mockResolvedValue({ idType: 1, ...newTipo });
 
       // Act
-      const response = await request(app).post("/tipos").send(newTipo);
+      const response = await request(app).post("/types").send(newTipo);
 
       // Assert
       expect(response.status).toBe(201);
-      expect(response.body).toEqual({ idTipo: 1, ...newTipo });
+      expect(response.body).toEqual({ idType: 1, ...newTipo });
     });
 
     it("debe devolver 400 si los datos son inválidos", async () => {
       // Arrange
-      const invalidTipo = { tipo: "", color: "#GGGGGG", idUsuario: "" }; // Datos inválidos
-      mockTiposModel.create.mockResolvedValue(null);
+      const invalidType = { type: "", color: "#GGGGGG", idUser: "" }; // Datos inválidos
+      mockTypesDAO.create.mockResolvedValue(null);
 
       // Act
-      const response = await request(app).post("/tipos").send(invalidTipo);
+      const response = await request(app).post("/types").send(invalidType);
 
       // Assert
       expect(response.status).toBe(400);
@@ -196,15 +196,15 @@ describe("Tipos Routes", () => {
 
     it("debe devolver 400 si el tipo ya existe", async () => {
       // Arrange
-      const existingTipo = {
-        tipo: "Personal",
+      const existingType = {
+        type: "Personal",
         color: "#FF5733",
-        idUsuario: "user1",
+        idUser: "user1",
       };
-      mockTiposModel.create.mockRejectedValue(new Error("already exists"));
+      mockTypesDAO.create.mockRejectedValue(new Error("already exists"));
 
       // Act
-      const response = await request(app).post("/tipos").send(existingTipo);
+      const response = await request(app).post("/types").send(existingType);
 
       // Assert
       expect(response.status).toBe(400);
@@ -213,11 +213,11 @@ describe("Tipos Routes", () => {
 
     it("debe devolver 500 si hay un error interno", async () => {
       // Arrange
-      const newTipo = { tipo: "Deporte", color: "#00FF00", idUsuario: "user2" };
-      mockTiposModel.create.mockRejectedValue(new Error("Error inesperado"));
+      const newTipo = { type: "Deporte", color: "#00FF00", idUser: "user2" };
+      mockTypesDAO.create.mockRejectedValue(new Error("Error inesperado"));
 
       // Act
-      const response = await request(app).post("/tipos").send(newTipo);
+      const response = await request(app).post("/types").send(newTipo);
 
       // Assert
       expect(response.status).toBe(500);
@@ -225,113 +225,113 @@ describe("Tipos Routes", () => {
     });
   });
 
-  describe("PUT /tipos/:idTipo", () => {
+  describe("PUT /types/:idTipo", () => {
     it("debe actualizar un tipo cuando los datos son válidos", async () => {
       // Arrange
-      const idTipo = 1; // Ensure idTipo is a number
+      const idType = 1; // Ensure idTipo is a number
       const updatedData = {
-        tipo: "Actualizado",
+        type: "Actualizado",
         color: "#FFFFFF",
-        idUsuario: "user1",
+        idUser: "user1",
       };
-      mockTiposModel.update.mockResolvedValue({ idTipo, ...updatedData });
+      mockTypesDAO.update.mockResolvedValue({ idType, ...updatedData });
 
       // Act
       const response = await request(app)
-        .put(`/tipos/${idTipo}`)
+        .put(`/types/${idType}`)
         .send(updatedData);
 
       // Assert
       expect(response.status).toBe(200);
-      expect(response.body).toEqual({ idTipo, ...updatedData });
-      expect(mockTiposModel.update).toHaveBeenCalledWith(idTipo, updatedData);
+      expect(response.body).toEqual({ idType, ...updatedData });
+      expect(mockTypesDAO.update).toHaveBeenCalledWith(idType, updatedData);
     });
 
     it("debe devolver 400 si la validación falla", async () => {
       // Arrange
-      const idTipo = 1;
+      const idType = 1;
       const invalidData = {
-        tipo: "",
+        type: "",
         color: "invalidColor", // Invalid color
-        idUsuario: "user1",
+        idUser: "user1",
       };
-      mockTiposModel.update.mockResolvedValue(null);
+      mockTypesDAO.update.mockResolvedValue(null);
 
       // Act
       const response = await request(app)
-        .put(`/tipos/${idTipo}`)
+        .put(`/types/${idType}`)
         .send(invalidData);
 
       // Assert
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty("error");
-      expect(mockTiposModel.update).not.toHaveBeenCalled();
+      expect(mockTypesDAO.update).not.toHaveBeenCalled();
     });
 
     it("debe devolver 404 si el tipo no existe", async () => {
       // Arrange
-      const idTipo = 999;
+      const idType = 999;
       const updatedData = {
-        tipo: "Actualizado",
+        type: "Actualizado",
         color: "#FFFFFF",
-        idUsuario: "user1",
+        idUser: "user1",
       };
-      mockTiposModel.update.mockResolvedValue(null);
+      mockTypesDAO.update.mockResolvedValue(null);
 
       // Act
       const response = await request(app)
-        .put(`/tipos/${idTipo}`)
+        .put(`/types/${idType}`)
         .send(updatedData);
 
       // Assert
       expect(response.status).toBe(404);
       expect(response.body).toEqual({ error: "Tipo no encontrado" });
-      expect(mockTiposModel.update).toHaveBeenCalledWith(idTipo, updatedData);
+      expect(mockTypesDAO.update).toHaveBeenCalledWith(idType, updatedData);
     });
 
     it("debe devolver 500 si ocurre un error en el servidor", async () => {
       // Arrange
-      const idTipo = 1;
+      const idType = 1;
       const updatedData = {
-        tipo: "Actualizado",
+        type: "Actualizado",
         color: "#FFFFFF",
-        idUsuario: "user1",
+        idUser: "user1",
       };
-      mockTiposModel.update.mockRejectedValue(
+      mockTypesDAO.update.mockRejectedValue(
         new Error("Error de base de datos")
       );
 
       // Act
       const response = await request(app)
-        .put(`/tipos/${idTipo}`)
+        .put(`/types/${idType}`)
         .send(updatedData);
 
       // Assert
       expect(response.status).toBe(500);
       expect(response.body).toEqual({ error: "Error interno del servidor" });
-      expect(mockTiposModel.update).toHaveBeenCalledWith(idTipo, updatedData);
+      expect(mockTypesDAO.update).toHaveBeenCalledWith(idType, updatedData);
     });
 
     it("debe devolver 400 si el idTipo es inválido", async () => {
       // Act
       const response = await request(app)
-        .put("/tipos/abc") // Invalid idTipo
-        .send({ tipo: "Nuevo" });
+        .put("/types/abc") // Invalid idTipo
+        .send({ type: "Nuevo" });
 
       // Assert
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty("error");
-      expect(mockTiposModel.update).not.toHaveBeenCalled();
+      expect(mockTypesDAO.update).not.toHaveBeenCalled();
     });
   });
 
-  describe("DELETE /tipos/:idTipo", () => {
+  describe("DELETE /types/:idTipo", () => {
     it("debería eliminar un tipo existente y devolver un estado 200", async () => {
-      mockTiposModel.delete.mockResolvedValue(true); // Mock de eliminación exitosa
+      mockTypesDAO.delete.mockResolvedValue(true); // Mock de eliminación exitosa
 
-      const response = await request(app).delete("/tipos/1");
+      const response = await request(app).delete("/types/1");
 
-      expect(mockTiposModel.delete).toHaveBeenCalledWith(1); // Se llama con ID correcto
+      expect(mockTypesDAO.delete).toHaveBeenCalledWith(1); // Se llama con ID correcto
       expect(response.status).toBe(200); // Código de estado correcto
       expect(response.body).toEqual({
         message: "Tipo eliminado correctamente",
@@ -339,33 +339,33 @@ describe("Tipos Routes", () => {
     });
 
     it("debería devolver un estado 404 si el tipo no existe", async () => {
-      mockTiposModel.delete.mockResolvedValue(false); // Mock de "no encontrado"
+      mockTypesDAO.delete.mockResolvedValue(false); // Mock de "no encontrado"
 
-      const response = await request(app).delete("/tipos/999");
+      const response = await request(app).delete("/types/999");
 
-      expect(mockTiposModel.delete).toHaveBeenCalledWith(999);
+      expect(mockTypesDAO.delete).toHaveBeenCalledWith(999);
       expect(response.status).toBe(404);
       expect(response.body).toEqual({ error: "Tipo no encontrado" });
     });
 
     it("debería devolver un estado 500 si ocurre un error interno", async () => {
-      mockTiposModel.delete.mockRejectedValue(
+      mockTypesDAO.delete.mockRejectedValue(
         new Error("Error de base de datos")
       ); // Simular error
 
-      const response = await request(app).delete("/tipos/2");
+      const response = await request(app).delete("/types/2");
 
-      expect(mockTiposModel.delete).toHaveBeenCalledWith(2);
+      expect(mockTypesDAO.delete).toHaveBeenCalledWith(2);
       expect(response.status).toBe(500);
       expect(response.body).toEqual({ error: "Error interno del servidor" });
       expect(console.error).toHaveBeenCalledWith(
-        "Error al eliminar el tipo:",
+        "Error al eliminar el type:",
         expect.any(Error)
       );
     });
 
     it("debería devolver un estado 400 si el id no es un número válido", async () => {
-      const response = await request(app).delete("/tipos/abc");
+      const response = await request(app).delete("/types/abc");
 
       expect(response.status).toBe(400);
       expect(response.body).toEqual({ message: "ID inválido" });
@@ -373,7 +373,7 @@ describe("Tipos Routes", () => {
 
     it("debería manejar correctamente una solicitud sin parámetro de id", async () => {
       // Aquí la prueba debería manejar correctamente la falta de ID
-      const response = await request(app).delete("/tipos"); // Sin ID
+      const response = await request(app).delete("/types"); // Sin ID
 
       expect(response.status).toBe(404); // Probablemente Express devuelva 404, no 400
     });
