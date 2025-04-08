@@ -3,6 +3,7 @@ import {
   Task,
   TaskCreate,
   TaskUpdate,
+  TaskReturn,
 } from "@/src/tasks/model/interfaces/interfacesTasks";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import ITaskDAO from "./ITasksDAO";
@@ -151,12 +152,12 @@ export default class TaskMysqlDAO implements ITaskDAO {
     });
   }
   async create(idTask: string, task: TaskCreate): Promise<TaskReturn | null> {
-    try {
+    return new Promise<TaskReturn | null>((resolve, reject) => {
       const query = `
-        INSERT INTO ${TABLE_NAME}
-          (${FIELDS.idTask}, ${FIELDS.title}, ${FIELDS.description}, ${FIELDS.activityDate}, ${FIELDS.idState}, ${FIELDS.idType}, ${FIELDS.idUser})
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-      `;
+    INSERT INTO ${TABLE_NAME}
+      (${FIELDS.idTask}, ${FIELDS.title}, ${FIELDS.description}, ${FIELDS.activityDate}, ${FIELDS.idState}, ${FIELDS.idType}, ${FIELDS.idUser})
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `;
 
       const values = [
         idTask,
@@ -174,27 +175,80 @@ export default class TaskMysqlDAO implements ITaskDAO {
           return reject(new Error("Database insertion error")); // Lanza un error específico
         }
 
-        // resolve({
-        //   idTask: idTask,
-        //   title: task.title,
-        //   description: task.description,
-        //   activityDate: task.activityDate,
-        //   state: {
-        //     idState: task.idState,
-        //     state: "", // Aquí deberías obtener el estado correspondiente si es necesario
-        //   },
-        //   type: {
-        // });
+        resolve({
+          idTask: idTask,
+          title: task.title,
+          description: task.description,
+          activityDate: task.activityDate,
+          idState: task.idState,
+          idType: task.idType,
+          idUser: task.idUser,
+        });
       });
-    } catch (error) {
-      console.error("Error creating task:", error);
-      throw new Error("Error creating task in the database");
-    }
+    });
   }
   update(idTask: string, task: TaskUpdate): Promise<TaskReturn | null> {
-    throw new Error("Method not implemented.");
+    return new Promise<TaskReturn>((resolve, reject) => {
+      const query = `UPDATE ${TABLE_NAME} SET
+                      ${FIELDS.title} = ?, 
+                      ${FIELDS.description} = ?, 
+                      ${FIELDS.activityDate} = ?, 
+                      ${FIELDS.idState} = ?,
+                      ${FIELDS.idType} = ?, 
+                      ${FIELDS.idUser} = ? 
+                      WHERE ${FIELDS.idTask} = ?`;
+
+      connection.query(
+        query,
+        [
+          task.title,
+          task.description,
+          task.activityDate,
+          task.idState,
+          task.idType,
+          task.idUser,
+          idTask,
+        ],
+        (err: any, results: any) => {
+          if (err) {
+            return reject(
+              new Error(`Database update error:  + ${err.message}`)
+            ); // Lanza un error con mensaje detallado
+          }
+
+          const resultSet = results as ResultSetHeader;
+
+          if (resultSet.affectedRows === 0) {
+            return reject(new Error("User not found"));
+          }
+
+          // Resolver con el resultado
+          resolve({
+            idTask: idTask,
+            title: task.title,
+            description: task.description,
+            activityDate: task.activityDate,
+            idState: task.idState,
+            idType: task.idType,
+            idUser: task.idUser,
+          } as TaskReturn);
+        }
+      );
+    });
   }
   delete(idTask: string): Promise<boolean> {
-    throw new Error("Method not implemented.");
+    return new Promise<boolean>((resolve, reject) => {
+      const query = `DELETE FROM ${TABLE_NAME} WHERE ${FIELDS.idTask} = ?`;
+      connection.query(query, [idTask], (err: any, results: any) => {
+        if (err) {
+          return reject(err);
+        }
+        const resultSet = results as ResultSetHeader;
+        if (resultSet.affectedRows === 0) {
+          return reject(new Error("Tarea no encontrada"));
+        }
+        resolve(true);
+      });
+    });
   }
 }
