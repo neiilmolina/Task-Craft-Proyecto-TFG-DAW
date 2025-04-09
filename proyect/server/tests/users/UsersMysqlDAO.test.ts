@@ -34,7 +34,7 @@ describe("UsersMysqlDAO", () => {
         password: "hashedpassword",
         urlImg: null,
         idRol: 1,
-        rol: "admin",
+        role: "admin",
       },
       {
         idUser: "2",
@@ -43,7 +43,7 @@ describe("UsersMysqlDAO", () => {
         password: "hashedpassword",
         urlImg: "url.img",
         idRol: 2,
-        rol: "user",
+        role: "user",
       },
       {
         idUser: "3",
@@ -52,7 +52,7 @@ describe("UsersMysqlDAO", () => {
         password: "hashedpassword",
         urlImg: null,
         idRol: 2,
-        rol: "user",
+        role: "user",
       },
     ];
 
@@ -82,9 +82,9 @@ describe("UsersMysqlDAO", () => {
           userName: "John Doe",
           email: "john@example.com",
           urlImg: null,
-          rol: {
-            idRol: 1,
-            rol: "admin",
+          role: {
+            idRole: 1,
+            role: "admin",
           },
         },
         {
@@ -92,9 +92,9 @@ describe("UsersMysqlDAO", () => {
           userName: "Jane Doe",
           email: "jane@example.com",
           urlImg: "url.img",
-          rol: {
-            idRol: 2,
-            rol: "user",
+          role: {
+            idRole: 2,
+            role: "user",
           },
         },
         {
@@ -102,9 +102,9 @@ describe("UsersMysqlDAO", () => {
           userName: "Manolo Gonzalez",
           email: "manolo@example.com",
           urlImg: null,
-          rol: {
-            idRol: 2,
-            rol: "user",
+          role: {
+            idRole: 2,
+            role: "user",
           },
         },
       ];
@@ -201,9 +201,9 @@ describe("UsersMysqlDAO", () => {
           userName: "Jane Doe",
           email: "jane@example.com",
           urlImg: "url.img", // Este es el valor correcto de urlImg para este usuario
-          rol: {
-            idRol: 2,
-            rol: "user",
+          role: {
+            idRole: 2,
+            role: "user",
           },
         },
         {
@@ -211,9 +211,9 @@ describe("UsersMysqlDAO", () => {
           userName: "Manolo Gonzalez",
           email: "manolo@example.com",
           urlImg: null, // Este es el valor correcto de urlImg para este usuario
-          rol: {
-            idRol: 2,
-            rol: "user",
+          role: {
+            idRole: 2,
+            role: "user",
           },
         },
       ];
@@ -232,9 +232,9 @@ describe("UsersMysqlDAO", () => {
         userName: "John Doe",
         email: "john@example.com",
         urlImg: null,
-        rol: {
+        role: {
           idRol: 1,
-          rol: "admin",
+          role: "admin",
         },
       };
 
@@ -251,8 +251,8 @@ describe("UsersMysqlDAO", () => {
             userName: mockUser.userName,
             email: mockUser.email,
             urlImg: mockUser.urlImg,
-            idRol: mockUser.rol.idRol,
-            rol: mockUser.rol.rol,
+            idRol: mockUser.role.idRol,
+            role: mockUser.role.role,
           },
         ];
 
@@ -320,9 +320,9 @@ describe("UsersMysqlDAO", () => {
         email: "john@example.com",
         urlImg: null,
         password: hashedPassword,
-        rol: {
+        role: {
           idRol: 1,
-          rol: "admin",
+          role: "admin",
         },
       };
 
@@ -339,8 +339,8 @@ describe("UsersMysqlDAO", () => {
             email: mockUsuario.email,
             urlImg: mockUsuario.urlImg,
             password: mockUsuario.password,
-            idRol: mockUsuario.rol.idRol,
-            rol: mockUsuario.rol.rol,
+            idRol: mockUsuario.role.idRol,
+            role: mockUsuario.role.role,
           },
         ]);
       });
@@ -356,7 +356,7 @@ describe("UsersMysqlDAO", () => {
         userName: mockUsuario.userName,
         email: mockUsuario.email,
         urlImg: mockUsuario.urlImg,
-        rol: mockUsuario.rol,
+        role: mockUsuario.role,
       });
     });
 
@@ -393,9 +393,9 @@ describe("UsersMysqlDAO", () => {
         email: "john@example.com",
         urlImg: null,
         password: hashedPassword,
-        rol: {
+        role: {
           idRol: 1,
-          rol: "admin",
+          role: "admin",
         },
       };
 
@@ -412,8 +412,8 @@ describe("UsersMysqlDAO", () => {
             email: mockUsuario.email,
             urlImg: mockUsuario.urlImg,
             password: mockUsuario.password,
-            idRol: mockUsuario.rol.idRol,
-            rol: mockUsuario.rol.rol,
+            idRol: mockUsuario.role.idRol,
+            role: mockUsuario.role.role,
           },
         ]);
       });
@@ -461,9 +461,9 @@ describe("UsersMysqlDAO", () => {
         email: mockEmail,
         urlImg: null,
         password: hashedPassword,
-        rol: {
+        role: {
           idRol: 1,
-          rol: "admin",
+          role: "admin",
         },
       };
 
@@ -480,8 +480,8 @@ describe("UsersMysqlDAO", () => {
             email: mockUsuario.email,
             urlImg: mockUsuario.urlImg,
             password: mockUsuario.password,
-            idRol: mockUsuario.rol.idRol,
-            rol: mockUsuario.rol.rol,
+            idRol: mockUsuario.role.idRol,
+            role: mockUsuario.role.role,
           },
         ]);
       });
@@ -494,7 +494,7 @@ describe("UsersMysqlDAO", () => {
         userName: mockUsuario.userName,
         email: mockUsuario.email,
         urlImg: mockUsuario.urlImg,
-        rol: mockUsuario.rol,
+        role: mockUsuario.role,
       });
     });
 
@@ -528,9 +528,9 @@ describe("UsersMysqlDAO", () => {
         email: mockEmail,
         urlImg: null,
         password: hashedPassword,
-        rol: {
+        role: {
           idRol: 1,
-          rol: "admin",
+          role: "admin",
         },
       };
 
@@ -547,8 +547,8 @@ describe("UsersMysqlDAO", () => {
             email: mockUsuario.email,
             urlImg: mockUsuario.urlImg,
             password: mockUsuario.password,
-            idRol: mockUsuario.rol.idRol,
-            rol: mockUsuario.rol.rol,
+            idRol: mockUsuario.role.idRol,
+            role: mockUsuario.role.role,
           },
         ]);
       });
@@ -666,7 +666,7 @@ describe("UsersMysqlDAO", () => {
         userName: "usuario_actualizado",
         email: "usuario@actualizado.com",
         urlImg: "https://nueva-imagen.com",
-        idRol: 2,
+        idRole: 2,
       };
 
       // Configurar el mock de la conexión
@@ -692,7 +692,7 @@ describe("UsersMysqlDAO", () => {
         userName: userToUpdate.userName,
         email: userToUpdate.email,
         urlImg: userToUpdate.urlImg,
-        idRol: userToUpdate.idRol,
+        idRol: userToUpdate.idRole,
       });
 
       // Verificar que la query fue llamada con los parámetros correctos
@@ -702,7 +702,7 @@ describe("UsersMysqlDAO", () => {
           userToUpdate.userName,
           userToUpdate.email,
           userToUpdate.urlImg,
-          userToUpdate.idRol,
+          userToUpdate.idRole,
           userId,
         ],
         expect.any(Function)
@@ -716,7 +716,7 @@ describe("UsersMysqlDAO", () => {
         userName: "usuario_inexistente",
         email: "usuario@inexistente.com",
         urlImg: "https://inexistente.com",
-        idRol: 1,
+        idRole: 1,
       };
 
       // Configurar el mock de la conexión
@@ -745,7 +745,7 @@ describe("UsersMysqlDAO", () => {
         userName: "usuario_actualizado",
         email: "usuario@actualizado.com",
         urlImg: "https://nueva-imagen.com",
-        idRol: 2,
+        idRole: 2,
       };
       const mockError = new Error("Database update error");
 

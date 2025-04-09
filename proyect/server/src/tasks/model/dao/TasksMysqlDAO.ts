@@ -7,8 +7,6 @@ import {
 } from "@/src/tasks/model/interfaces/interfacesTasks";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import ITaskDAO from "./ITasksDAO";
-import { Temporal } from "@js-temporal/polyfill";
-import { resolve } from "path";
 
 const TABLE_NAME = "tareas";
 const FIELDS = {
