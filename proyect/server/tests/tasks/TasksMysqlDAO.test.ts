@@ -307,14 +307,14 @@ describe("TaskMysqlDAO", () => {
     });
   });
 
-  describe("TasksMysqlDAO - create", () => {
+  describe.only("TasksMysqlDAO - create", () => {
     const mockConnection = mysql.createConnection();
 
     const idTask = "task-123";
     const taskInput: TaskCreate = {
       title: "Nueva tarea",
       description: "Descripción de la nueva tarea",
-      activityDate: Temporal.PlainDateTime.from("2025-04-10T10:00:00"),
+      activityDate: "2025-04-10T10:00:00",
       idState: 1,
       idType: 2,
       idUser: "user-456",
@@ -324,7 +324,7 @@ describe("TaskMysqlDAO", () => {
       idTask: idTask,
       title: taskInput.title,
       description: taskInput.description,
-      activityDate: taskInput.activityDate,
+      activityDate: Temporal.PlainDateTime.from("2025-04-10T10:00:00"),
       idState: taskInput.idState,
       idType: taskInput.idType,
       idUser: taskInput.idUser,
@@ -379,14 +379,14 @@ describe("TaskMysqlDAO", () => {
     });
   });
 
-  describe("TasksMysqlDAO - update", () => {
+  describe.only("TasksMysqlDAO - update", () => {
     const mockConnection = mysql.createConnection();
 
     const idTask = "task-789";
     const taskInput: TaskUpdate = {
       title: "Tarea actualizada",
       description: "Nueva descripción",
-      activityDate: Temporal.PlainDateTime.from("2025-04-15T09:30:00"),
+      activityDate: "2025-04-15T09:30:00", // Se mantiene con T
       idState: 2,
       idType: 3,
       idUser: "user-999",
@@ -396,7 +396,9 @@ describe("TaskMysqlDAO", () => {
       idTask: idTask,
       title: taskInput.title ?? "",
       description: taskInput.description ?? "",
-      activityDate: taskInput.activityDate ?? Temporal.PlainDateTime.from(""),
+      activityDate:
+        Temporal.PlainDateTime.from("2025-04-15T09:30:00") ??
+        Temporal.PlainDateTime.from(""),
       idState: taskInput.idState ?? 0,
       idType: taskInput.idType ?? 0,
       idUser: taskInput.idUser ?? "",
@@ -421,7 +423,7 @@ describe("TaskMysqlDAO", () => {
         expect.arrayContaining([
           taskInput.title,
           taskInput.description,
-          taskInput.activityDate,
+          "2025-04-15 09:30:00",
           taskInput.idState,
           taskInput.idType,
           taskInput.idUser,

@@ -33,7 +33,7 @@ export interface Task {
 export interface TaskCreate {
   title: string;
   description: string;
-  activityDate: Temporal.PlainDateTime;
+  activityDate: string;
   idState: number;
   idType: number;
   idUser: string;
@@ -42,7 +42,7 @@ export interface TaskCreate {
 export interface TaskUpdate {
   title?: string;
   description?: string;
-  activityDate?: Temporal.PlainDateTime;
+  activityDate?: string;
   idState?: number;
   idType?: number;
   idUser?: string;

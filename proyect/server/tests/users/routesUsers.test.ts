@@ -45,14 +45,14 @@ describe("Users Routes", () => {
           userName: "user1",
           email: "user1@example.com",
           urlImg: "https://imagen.com/user1.png",
-          rol: { idRol: 2, rol: "Admin" },
+          role: { idRole: 2, role: "Admin" },
         },
         {
           idUser: "2",
           userName: "user2",
           email: "user2@example.com",
           urlImg: null,
-          rol: { idRol: 3, rol: "Editor" },
+          role: { idRole: 3, role: "Editor" },
         },
       ];
 
@@ -95,7 +95,7 @@ describe("Users Routes", () => {
           userName: "user1",
           email: "user1@example.com",
           urlImg: "https://imagen.com/user1.png",
-          rol: { idRol: 2, rol: "Admin" },
+          role: { idRole: 2, role: "Admin" },
         },
       ];
 
@@ -115,7 +115,7 @@ describe("Users Routes", () => {
         userName: "user1",
         email: "user1@example.com",
         urlImg: "https://imagen.com/user1.png",
-        rol: { idRol: 2, rol: "Admin" },
+        role: { idRole: 2, role: "Admin" },
       };
 
       mockUsersModel.getById.mockResolvedValue(mockUser);
@@ -176,9 +176,9 @@ describe("Users Routes", () => {
         userName: "john_doe",
         email: "john@example.com",
         urlImg: null,
-        rol: {
-          idRol: 1,
-          rol: "admin",
+        role: {
+          idRole: 1,
+          role: "admin",
         },
       };
 
@@ -262,7 +262,7 @@ describe("Users Routes", () => {
         userName: "nuevoUser",
         email: "nuevo@example.com",
         urlImg: "https://imagen.com/nuevo.png",
-        idRol: 1,
+        idRole: 1,
         password: "password123",
       };
 
@@ -271,7 +271,7 @@ describe("Users Routes", () => {
         userName: nuevoUser.userName,
         email: nuevoUser.email,
         urlImg: nuevoUser.urlImg,
-        idRol: nuevoUser.idRol || 1,
+        idRole: nuevoUser.idRole || 1,
       };
 
       mockUsersModel.create.mockResolvedValue(userReturn);
@@ -286,7 +286,7 @@ describe("Users Routes", () => {
           userName: nuevoUser.userName,
           email: nuevoUser.email,
           urlImg: nuevoUser.urlImg,
-          idRol: nuevoUser.idRol,
+          idRole: nuevoUser.idRole,
           password: expect.any(String), // La contraseña es encriptada
         })
       );
@@ -316,7 +316,7 @@ describe("Users Routes", () => {
         userName: "userError",
         email: "error@example.com",
         urlImg: "https://imagen.com/error.png",
-        idRol: 2,
+        idRole: 2,
         password: "password123",
       };
 
@@ -340,7 +340,7 @@ describe("Users Routes", () => {
         userName: "userActualizado",
         email: "actualizado@example.com",
         urlImg: "https://imagen.com/actualizado.png",
-        idRol: 2,
+        idRole: 2,
       };
 
       const userActualizado: UserReturn = {
@@ -348,7 +348,7 @@ describe("Users Routes", () => {
         userName: datosActualizados.userName,
         email: datosActualizados.email || "default@example.com",
         urlImg: datosActualizados.urlImg,
-        idRol: datosActualizados.idRol ?? 1,
+        idRole: datosActualizados.idRole ?? 1,
       };
 
       mockUsersModel.update.mockResolvedValue(userActualizado);

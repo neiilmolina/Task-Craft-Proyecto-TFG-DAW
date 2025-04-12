@@ -7,6 +7,7 @@ import {
 } from "@/src/tasks/model/interfaces/interfacesTasks";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import ITaskDAO from "./ITasksDAO";
+import { Temporal } from "@js-temporal/polyfill";
 
 const TABLE_NAME = "tareas";
 const FIELDS = {
@@ -71,7 +72,9 @@ export default class TaskMysqlDAO implements ITaskDAO {
           idTask: row[FIELDS.idTask],
           title: row[FIELDS.title],
           description: row[FIELDS.description],
-          activityDate: row[FIELDS.activityDate],
+          activityDate: Temporal.PlainDateTime.from(
+            row[FIELDS.activityDate].replace(" ", "T")
+          ),
           state: {
             idState: row[FIELDS.idState],
             state: row[FIELDS.state],
@@ -88,7 +91,7 @@ export default class TaskMysqlDAO implements ITaskDAO {
       });
     });
   }
-  getById(idTask: string): Promise<Task | null> {
+  async getById(idTask: string): Promise<Task | null> {
     return new Promise<Task | null>((resolve, reject) => {
       const query = `
       SELECT 
@@ -106,8 +109,7 @@ export default class TaskMysqlDAO implements ITaskDAO {
       JOIN estados e ON t.${FIELDS.idState} = e.idEstado
       JOIN tipos ty ON t.${FIELDS.idType} = ty.idTipo
       JOIN usuarios u ON t.${FIELDS.idUser} = u.idUsuario
-      WHERE t.${FIELDS.idTask} = ?
-    `;
+      WHERE t.${FIELDS.idTask} = ?`;
 
       connection.query(
         query,
@@ -125,11 +127,17 @@ export default class TaskMysqlDAO implements ITaskDAO {
 
           if (results.length > 0) {
             const row = results[0];
+
+            // Convierte la fecha a Temporal.PlainDateTime si está presente
+            const activityDate = row[FIELDS.activityDate]
+              ? Temporal.PlainDateTime.from(row[FIELDS.activityDate])
+              : Temporal.PlainDateTime.from("");
+
             const task: Task = {
               idTask: row[FIELDS.idTask],
               title: row[FIELDS.title],
               description: row[FIELDS.description],
-              activityDate: row[FIELDS.activityDate],
+              activityDate: activityDate, // Asignamos la fecha procesada
               state: {
                 idState: row[FIELDS.idState],
                 state: row[FIELDS.state],
@@ -149,19 +157,23 @@ export default class TaskMysqlDAO implements ITaskDAO {
       );
     });
   }
+
   async create(idTask: string, task: TaskCreate): Promise<TaskReturn | null> {
     return new Promise<TaskReturn | null>((resolve, reject) => {
       const query = `
-    INSERT INTO ${TABLE_NAME}
-      (${FIELDS.idTask}, ${FIELDS.title}, ${FIELDS.description}, ${FIELDS.activityDate}, ${FIELDS.idState}, ${FIELDS.idType}, ${FIELDS.idUser})
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-  `;
+        INSERT INTO ${TABLE_NAME}
+          (${FIELDS.idTask}, ${FIELDS.title}, ${FIELDS.description}, ${FIELDS.activityDate}, ${FIELDS.idState}, ${FIELDS.idType}, ${FIELDS.idUser})
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+      `;
+
+      // Convertir la fecha del formato string a un formato compatible con la base de datos (replace "T" por espacio)
+      const formattedDate = task.activityDate.replace("T", " ");
 
       const values = [
         idTask,
         task.title,
         task.description,
-        task.activityDate.toString().replace("T", " "), // Convertir Temporal.PlainDateTime a formato "YYYY-MM-DD HH:MM:SS"
+        formattedDate, // Fecha convertida al formato adecuado para la base de datos
         task.idState,
         task.idType,
         task.idUser,
@@ -173,11 +185,16 @@ export default class TaskMysqlDAO implements ITaskDAO {
           return reject(new Error("Database insertion error")); // Lanza un error específico
         }
 
+        // Convertir la fecha a Temporal.PlainDateTime para la respuesta
+        const activityDate = Temporal.PlainDateTime.from(
+          task.activityDate.replace("T", "T")
+        );
+
         resolve({
           idTask: idTask,
           title: task.title,
           description: task.description,
-          activityDate: task.activityDate,
+          activityDate: activityDate, // Usar Temporal.PlainDateTime para el campo de fecha
           idState: task.idState,
           idType: task.idType,
           idUser: task.idUser,
@@ -185,7 +202,7 @@ export default class TaskMysqlDAO implements ITaskDAO {
       });
     });
   }
-  update(idTask: string, task: TaskUpdate): Promise<TaskReturn | null> {
+  async update(idTask: string, task: TaskUpdate): Promise<TaskReturn | null> {
     return new Promise<TaskReturn>((resolve, reject) => {
       const query = `UPDATE ${TABLE_NAME} SET
                       ${FIELDS.title} = ?, 
@@ -201,7 +218,7 @@ export default class TaskMysqlDAO implements ITaskDAO {
         [
           task.title,
           task.description,
-          task.activityDate,
+          task.activityDate ? task.activityDate.replace("T", " ") : undefined, // Reemplaza 'T' si se proporciona activityDate
           task.idState,
           task.idType,
           task.idUser,
@@ -209,9 +226,7 @@ export default class TaskMysqlDAO implements ITaskDAO {
         ],
         (err: any, results: any) => {
           if (err) {
-            return reject(
-              new Error(`Database update error:  + ${err.message}`)
-            ); // Lanza un error con mensaje detallado
+            return reject(new Error(`Database update error: ${err.message}`)); // Lanza un error con mensaje detallado
           }
 
           const resultSet = results as ResultSetHeader;
@@ -225,7 +240,9 @@ export default class TaskMysqlDAO implements ITaskDAO {
             idTask: idTask,
             title: task.title,
             description: task.description,
-            activityDate: task.activityDate,
+            activityDate: task.activityDate
+              ? Temporal.PlainDateTime.from(task.activityDate)
+              : undefined, // Convierte a Temporal si se proporciona
             idState: task.idState,
             idType: task.idType,
             idUser: task.idUser,
@@ -234,7 +251,8 @@ export default class TaskMysqlDAO implements ITaskDAO {
       );
     });
   }
-  delete(idTask: string): Promise<boolean> {
+
+  async delete(idTask: string): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
       const query = `DELETE FROM ${TABLE_NAME} WHERE ${FIELDS.idTask} = ?`;
       connection.query(query, [idTask], (err: any, results: any) => {

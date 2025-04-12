@@ -755,6 +755,54 @@ describe("UsuariosMysqlDAO", () => {
 });
 ```
 
+##### - routesUsers.test.ts
+
+Pruebas de integración para las rutas:
+
+```ts
+describe("UsuariosMysqlDAO", () => {
+  let app: Express;
+  let mockTiposModel: jest.Mocked<IUsersDAO>;
+
+  beforeEach(() => {
+    // Configuración del servidor de pruebas
+  });
+
+  describe("GET /users", () => {
+    it("debe devolver un array de users cuando la base de datos tiene datos");
+    it("debe devolver un array vacío cuando la base de datos no tiene datos");
+    it("debe devolver un error 500 si falla la obtención de datos");
+    it("debe filtrar users por idRol cuando se proporciona un id válido");
+  });
+
+  describe("GET /users/:idUser", () => {
+    it("debe devolver un user cuando el idUser existe");
+    it("debe devolver un error 404 cuando el idUser no existe");
+    it("debe devolver un error 500 si ocurre un fallo en la base de datos");
+    it("debe manejar correctamente un idUser inválido (NaN)");
+  });
+
+  describe("POST /validateUser", () => {
+    it("debe devolver un user cuando las credenciales son correctas");
+    it("debe devolver un error 404 si el user no existe");
+    it("debe devolver un error 500 si ocurre un fallo en el controlador");
+    it("debe devolver un error 400 si los datos de entrada no son válidos");
+  });
+
+  describe("UsuariosMysqlDAO - update", () => {
+    it("should successfully update an existing user");
+    it("should throw an error if user is not found");
+    it("should throw an error if database query fails");
+  });
+
+  describe("UsuariosMysqlDAO - delete", () => {
+    it("should return true when the user is successfully deleted");
+    it("should throw an error if user is not found");
+    it("should throw an error if database query fails");
+  });
+});
+```
+
 ### Tipos
 
 ##### 1. TiposController.ts
