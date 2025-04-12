@@ -7,8 +7,8 @@ import {
 import { UUID_REGEX } from "@/src/core/constants";
 
 // Constantes para los tipos de validación
-const title = z.string();
-const description = z.string();
+const title = z.string().min(1, "El título es obligatorio");
+const description = z.string().min(1, "La descripción es obligatoria");
 const activityDate = z.string().refine((value) => {
   try {
     Temporal.PlainDateTime.from(value); // Intentar convertir el string a Temporal.PlainDateTime
@@ -16,11 +16,16 @@ const activityDate = z.string().refine((value) => {
   } catch {
     return false;
   }
-}, "activityDate debe ser una fecha válida en formato ISO");
-const idState = z.number();
-const idType = z.number();
+}, "activityDate debe ser una fecha válida en formato ISO, como '2025-04-11T10:00:00'");
+const idState = z
+  .number()
+  .min(1, "El estado debe ser un número válido y mayor que 0");
+const idType = z
+  .number()
+  .min(1, "El tipo debe ser un número válido y mayor que 0");
 const idUser = z.string().refine((val) => UUID_REGEX.test(val), {
-  message: "El ID del usuario debe ser un UUID válido",
+  message:
+    "El ID del usuario debe ser un UUID válido, como 'bb89888b-2921-453f-b8c2-49dc2668595f'",
 });
 
 // Esquema para TaskCreate
@@ -48,7 +53,11 @@ export const validateTaskCreate = (input: Partial<TaskCreate>) => {
   if (result.success) {
     return { success: true, input: result.data };
   } else {
-    return { success: false, errors: result.error.errors };
+    const errors = result.error.errors.map((err) => ({
+      path: err.path.join("."),
+      message: err.message,
+    }));
+    return { success: false, errors };
   }
 };
 

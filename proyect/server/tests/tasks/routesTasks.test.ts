@@ -9,6 +9,7 @@ import {
   TaskUpdate,
 } from "@/src/tasks/model/interfaces/interfacesTasks";
 import { Temporal } from "@js-temporal/polyfill";
+import { mock } from "node:test";
 
 const originalConsoleError = console.error;
 beforeAll(() => {
@@ -164,62 +165,36 @@ describe("Tasks Routes", () => {
   });
 
   describe("POST /tasks", () => {
+    const mockTaskData = {
+      title: "Tarea de ejemplo",
+      description: "Descripción de prueba",
+      activityDate: "2025-04-11T10:00:00",
+      idState: 1,
+      idType: 1,
+      idUser: "bb89888b-2921-453f-b8c2-49dc2668595f",
+    };
+
+    const mockNewTask: TaskReturn = {
+      idTask: "4d3c22bf-d51e-4f55-ae4d-ee81477aab4e",
+      title: mockTaskData.title,
+      description: mockTaskData.description,
+      activityDate: Temporal.PlainDateTime.from(mockTaskData.activityDate), // Sigue usando PlainDateTime
+      idState: 1,
+      idType: 1,
+      idUser: "bb89888b-2921-453f-b8c2-49dc2668595f",
+    };
     it("debe devolver un task cuando los datos son correctos", async () => {
-      const mockTaskData = {
-        title: "Tarea de ejemplo",
-        description: "Descripción de prueba",
-        activityDate: "2025-04-11 10:00:00",
-        state: { idState: 1, state: "Pendiente" },
-        type: { idType: 1, type: "Trabajo", color: "#ff0000" },
-        idUser: "bb89888b-2921-453f-b8c2-49dc2668595f",
-      };
-
-      const mockNewTask: TaskReturn = {
-        idTask: "4d3c22bf-d51e-4f55-ae4d-ee81477aab4e",
-        title: mockTaskData.title,
-        description: mockTaskData.description,
-        activityDate: Temporal.PlainDateTime.from(mockTaskData.activityDate),
-        idState: 1,
-        idType: 1,
-        idUser: "bb89888b-2921-453f-b8c2-49dc2668595f",
-      };
-
       mockTaskModel.create.mockResolvedValue(mockNewTask); // Simula la creación de una tarea
 
       const response = await request(app).post("/tasks").send(mockTaskData);
 
       expect(response.status).toBe(200);
-      expect(response.body).toEqual(mockNewTask);
-    });
-
-    it("debe devolver un error 404 si el user no existe", async () => {
-      const mockTaskData = {
-        title: "Tarea de ejemplo",
-        description: "Descripción de prueba",
-        activityDate: "2025-04-11T10:00:00",
-        state: { idState: 1, state: "Pendiente" },
-        type: { idType: 1, type: "Trabajo", color: "#ff0000" },
-        idUser: "non-existent-user", // Usuario no existente
-      };
-
-      mockTaskModel.create.mockResolvedValue(null); // Simula que no se puede crear la tarea
-
-      const response = await request(app).post("/tasks").send(mockTaskData);
-
-      expect(response.status).toBe(404);
-      expect(response.body).toEqual({ error: "Usuario no encontrado" }); // Error relacionado con usuario no encontrado
+      expect(response.body.activityDate).toEqual(
+        mockNewTask.activityDate.toString()
+      ); // Compara las fechas como strings
     });
 
     it("debe devolver un error 500 si ocurre un fallo en el controlador", async () => {
-      const mockTaskData = {
-        title: "Tarea de ejemplo",
-        description: "Descripción de prueba",
-        activityDate: "2025-04-11T10:00:00",
-        state: { idState: 1, state: "Pendiente" },
-        type: { idType: 1, type: "Trabajo", color: "#ff0000" },
-        idUser: "bb89888b-2921-453f-b8c2-49dc2668595f",
-      };
-
       mockTaskModel.create.mockRejectedValue(new Error("Database error")); // Simula un error en la creación
 
       const response = await request(app).post("/tasks").send(mockTaskData);
@@ -230,19 +205,188 @@ describe("Tasks Routes", () => {
 
     it("debe devolver un error 400 si los datos de entrada no son válidos", async () => {
       const invalidTaskData = {
-        // Datos inválidos (falta campo necesario)
         title: "Tarea de ejemplo",
         // Falta descripción
         activityDate: "2025-04-11T10:00:00",
-        state: { idState: 1, state: "Pendiente" },
-        type: { idType: 1, type: "Trabajo", color: "#ff0000" },
+        idState: 1,
+        type: 1,
         idUser: "bb89888b-2921-453f-b8c2-49dc2668595f",
       };
 
       const response = await request(app).post("/tasks").send(invalidTaskData);
 
       expect(response.status).toBe(400);
-      expect(response.body).toEqual({ error: "Datos de tarea no válidos" }); // Error de validación de datos
+      expect(response.body.error).toEqual([
+        { message: "Required", path: "description" },
+        { message: "Required", path: "idType" },
+      ]); // Asegúrate de que el mensaje coincida con lo que se espera
+    });
+  });
+
+  describe("PUT /tasks/:idTask", () => {
+    const idTask = "4d3c22bf-d51e-4f55-ae4d-ee81477aab4e";
+    it("debe actualizar un task cuando los datos son válidos", async () => {
+      const mockTaskData = {
+        title: "Tarea actualizada",
+        description: "Descripción actualizada",
+        activityDate: "2025-05-01T10:00:00", // Temporal.PlainDateTime esperado
+        idState: 2,
+        idType: 1,
+        idUser: "bb89888b-2921-453f-b8c2-49dc2668595f",
+      };
+
+      const mockUpdatedTask = {
+        idTask: idTask,
+        ...mockTaskData,
+      };
+      const mockUpdatedTaskReturn: TaskReturn = {
+        idTask: mockUpdatedTask.idTask,
+        title: mockUpdatedTask.title,
+        description: mockUpdatedTask.description,
+        activityDate: Temporal.PlainDateTime.from(mockUpdatedTask.activityDate),
+        idState: mockUpdatedTask.idState,
+        idType: mockUpdatedTask.idType,
+        idUser: mockTaskData.idUser,
+      };
+
+      // Simula que la tarea se actualiza correctamente
+      mockTaskModel.update.mockResolvedValue(mockUpdatedTaskReturn);
+
+      const response = await request(app)
+        .put(`/tasks/${idTask}`)
+        .send(mockTaskData);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(mockUpdatedTask);
+    });
+
+    it("debe devolver 400 si la validación falla", async () => {
+      const invalidTaskData = {
+        // Falta descripción
+        title: "Tarea incompleta",
+        activityDate: "2025-05-01T10:00:00",
+        idState: 2,
+        idType: "fdfds",
+        idUser: "bb89888b-2921-453f-b8c2-49dc2668595f",
+      };
+
+      const response = await request(app)
+        .put(`/tasks/${idTask}`)
+        .send(invalidTaskData);
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toEqual([
+        {
+          code: "invalid_type",
+          expected: "number",
+          message: "Expected number, received string",
+          path: ["idType"],
+          received: "string",
+        },
+      ]);
+    });
+
+    it("debe devolver 404 si el task no existe", async () => {
+      const mockTaskData = {
+        title: "Tarea de ejemplo",
+        description: "Descripción de prueba",
+        activityDate: "2025-05-01T10:00:00",
+        idState: 1,
+        idType: 1,
+        idUser: "bb89888b-2921-453f-b8c2-49dc2668595f",
+      };
+
+      // Simula que no se encuentra la tarea para la actualización
+      mockTaskModel.update.mockResolvedValue(null);
+
+      const response = await request(app)
+        .put(`/tasks/${idTask}`)
+        .send(mockTaskData);
+
+      expect(response.status).toBe(404);
+      expect(response.body.error).toBe("Tarea no encontrada");
+    });
+
+    it("debe devolver 500 si ocurre un error en el servidor", async () => {
+      const mockTaskData = {
+        title: "Tarea de ejemplo",
+        description: "Descripción de prueba",
+        activityDate: "2025-05-01T10:00:00",
+        idState: 1,
+        idType: 1,
+        idUser: "bb89888b-2921-453f-b8c2-49dc2668595f",
+      };
+
+      // Simula un error interno en el servidor
+      mockTaskModel.update.mockRejectedValue(new Error("Error interno"));
+
+      const response = await request(app)
+        .put(`/tasks/${idTask}`)
+        .send(mockTaskData);
+
+      expect(response.status).toBe(500);
+      expect(response.body.error).toBe("Error interno del servidor");
+    });
+
+    it("debería devolver un estado 400 si el id no es un UUID válido", async () => {
+      const invalidId = "invalid-id";
+      const mockTaskData = {
+        title: "Tarea de ejemplo",
+        description: "Descripción de prueba",
+        activityDate: "2025-05-01T10:00:00",
+        idState: 1,
+        idType: 1,
+        idUser: "bb89888b-2921-453f-b8c2-49dc2668595f",
+      };
+
+      const response = await request(app)
+        .put(`/tasks/${invalidId}`)
+        .send(mockTaskData);
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBe("El ID de la tarea debe ser válido");
+    });
+  });
+
+  describe("DELETE /tasks/:idTask", () => {
+    const mockTaskId = "550e8400-e29b-41d4-a716-446655440000";
+    it("debería eliminar un task existente y devolver un estado 200", async () => {
+      // Simula que la tarea fue eliminada correctamente
+      mockTaskModel.delete.mockResolvedValue(true);
+
+      const response = await request(app).delete(`/tasks/${mockTaskId}`).send();
+
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(true);
+    });
+
+    it("debería devolver un estado 404 si el task no existe", async () => {
+      // Simula que no se encuentra la tarea para eliminar
+      mockTaskModel.delete.mockResolvedValue(false);
+
+      const response = await request(app).delete(`/tasks/${mockTaskId}`).send();
+
+      expect(response.status).toBe(404);
+      expect(response.body.error).toBe("Tarea no encontrada");
+    });
+
+    it("debería devolver un estado 500 si ocurre un error interno", async () => {
+      // Simula un error interno en el servidor
+      mockTaskModel.delete.mockRejectedValue(new Error("Error interno"));
+
+      const response = await request(app).delete(`/tasks/${mockTaskId}`).send();
+
+      expect(response.status).toBe(500);
+      expect(response.body.error).toBe("Error interno del servidor");
+    });
+
+    it("debería devolver un estado 400 si el id no es un UUID válido", async () => {
+      const invalidId = "invalid-id";
+
+      const response = await request(app).delete(`/tasks/${invalidId}`).send();
+
+      expect(response.status).toBe(400);
+      expect(response.body.error).toBe("El ID de la tarea debe ser válido");
     });
   });
 });

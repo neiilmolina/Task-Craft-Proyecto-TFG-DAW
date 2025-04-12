@@ -789,16 +789,19 @@ describe("UsuariosMysqlDAO", () => {
     it("debe devolver un error 400 si los datos de entrada no son válidos");
   });
 
-  describe("UsuariosMysqlDAO - update", () => {
-    it("should successfully update an existing user");
-    it("should throw an error if user is not found");
-    it("should throw an error if database query fails");
+  describe("PUT /users/update/:idUser", () => {
+    it("debe actualizar un user cuando los datos son válidos");
+    it("debe devolver 400 si la validación falla");
+    it("debe devolver 404 si el user no existe");
+    it("debe devolver 500 si ocurre un error en el servidor");
+    it("debería devolver un estado 400 si el id no es un UUID válido");
   });
 
-  describe("UsuariosMysqlDAO - delete", () => {
-    it("should return true when the user is successfully deleted");
-    it("should throw an error if user is not found");
-    it("should throw an error if database query fails");
+  describe("DELETE /users/:idUser", () => {
+    it("debería eliminar un user existente y devolver un estado 200");
+    it("debería devolver un estado 404 si el user no existe");
+    it("debería devolver un estado 500 si ocurre un error interno");
+    it("debería devolver un estado 400 si el id no es un UUID válido");
   });
 });
 ```

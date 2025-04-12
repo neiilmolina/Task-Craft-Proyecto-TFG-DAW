@@ -65,7 +65,9 @@ export default class TasksController {
 
   createTask: RequestHandler = async (req, res) => {
     try {
+      // Ajustar req.body para extraer solo los valores de idState y idType
       const taskData: TaskCreate = req.body;
+
       const result = validateTaskCreate(taskData);
       if (!result.success) {
         res.status(400).json({ error: result.errors });
@@ -74,7 +76,7 @@ export default class TasksController {
 
       const idTask = randomUUID();
       if (!UUID_REGEX.test(idTask)) {
-        res.status(400).json({ error: "El ID del user debe ser válido" });
+        res.status(400).json({ error: "El ID del task debe ser válido" });
         return;
       }
 
@@ -90,24 +92,31 @@ export default class TasksController {
       res.status(500).json({ error: "Error interno del servidor" });
     }
   };
-  
+
   updateTask: RequestHandler = async (req, res) => {
     try {
       const idTask = req.params.idTask;
+
+      // Verificación de UUID
       if (!UUID_REGEX.test(idTask)) {
-        res.status(400).json({ error: "El ID del user debe ser válido" });
+        res.status(400).json({ error: "El ID de la tarea debe ser válido" });
         return;
       }
+
       const taskData: TaskUpdate = req.body;
 
+      // Validación de datos de la tarea
       const result = validateTaskUpdate(taskData);
       if (!result.success) {
         res.status(400).json({ error: result.errors });
         return;
       }
 
+      // Intentando actualizar la tarea
+
       const taskUpdate = await this.tasksRepository.update(idTask, taskData);
 
+      // Verificación si la tarea fue encontrada y actualizada
       if (!taskUpdate) {
         res.status(404).json({ error: "Tarea no encontrada" });
         return;
@@ -118,10 +127,14 @@ export default class TasksController {
       res.status(500).json({ error: "Error interno del servidor" });
     }
   };
+
   deleteTask: RequestHandler = async (req, res) => {
     try {
       const idTask = req.params.idTask;
-
+      if (!UUID_REGEX.test(idTask)) {
+        res.status(400).json({ error: "El ID de la tarea debe ser válido" });
+        return;
+      }
       const task = await this.tasksRepository.delete(idTask);
 
       if (!task) {
