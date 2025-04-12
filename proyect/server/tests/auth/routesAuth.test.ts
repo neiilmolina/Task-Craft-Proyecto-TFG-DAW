@@ -52,9 +52,9 @@ describe("Auth Routes", () => {
         userName: "john_doe",
         email: "john@example.com",
         urlImg: null,
-        rol: {
-          idRol: 1,
-          rol: "admin",
+        role: {
+          idRole: 1,
+          role: "admin",
         },
       };
 

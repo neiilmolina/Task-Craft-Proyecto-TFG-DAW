@@ -8,16 +8,16 @@ interface TypeTask {
 }
 
 export interface TaskBD {
-  idTask: string;
-  title: string;
-  description: string;
-  activityDate: Temporal.PlainDateTime;
-  idState: number;
-  state: string;
-  idType: number;
-  type: string;
+  idTarea: string;
+  titulo: string;
+  descripcion: string;
+  fechaActividad: Temporal.PlainDateTime;
+  idEstado: number;
+  estado: string;
+  idTipo: number;
+  tipo: string;
   color: string;
-  idUser: string;
+  idUsuario: string;
 }
 
 export interface Task {
