@@ -15,7 +15,7 @@ import {
 export default class TasksController {
   private tasksRepository: TasksRepository;
 
-  constructor(private tasksDAO: ITasksDAO) {
+  constructor(tasksDAO: ITasksDAO) {
     this.tasksRepository = new TasksRepository(tasksDAO);
   }
 
@@ -28,7 +28,7 @@ export default class TasksController {
         return;
       }
 
-      const tasks = await this.tasksDAO.getAll(idUser);
+      const tasks = await this.tasksRepository.getAll(idUser);
 
       if (!tasks) {
         res.status(404).json({ error: "No se encontraron tareas" });
