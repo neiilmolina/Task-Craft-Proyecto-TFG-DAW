@@ -26,13 +26,13 @@ describe("TaskMysqlDAO", () => {
     jest.restoreAllMocks();
   });
 
-  describe("getAll", () => {
+  describe.only("getAll", () => {
     const mockResultsList: TaskBD[] = [
       {
         idTarea: "1",
         titulo: "Task 1",
         descripcion: "Description 1",
-        fechaActividad: new Temporal.PlainDateTime(2023, 10, 1, 0, 0, 0),
+        fechaActividad: "2023-10-01 00:00:00",
         idEstado: 1,
         estado: "Pending",
         idTipo: 1,
@@ -44,7 +44,7 @@ describe("TaskMysqlDAO", () => {
         idTarea: "2",
         titulo: "Task 2",
         descripcion: "Description 2",
-        fechaActividad: new Temporal.PlainDateTime(2023, 10, 1, 0, 0, 0),
+        fechaActividad: "2023-10-01 00:00:00",
         idEstado: 2,
         estado: "In Progress",
         idTipo: 2,
@@ -78,7 +78,9 @@ describe("TaskMysqlDAO", () => {
         idTask: row.idTarea,
         title: row.titulo,
         description: row.descripcion,
-        activityDate: row.fechaActividad,
+        activityDate: Temporal.PlainDateTime.from(
+          row.fechaActividad.replace(" ", "T")
+        ),
         state: {
           idState: row.idEstado,
           state: row.estado,
@@ -166,7 +168,7 @@ describe("TaskMysqlDAO", () => {
 
     it("should handle filtering tasks by idUser", async () => {
       const mockConnection = mysql.createConnection();
-      const idUser = "user123";
+      const idUser = "user1";
 
       const filteredResults = mockResultsList.filter(
         (row) => row.idUsuario === idUser
@@ -193,7 +195,9 @@ describe("TaskMysqlDAO", () => {
         idTask: row.idTarea,
         title: row.titulo,
         description: row.descripcion,
-        activityDate: row.fechaActividad,
+        activityDate: Temporal.PlainDateTime.from(
+          row.fechaActividad.replace(" ", "T")
+        ),
         state: {
           idState: row.idEstado,
           state: row.estado,
@@ -210,14 +214,14 @@ describe("TaskMysqlDAO", () => {
     });
   });
 
-  describe("getById", () => {
+  describe.only("getById", () => {
     const mockConnection = mysql.createConnection();
 
     const mockTaskRow = {
       idTarea: "t1",
       titulo: "Título prueba",
       descripcion: "Descripción de prueba",
-      fechaActividad: Temporal.PlainDateTime.from("2025-04-10T00:00:00"),
+      fechaActividad: "2025-04-10T00:00:00",
       idEstado: 1,
       estado: "Pendiente",
       idTipo: 2,
@@ -247,7 +251,7 @@ describe("TaskMysqlDAO", () => {
         idTask: mockTaskRow.idTarea,
         title: mockTaskRow.titulo,
         description: mockTaskRow.descripcion,
-        activityDate: mockTaskRow.fechaActividad,
+        activityDate: Temporal.PlainDateTime.from(mockTaskRow.fechaActividad),
         state: {
           idState: mockTaskRow.idEstado,
           state: mockTaskRow.estado,
@@ -307,7 +311,7 @@ describe("TaskMysqlDAO", () => {
     });
   });
 
-  describe.only("TasksMysqlDAO - create", () => {
+  describe("TasksMysqlDAO - create", () => {
     const mockConnection = mysql.createConnection();
 
     const idTask = "task-123";
@@ -379,7 +383,7 @@ describe("TaskMysqlDAO", () => {
     });
   });
 
-  describe.only("TasksMysqlDAO - update", () => {
+  describe("TasksMysqlDAO - update", () => {
     const mockConnection = mysql.createConnection();
 
     const idTask = "task-789";

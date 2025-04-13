@@ -11,7 +11,7 @@ export interface TaskBD {
   idTarea: string;
   titulo: string;
   descripcion: string;
-  fechaActividad: Temporal.PlainDateTime;
+  fechaActividad: string;
   idEstado: number;
   estado: string;
   idTipo: number;
