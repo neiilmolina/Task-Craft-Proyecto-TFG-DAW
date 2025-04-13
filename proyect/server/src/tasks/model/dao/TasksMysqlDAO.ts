@@ -6,7 +6,7 @@ import {
   TaskReturn,
 } from "@/src/tasks/model/interfaces/interfacesTasks";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
-import ITaskDAO from "./ITasksDAO";
+import ITaskDAO from "@/src/tasks/model/dao/ITasksDAO";
 import { Temporal } from "@js-temporal/polyfill";
 
 const TABLE_NAME = "tareas";
@@ -258,7 +258,7 @@ export default class TaskMysqlDAO implements ITaskDAO {
           const resultSet = results as ResultSetHeader;
 
           if (resultSet.affectedRows === 0) {
-            return reject(new Error("User not found"));
+            return reject(new Error("Task not found"));
           }
 
           // Resolver con el resultado

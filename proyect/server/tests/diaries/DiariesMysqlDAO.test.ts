@@ -1,23 +1,22 @@
-import { ResultSetHeader } from "mysql2";
 import mysql from "@/tests/__mocks__/mysql";
-import {
-  Task,
-  TaskBD,
-  TaskCreate,
-  TaskReturn,
-  TaskUpdate,
-} from "@/src/tasks/model/interfaces/interfacesTasks";
-import TaskMysqlDAO from "@/src/tasks/model/dao/TasksMysqlDAO";
+import DiariesMysqlDAO from "@/src/diaries/model/dao/DiariesMysqlDAO";
 import { Temporal } from "@js-temporal/polyfill";
+import {
+  Diary,
+  DiaryBD,
+  DiaryCreate,
+  DiaryReturn,
+  DiaryUpdate,
+} from "@/src/diaries/model/interfaces/interfacesDiaries";
 
 jest.mock("mysql2", () => ({
   createConnection: mysql.createConnection,
 }));
 
-describe("TaskMysqlDAO", () => {
-  let taskDAO: TaskMysqlDAO;
+describe("DiariesMysqlDAO", () => {
+  let diaryDAO: DiariesMysqlDAO;
   beforeEach(() => {
-    taskDAO = new TaskMysqlDAO();
+    diaryDAO = new DiariesMysqlDAO();
 
     jest.clearAllMocks();
   });
@@ -27,34 +26,24 @@ describe("TaskMysqlDAO", () => {
   });
 
   describe("getAll", () => {
-    const mockResultsList: TaskBD[] = [
+    const mockResultsList: DiaryBD[] = [
       {
-        idTarea: "1",
-        titulo: "Task 1",
+        idDiario: "1",
+        titulo: "Diary 1",
         descripcion: "Description 1",
         fechaActividad: "2023-10-01 00:00:00",
-        idEstado: 1,
-        estado: "Pending",
-        idTipo: 1,
-        tipo: "Type 1",
-        color: "#FFFFFF",
         idUsuario: "user1",
       },
       {
-        idTarea: "2",
-        titulo: "Task 2",
+        idDiario: "2",
+        titulo: "Diary 2",
         descripcion: "Description 2",
         fechaActividad: "2023-10-01 00:00:00",
-        idEstado: 2,
-        estado: "In Progress",
-        idTipo: 2,
-        tipo: "Type 2",
-        color: "#FFFFFF",
         idUsuario: "user2",
       },
     ];
 
-    it("should return an array of tasks when query is successful", async () => {
+    it("should return an array of Diarys when query is successful", async () => {
       const mockConnection = mysql.createConnection();
 
       mockConnection.query.mockImplementation(
@@ -72,30 +61,21 @@ describe("TaskMysqlDAO", () => {
         }
       );
 
-      const tasks = await taskDAO.getAll();
+      const diaries = await diaryDAO.getAll();
 
-      const expectedResults: Task[] = mockResultsList.map((row) => ({
-        idTask: row.idTarea,
+      const expectedResults: Diary[] = mockResultsList.map((row) => ({
+        idDiary: row.idDiario,
         title: row.titulo,
         description: row.descripcion,
         activityDate: Temporal.PlainDateTime.from(
           row.fechaActividad.replace(" ", "T")
         ),
-        state: {
-          idState: row.idEstado,
-          state: row.estado,
-        },
-        type: {
-          idType: row.idTipo,
-          type: row.tipo,
-          color: row.color,
-        },
         idUser: row.idUsuario,
       }));
 
-      expect(tasks).toEqual(expectedResults);
+      expect(diaries).toEqual(expectedResults);
       expect(mockConnection.query).toHaveBeenCalledTimes(1);
-      expect(tasks[0].activityDate instanceof Temporal.PlainDateTime).toBe(
+      expect(diaries[0].activityDate instanceof Temporal.PlainDateTime).toBe(
         true
       );
     });
@@ -119,7 +99,7 @@ describe("TaskMysqlDAO", () => {
         }
       );
 
-      await expect(taskDAO.getAll()).rejects.toThrow("Database error");
+      await expect(diaryDAO.getAll()).rejects.toThrow("Database error");
     });
 
     it("should throw an error if results are not an array", async () => {
@@ -140,12 +120,12 @@ describe("TaskMysqlDAO", () => {
         }
       );
 
-      await expect(taskDAO.getAll()).rejects.toThrow(
+      await expect(diaryDAO.getAll()).rejects.toThrow(
         "Expected array of results but got something else."
       );
     });
 
-    it("should return an empty array if no tasks are found", async () => {
+    it("should return an empty array if no Diarys are found", async () => {
       const mockConnection = mysql.createConnection();
 
       mockConnection.query.mockImplementation(
@@ -162,11 +142,11 @@ describe("TaskMysqlDAO", () => {
         }
       );
 
-      const tasks = await taskDAO.getAll();
-      expect(tasks).toEqual([]);
+      const diaries = await diaryDAO.getAll();
+      expect(diaries).toEqual([]);
     });
 
-    it("should handle filtering tasks by idUser", async () => {
+    it("should handle filtering Diarys by idUser", async () => {
       const mockConnection = mysql.createConnection();
       const idUser = "user1";
 
@@ -189,48 +169,34 @@ describe("TaskMysqlDAO", () => {
         }
       );
 
-      const tasks = await taskDAO.getAll(idUser);
+      const diaries = await diaryDAO.getAll(idUser);
 
-      const expectedResults: Task[] = filteredResults.map((row) => ({
-        idTask: row.idTarea,
+      const expectedResults: Diary[] = filteredResults.map((row) => ({
+        idDiary: row.idDiario,
         title: row.titulo,
         description: row.descripcion,
         activityDate: Temporal.PlainDateTime.from(
           row.fechaActividad.replace(" ", "T")
         ),
-        state: {
-          idState: row.idEstado,
-          state: row.estado,
-        },
-        type: {
-          idType: row.idTipo,
-          type: row.tipo,
-          color: row.color,
-        },
         idUser: row.idUsuario,
       }));
 
-      expect(tasks).toEqual(expectedResults);
+      expect(diaries).toEqual(expectedResults);
     });
   });
 
   describe("getById", () => {
     const mockConnection = mysql.createConnection();
 
-    const mockTaskRow = {
-      idTarea: "t1",
+    const mockDiaryRow = {
+      idDiario: "t1",
       titulo: "Título prueba",
       descripcion: "Descripción de prueba",
       fechaActividad: "2025-04-10T00:00:00",
-      idEstado: 1,
-      estado: "Pendiente",
-      idTipo: 2,
-      tipo: "Trabajo",
-      color: "#FF0000",
       idUsuario: "u1",
     };
 
-    it("should return a task when a valid ID is provided", async () => {
+    it("should return a Diary when a valid ID is provided", async () => {
       mockConnection.query.mockImplementation(
         (
           sql: string,
@@ -238,30 +204,21 @@ describe("TaskMysqlDAO", () => {
           callback?: (err: Error | null, results?: any[]) => void
         ) => {
           if (typeof params === "function") {
-            params(null, [mockTaskRow]);
+            params(null, [mockDiaryRow]);
           } else if (callback) {
-            callback(null, [mockTaskRow]);
+            callback(null, [mockDiaryRow]);
           }
         }
       );
 
-      const task = await taskDAO.getById("t1");
+      const Diary = await diaryDAO.getById("t1");
 
-      expect(task).toEqual({
-        idTask: mockTaskRow.idTarea,
-        title: mockTaskRow.titulo,
-        description: mockTaskRow.descripcion,
-        activityDate: Temporal.PlainDateTime.from(mockTaskRow.fechaActividad),
-        state: {
-          idState: mockTaskRow.idEstado,
-          state: mockTaskRow.estado,
-        },
-        type: {
-          idType: mockTaskRow.idTipo,
-          type: mockTaskRow.tipo,
-          color: mockTaskRow.color,
-        },
-        idUser: mockTaskRow.idUsuario,
+      expect(Diary).toEqual({
+        idDiary: mockDiaryRow.idDiario,
+        title: mockDiaryRow.titulo,
+        description: mockDiaryRow.descripcion,
+        activityDate: Temporal.PlainDateTime.from(mockDiaryRow.fechaActividad),
+        idUser: mockDiaryRow.idUsuario,
       });
 
       expect(mockConnection.query).toHaveBeenCalledWith(
@@ -271,7 +228,7 @@ describe("TaskMysqlDAO", () => {
       );
     });
 
-    it("should return null when no user is found", async () => {
+    it("should return null when no diary is found", async () => {
       mockConnection.query.mockImplementation(
         (
           sql: string,
@@ -286,7 +243,7 @@ describe("TaskMysqlDAO", () => {
         }
       );
 
-      const result = await taskDAO.getById("not-found-id");
+      const result = await diaryDAO.getById("not-found-id");
       expect(result).toBeNull();
     });
 
@@ -307,34 +264,30 @@ describe("TaskMysqlDAO", () => {
         }
       );
 
-      await expect(taskDAO.getById("t1")).rejects.toThrow("Query failed");
+      await expect(diaryDAO.getById("t1")).rejects.toThrow("Query failed");
     });
   });
 
-  describe("TasksMysqlDAO - create", () => {
+  describe("create", () => {
     const mockConnection = mysql.createConnection();
 
-    const idTask = "task-123";
-    const taskInput: TaskCreate = {
-      title: "Nueva tarea",
-      description: "Descripción de la nueva tarea",
+    const idDiary = "diary-123";
+    const diaryInput: DiaryCreate = {
+      title: "Nuevo diario",
+      description: "Descripción de la nuevo diario",
       activityDate: "2025-04-10T10:00:00",
-      idState: 1,
-      idType: 2,
       idUser: "user-456",
     };
 
-    const expectedReturn: TaskReturn = {
-      idTask: idTask,
-      title: taskInput.title,
-      description: taskInput.description,
+    const expectedReturn: DiaryReturn = {
+      idDiary: idDiary,
+      title: diaryInput.title,
+      description: diaryInput.description,
       activityDate: Temporal.PlainDateTime.from("2025-04-10T10:00:00"),
-      idState: taskInput.idState,
-      idType: taskInput.idType,
-      idUser: taskInput.idUser,
+      idUser: diaryInput.idUser,
     };
 
-    it("should successfully create a new task", async () => {
+    it("should successfully create a new Diary", async () => {
       mockConnection.query.mockImplementation(
         (
           sql: string,
@@ -345,20 +298,18 @@ describe("TaskMysqlDAO", () => {
         }
       );
 
-      const result = await taskDAO.create(idTask, taskInput);
+      const result = await diaryDAO.create(idDiary, diaryInput);
 
       expect(result).toEqual(expectedReturn);
 
       expect(mockConnection.query).toHaveBeenCalledWith(
         expect.stringContaining("INSERT INTO"),
         expect.arrayContaining([
-          idTask,
-          taskInput.title,
-          taskInput.description,
-          expect.stringContaining("2025-04-10"), // Fecha formateada
-          taskInput.idState,
-          taskInput.idType,
-          taskInput.idUser,
+          idDiary,
+          diaryInput.title,
+          diaryInput.description,
+          expect.stringContaining("2025-04-10"),
+          diaryInput.idUser,
         ]),
         expect.any(Function)
       );
@@ -377,38 +328,34 @@ describe("TaskMysqlDAO", () => {
         }
       );
 
-      await expect(taskDAO.create(idTask, taskInput)).rejects.toThrow(
+      await expect(diaryDAO.create(idDiary, diaryInput)).rejects.toThrow(
         "Database insertion error"
       );
     });
   });
 
-  describe("TasksMysqlDAO - update", () => {
+  describe("update", () => {
     const mockConnection = mysql.createConnection();
 
-    const idTask = "task-789";
-    const taskInput: TaskUpdate = {
-      title: "Tarea actualizada",
+    const idDiary = "Diary-789";
+    const diaryInput: DiaryUpdate = {
+      title: "Diario actualizada",
       description: "Nueva descripción",
-      activityDate: "2025-04-15T09:30:00", // Se mantiene con T
-      idState: 2,
-      idType: 3,
+      activityDate: "2025-04-15T09:30:00",
       idUser: "user-999",
     };
 
-    const expectedReturn: TaskReturn = {
-      idTask: idTask,
-      title: taskInput.title ?? "",
-      description: taskInput.description ?? "",
+    const expectedReturn: DiaryReturn = {
+      idDiary: idDiary,
+      title: diaryInput.title ?? "",
+      description: diaryInput.description ?? "",
       activityDate:
         Temporal.PlainDateTime.from("2025-04-15T09:30:00") ??
         Temporal.PlainDateTime.from(""),
-      idState: taskInput.idState ?? 0,
-      idType: taskInput.idType ?? 0,
-      idUser: taskInput.idUser ?? "",
+      idUser: diaryInput.idUser ?? "",
     };
 
-    it("should successfully update an existing task", async () => {
+    it("should successfully update an existing Diary", async () => {
       mockConnection.query.mockImplementation(
         (
           sql: string,
@@ -419,25 +366,23 @@ describe("TaskMysqlDAO", () => {
         }
       );
 
-      const result = await taskDAO.update(idTask, taskInput);
+      const result = await diaryDAO.update(idDiary, diaryInput);
 
       expect(result).toEqual(expectedReturn);
       expect(mockConnection.query).toHaveBeenCalledWith(
         expect.stringContaining("UPDATE"),
         expect.arrayContaining([
-          taskInput.title,
-          taskInput.description,
+          diaryInput.title,
+          diaryInput.description,
           "2025-04-15 09:30:00",
-          taskInput.idState,
-          taskInput.idType,
-          taskInput.idUser,
-          idTask,
+          diaryInput.idUser,
+          idDiary,
         ]),
         expect.any(Function)
       );
     });
 
-    it("should throw an error if user is not found", async () => {
+    it("should throw an error if diary is not found", async () => {
       mockConnection.query.mockImplementation(
         (
           sql: string,
@@ -448,8 +393,8 @@ describe("TaskMysqlDAO", () => {
         }
       );
 
-      await expect(taskDAO.update(idTask, taskInput)).rejects.toThrow(
-        "User not found"
+      await expect(diaryDAO.update(idDiary, diaryInput)).rejects.toThrow(
+        "Diary not found"
       );
     });
 
@@ -466,17 +411,17 @@ describe("TaskMysqlDAO", () => {
         }
       );
 
-      await expect(taskDAO.update(idTask, taskInput)).rejects.toThrow(
+      await expect(diaryDAO.update(idDiary, diaryInput)).rejects.toThrow(
         /Database update error/
       );
     });
   });
 
-  describe("TasksMysqlDAO - delete", () => {
+  describe("delete", () => {
     const mockConnection = mysql.createConnection();
-    const idTask = "task-999";
+    const idDiary = "Diary-999";
 
-    it("should return true when the task is successfully deleted", async () => {
+    it("should return true when the Diary is successfully deleted", async () => {
       mockConnection.query.mockImplementation(
         (
           sql: string,
@@ -487,17 +432,17 @@ describe("TaskMysqlDAO", () => {
         }
       );
 
-      const result = await taskDAO.delete(idTask);
+      const result = await diaryDAO.delete(idDiary);
 
       expect(result).toBe(true);
       expect(mockConnection.query).toHaveBeenCalledWith(
         expect.stringContaining("DELETE FROM"),
-        [idTask],
+        [idDiary],
         expect.any(Function)
       );
     });
 
-    it("should throw an error if task is not found", async () => {
+    it("should throw an error if Diary is not found", async () => {
       mockConnection.query.mockImplementation(
         (
           sql: string,
@@ -508,9 +453,7 @@ describe("TaskMysqlDAO", () => {
         }
       );
 
-      await expect(taskDAO.delete(idTask)).rejects.toThrow(
-        "Tarea no encontrada"
-      );
+      await expect(diaryDAO.delete(idDiary)).rejects.toThrow("Diary not found");
     });
 
     it("should throw an error if database query fails", async () => {
@@ -526,7 +469,9 @@ describe("TaskMysqlDAO", () => {
         }
       );
 
-      await expect(taskDAO.delete(idTask)).rejects.toThrow("Database failure");
+      await expect(diaryDAO.delete(idDiary)).rejects.toThrow(
+        "Database failure"
+      );
     });
   });
 });
