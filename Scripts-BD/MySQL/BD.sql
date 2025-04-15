@@ -161,20 +161,23 @@ CREATE TABLE IF NOT EXISTS amigos (
 );
 
 -- Inserciones de amigos
-INSERT INTO amigos (idAmigo, idPrimerUsuario, idSegundoUsuario, solicitudAmigoAceptada)
-VALUES
-    (UUID(), (SELECT idUsuario FROM usuarios WHERE nombreUsuario = 'admin' LIMIT 1), (SELECT idUsuario FROM usuarios WHERE nombreUsuario = 'neil' LIMIT 1), TRUE), 
-    (UUID(), (SELECT idUsuario FROM usuarios WHERE nombreUsuario = 'admin_pepe' LIMIT 1), (SELECT idUsuario FROM usuarios WHERE nombreUsuario = 'pepe' LIMIT 1), FALSE), 
-    (UUID(), (SELECT idUsuario FROM usuarios WHERE nombreUsuario = 'neil' LIMIT 1), (SELECT idUsuario FROM usuarios WHERE nombreUsuario = 'pepe' LIMIT 1), TRUE);
-
--- Crear tabla amigos_has_tareas (con idTareaCompartida como clave primaria)
 CREATE TABLE IF NOT EXISTS amigos_has_tareas (
-    idTareaCompartida CHAR(36) PRIMARY KEY, -- Nueva clave primaria
+    idTareaCompartida CHAR(36) PRIMARY KEY,
     idAmigo CHAR(36) NOT NULL,
     idTarea CHAR(36) NOT NULL,
     solicitudTareaAceptada BOOLEAN DEFAULT FALSE,
     
-    CONSTRAINT fk_idAmigo FOREIGN KEY (idAmigo) REFERENCES amigos(idAmigo),
+    CONSTRAINT fk_idAmigo FOREIGN KEY (idAmigo) REFERENCES usuarios(idUsuario),
+    CONSTRAINT fk_idTareaTarea FOREIGN KEY (idTarea) REFERENCES tareas(idTarea)
+);
+-- Crear tabla amigos_has_tareas (con idTareaCompartida como clave primaria)
+CREATE TABLE IF NOT EXISTS amigos_has_tareas (
+    idTareaCompartida CHAR(36) PRIMARY KEY,
+    idAmigo CHAR(36) NOT NULL,
+    idTarea CHAR(36) NOT NULL,
+    solicitudTareaAceptada BOOLEAN DEFAULT FALSE,
+    
+    CONSTRAINT fk_idAmigo FOREIGN KEY (idAmigo) REFERENCES usuarios(idUsuario),
     CONSTRAINT fk_idTareaTarea FOREIGN KEY (idTarea) REFERENCES tareas(idTarea)
 );
 
@@ -185,30 +188,4 @@ VALUES
     (UUID(), (SELECT idAmigo FROM amigos WHERE idPrimerUsuario = (SELECT idUsuario FROM usuarios WHERE nombreUsuario = 'neil' LIMIT 1) AND idSegundoUsuario = (SELECT idUsuario FROM usuarios WHERE nombreUsuario = 'pepe' LIMIT 1) LIMIT 1), (SELECT idTarea FROM tareas WHERE titulo = 'Evento de lanzamiento' LIMIT 1), TRUE);
 
 -- Consulta para ver las tareas compartidas entre amigos
-SELECT 
-    aht.idTareaCompartida,
-    u1.nombreUsuario AS nombrePrimerUsuario,
-    u2.nombreUsuario AS nombreSegundoUsuario,
-    aht.solicitudTareaAceptada,
-    ta.idTarea,
-    u3.nombreUsuario AS creador,
-    ta.titulo,
-    ta.descripcion,
-    ta.fechaActividad,
-    e.estado,
-    ti.tipo
-FROM amigos_has_tareas aht
-INNER JOIN amigos a
-    ON aht.idAmigo = a.idAmigo
-INNER JOIN usuarios u1
-    ON a.idPrimerUsuario = u1.idUsuario
-INNER JOIN usuarios u2
-    ON a.idSegundoUsuario = u2.idUsuario
-INNER JOIN tareas ta
-    ON aht.idTarea = ta.idTarea
-INNER JOIN estados e
-    ON ta.idEstado = e.idEstado
-INNER JOIN tipos ti
-    ON ta.idTipo = ti.idTipo
-LEFT JOIN usuarios u3 
-    ON ta.idUsuario = u3.idUsuario;
+
