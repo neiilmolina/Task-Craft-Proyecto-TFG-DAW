@@ -1,17 +1,25 @@
-export interface UserFriends {
-  idUser: string;
-  urlImg: string | null;
-  userName: string;
-  email: string;
-}
+import { UserFriends } from "@/src/users/model/interfaces/interfacesUsers";
 
 export interface FriendBD {
-  idAmigo: string;
-  idUsuario: string;
-  urlImagen: string | null;
-  nombreUsuario: string;
-  email: string;
-  solicitudAmigoAceptada: boolean;
+  idFriend: string;
+
+  idUser1: string;
+  urlImg1: string | null;
+  userName1: string;
+  email1: string;
+
+  idUser2: string;
+  urlImg2: string | null;
+  userName2: string;
+  email2: string;
+
+  friendRequestState: boolean;
+}
+
+export interface FriendFilters {
+  idFirstUser?: string;
+  idSecondUser?: string;
+  friendRequestState?: boolean;
 }
 
 export interface Friend {

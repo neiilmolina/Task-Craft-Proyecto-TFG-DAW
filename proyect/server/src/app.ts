@@ -53,10 +53,6 @@ const createApp = (
   // Usar el middleware de manejo de errores al final de todas las rutas
   app.use(errorHandler);
 
-  app.listen(port, () => {
-    console.log(`[server]: Server is running at http://localhost:${port}`);
-  });
-
   return app; // Asegúrate de devolver la app para que pueda ser utilizada
 };
 

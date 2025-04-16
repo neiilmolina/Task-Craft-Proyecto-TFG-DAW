@@ -10,6 +10,13 @@ export interface UserBD {
   role?: string;
 }
 
+export interface UserFriends {
+  idUser: string;
+  urlImg: string | null;
+  userName: string;
+  email: string;
+}
+
 export interface User {
   idUser: string;
   userName: string;
