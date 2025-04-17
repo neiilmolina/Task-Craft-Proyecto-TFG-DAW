@@ -45,7 +45,7 @@ export default class TasksController {
     try {
       const idTask = req.params.idTask;
       if (!UUID_REGEX.test(idTask)) {
-        res.status(400).json({ error: "El ID del user debe ser válido" });
+        res.status(400).json({ error: "El ID de la tarea debe ser válido" });
         return;
       }
 

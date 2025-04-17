@@ -1,21 +1,36 @@
 import { z } from "zod";
-import { FriendCreate } from "@/src/friends/model/interfaces/interfacesFriends";
-import { UUID_REGEX } from "@/src/core/constants";
+import {
+  FriendCreate,
+  FriendFilters,
+} from "@/src/friends/model/interfaces/interfacesFriends";
 
-const idUser = z.string().refine((val) => UUID_REGEX.test(val), {
-  message: "El ID del usuario debe ser un UUID válido",
-});
+const uuid = z.string().uuid();
 
 const request = z.boolean().default(false);
 
-export const FriendCreateSchema = z.object({
-  firstFriend: idUser,
-  secondFriend: idUser,
+const friendCreateSchema = z.object({
+  firstUser: uuid,
+  secondUser: uuid,
   friendRequestState: request,
 });
 
+const friendFiltersSchema = z.object({
+  idFirstUser: uuid.optional(),
+  idSecondUser: uuid.optional(),
+  friendRequestState: z.enum(["true", "false"]).optional(),
+});
+
 export const validateFriendCreate = (input: Partial<FriendCreate>) => {
-  const result = FriendCreateSchema.safeParse(input);
+  const result = friendCreateSchema.safeParse(input);
+  if (result.success) {
+    return { success: true, input: result.data };
+  } else {
+    return { success: false, errors: result.error.errors };
+  }
+};
+
+export const validateFriendFilters = (input: Partial<FriendFilters>) => {
+  const result = friendFiltersSchema.safeParse(input);
   if (result.success) {
     return { success: true, input: result.data };
   } else {
