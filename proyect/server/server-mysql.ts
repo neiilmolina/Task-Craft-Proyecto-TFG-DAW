@@ -12,7 +12,6 @@ import FriendsMysqlDAO from "@/src/friends/model/dao/FriendsMysqlDAO";
 // Create the server
 import setupWebSocket from "@/src/socket";
 import { createServer } from "http";
-import { Server as SocketIOServer } from "socket.io";
 
 // Create the model instance with the DAO
 const statesMysqlDAO = new StatesMysqlDAO();
@@ -36,16 +35,8 @@ const app = createApp(
 
 const server = createServer(app);
 
-// Socket.io se engancha al server HTTP
-const io = new SocketIOServer(server, {
-  cors: {
-    origin: "*", // o el origen que quieras permitir
-    methods: ["GET", "POST"],
-  },
-});
-
 // Inicializamos WebSocket
-setupWebSocket(io);
+setupWebSocket(server, friendsMysqlDAO);
 
 // Levantamos el servidor
 const PORT = process.env.PORT || 3000;

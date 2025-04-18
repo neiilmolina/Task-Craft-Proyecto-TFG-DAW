@@ -31,7 +31,6 @@ const createApp = (
   friendsDAO: IFriendsDAO
 ) => {
   const app = express();
-  const port = process.env.PORT || 3000;
   app.use(json());
   app.use(cookieParser());
   app.disable("x-powered-by");
