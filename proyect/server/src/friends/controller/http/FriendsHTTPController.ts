@@ -23,13 +23,25 @@ export default class FriendsHTTPController {
 
   getFriends: RequestHandler = async (req, res) => {
     try {
-      const filters: FriendFilters = req.query;
+      const filters: FriendFilters = {
+        ...req.query,
+        friendRequestState:
+          req.query.friendRequestState === "true"
+            ? true
+            : req.query.friendRequestState === "false"
+            ? false
+            : undefined,
+      };
 
       const result = validateFriendFilters(filters);
 
       if (!result.success) {
         res.status(400).json({ error: result.errors });
         return;
+      }
+      const { friendRequestState } = filters;
+
+      if (friendRequestState) {
       }
 
       const friends = await this.friendsRepository.getAll(filters);

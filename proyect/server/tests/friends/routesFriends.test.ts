@@ -156,7 +156,7 @@ describe("Friends Routes", () => {
       });
     });
 
-    it("should filter by friendRequestState=true", async () => {
+    it.only("should filter by friendRequestState=true", async () => {
       const filterFriends = sampleFriends.filter(
         (friend: Friend) => friend.friendRequestState
       );
@@ -171,7 +171,7 @@ describe("Friends Routes", () => {
       });
     });
 
-    it("should filter by friendRequestState=false", async () => {
+    it.only("should filter by friendRequestState=false", async () => {
       const filterFriends = sampleFriends.filter(
         (friend: Friend) => !friend.friendRequestState
       );

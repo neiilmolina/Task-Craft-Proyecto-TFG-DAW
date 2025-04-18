@@ -17,9 +17,14 @@ const friendCreateSchema = z.object({
 const friendFiltersSchema = z.object({
   idFirstUser: uuid.optional(),
   idSecondUser: uuid.optional(),
-  friendRequestState: z.enum(["true", "false"]).optional(),
+  friendRequestState: z
+    .preprocess((val) => {
+      if (val === "true") return true;
+      if (val === "false") return false;
+      return val;
+    }, z.boolean())
+    .optional(),
 });
-
 export const validateFriendCreate = (input: Partial<FriendCreate>) => {
   const result = friendCreateSchema.safeParse(input);
   if (result.success) {

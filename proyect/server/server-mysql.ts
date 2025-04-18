@@ -6,7 +6,8 @@ import TypesMysqlDAO from "@/src/types/model/dao/TypesMysqlDAO";
 import RolesMysqlDAO from "@/src/roles/model/dao/RolesMysqlDAO";
 import UsersMysqlDAO from "@/src/users/model/dao/UsersMysqlDAO";
 import TaskMysqlDAO from "@/src/tasks/model/dao/TasksMysqlDAO";
-import DiariesMysqlDAO from "./src/diaries/model/dao/DiariesMysqlDAO";
+import DiariesMysqlDAO from "@/src/diaries/model/dao/DiariesMysqlDAO";
+import FriendsMysqlDAO from "@/src/friends/model/dao/FriendsMysqlDAO";
 
 // Create the server
 import setupWebSocket from "@/src/socket";
@@ -20,6 +21,7 @@ const typesMysqlDAO = new TypesMysqlDAO();
 const rolesMysqlDAO = new RolesMysqlDAO();
 const tasksMysqlDAO = new TaskMysqlDAO();
 const diariesMysqlDAO = new DiariesMysqlDAO();
+const friendsMysqlDAO = new FriendsMysqlDAO();
 
 // Pass the model instance to createApp
 const app = createApp(
@@ -28,7 +30,8 @@ const app = createApp(
   rolesMysqlDAO,
   usersMysqlDAO,
   tasksMysqlDAO,
-  diariesMysqlDAO
+  diariesMysqlDAO,
+  friendsMysqlDAO
 );
 
 const server = createServer(app);

@@ -15,7 +15,9 @@ import createAuthRoute from "@/src/auth/routesAuth";
 import ITaskDAO from "@/src/tasks/model/dao/ITasksDAO";
 import createTasksRoute from "@/src/tasks/controller/routesTasks";
 import IDiariesDAO from "@/src/diaries/model/dao/IDiariesDAO";
-import createDiariesRoute from "./diaries/controller/routesDiaries";
+import createDiariesRoute from "@/src/diaries/controller/routesDiaries";
+import IFriendsDAO from "@/src/friends/model/dao/IFriendsDAO";
+import createFriendsRoute from "@/src/friends/controller/http/routesFriends";
 
 dotenv.config();
 
@@ -25,7 +27,8 @@ const createApp = (
   rolesDAO: IRolesDAO,
   usersDAO: IUsersDAO,
   tasksDAO: ITaskDAO,
-  diariesDAO: IDiariesDAO
+  diariesDAO: IDiariesDAO,
+  friendsDAO: IFriendsDAO
 ) => {
   const app = express();
   const port = process.env.PORT || 3000;
@@ -49,6 +52,7 @@ const createApp = (
   app.use("/auth", createAuthRoute(usersDAO));
   app.use("/tasks", createTasksRoute(tasksDAO));
   app.use("/diaries", createDiariesRoute(diariesDAO));
+  app.use("/friends", createFriendsRoute(friendsDAO));
 
   // Usar el middleware de manejo de errores al final de todas las rutas
   app.use(errorHandler);
