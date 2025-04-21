@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import { Response } from "express";
+import { User } from "../users/model/interfaces/interfacesUsers";
 
 const secretKey = process.env.JWT_SECRET as string;
 
@@ -15,7 +16,7 @@ export default function authMiddleware(
   res: Response,
   next: () => void
 ) {
-  const token = req.cookies.access_token; // Acceder a la cookie del token  
+  const token = req.cookies.access_token; // Acceder a la cookie del token
   req.session = { user: null };
 
   try {
