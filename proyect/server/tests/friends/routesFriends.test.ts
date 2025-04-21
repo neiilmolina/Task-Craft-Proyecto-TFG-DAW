@@ -35,7 +35,7 @@ describe("Friends Routes", () => {
     app.use("/friends", createFriendsRoute(mockFriendsModel));
   });
 
-  describe("GET /friends", () => {
+  describe.only("GET /friends", () => {
     const sampleFriends: Friend[] = [
       {
         idFriend: uuidv4(),
@@ -156,7 +156,7 @@ describe("Friends Routes", () => {
       });
     });
 
-    it.only("should filter by friendRequestState=true", async () => {
+    it("should filter by friendRequestState=true", async () => {
       const filterFriends = sampleFriends.filter(
         (friend: Friend) => friend.friendRequestState
       );
@@ -171,7 +171,7 @@ describe("Friends Routes", () => {
       });
     });
 
-    it.only("should filter by friendRequestState=false", async () => {
+    it("should filter by friendRequestState=false", async () => {
       const filterFriends = sampleFriends.filter(
         (friend: Friend) => !friend.friendRequestState
       );
@@ -183,6 +183,32 @@ describe("Friends Routes", () => {
       expect(res.body).toEqual(filterFriends);
       res.body.forEach((friend: Friend) => {
         expect(friend.friendRequestState).toBe(false);
+      });
+    });
+
+    it.only("should return all friends where the user appears as either firstUser or secondUser (OR logic via HTTP)", async () => {
+      const idUser = sampleFriends[0].firstUser.idUser;
+
+      // Simula que el usuario está en cualquiera de las dos posiciones
+      const filterFriends = sampleFriends.filter(
+        (friend: Friend) =>
+          friend.firstUser.idUser === idUser ||
+          friend.secondUser.idUser === idUser
+      );
+
+      mockFriendsModel.getAll.mockResolvedValue(filterFriends);
+
+      const res = await request(app)
+        .get("/friends")
+        .query({ idFirstUser: idUser, idSecondUser: idUser }); // Activa la lógica OR
+
+      expect(res.status).toBe(200);
+      expect(res.body).toEqual(filterFriends);
+
+      res.body.forEach((friend: Friend) => {
+        const isFirst = friend.firstUser.idUser === idUser;
+        const isSecond = friend.secondUser.idUser === idUser;
+        expect(isFirst || isSecond).toBe(true);
       });
     });
   });

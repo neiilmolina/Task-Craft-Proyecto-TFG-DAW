@@ -29,14 +29,6 @@ describe("FriendsWebSocketController", () => {
   let socketMock: Socket;
 
   beforeEach(() => {
-    mockFriendsModel = {
-      getAll: jest.fn(),
-      getById: jest.fn(),
-      create: jest.fn(),
-      update: jest.fn(),
-      delete: jest.fn(),
-    } as unknown as jest.Mocked<IFriendsDAO>;
-
     userMock = {
       idUser: randomUUID(),
       userName: "john_doe",
@@ -48,6 +40,13 @@ describe("FriendsWebSocketController", () => {
       },
     };
     (jwt.verify as jest.Mock).mockReturnValue(userMock);
+    mockFriendsModel = {
+      getAll: jest.fn(),
+      getById: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+    } as unknown as jest.Mocked<IFriendsDAO>;
     secretKey = process.env.JWT_SECRET as string;
     socketMock = {
       id: "mock-socket-id",
@@ -68,25 +67,31 @@ describe("FriendsWebSocketController", () => {
       disconnect: jest.fn(),
     } as unknown as Socket;
     controller = new FriendsWebSocketController(socketMock, mockFriendsModel);
+    (controller as any).socket.data.user = userMock;
+    // controller["socket"].data.user = userMock;
   });
 
   describe("handleSendFriendRequest", () => {
     it.only("should send a friend request and emit the success message", async () => {
       const idSecondUser = randomUUID();
-      const idFriend = randomUUID();
-      const mockResult: FriendReturn = {
-        idFriend: idFriend,
+      const idFriend = randomUUID(); // Este será el mismo que el generado dentro del método
+
+      const expectedFriend = {
+        idFriend,
         firstUser: userMock.idUser,
         secondUser: idSecondUser,
         friendRequestState: false,
       };
 
-      mockFriendsModel.create.mockResolvedValue(mockResult);
+      // Mock del UUID
+      jest.spyOn(require("crypto"), "randomUUID").mockReturnValue(idFriend);
+
+      // Mock del repositorio
+      (mockFriendsModel.create as jest.Mock).mockResolvedValue(expectedFriend);
 
       await controller["handleSendFriendRequest"](idSecondUser);
 
-      expect(mockFriendsModel.create).toHaveBeenCalledWith({
-        idFriend: idFriend,
+      expect(mockFriendsModel.create).toHaveBeenCalledWith(idFriend, {
         firstUser: userMock.idUser,
         secondUser: idSecondUser,
         friendRequestState: false,
@@ -94,7 +99,7 @@ describe("FriendsWebSocketController", () => {
 
       expect(socketMock.emit).toHaveBeenCalledWith("friend_request_sent", {
         success: true,
-        result: mockResult,
+        friend: expectedFriend,
       });
     });
 
@@ -114,5 +119,9 @@ describe("FriendsWebSocketController", () => {
         error: mockError,
       });
     });
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 });

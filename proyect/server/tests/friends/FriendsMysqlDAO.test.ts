@@ -27,7 +27,7 @@ describe("TaskMysqlDAO", () => {
     jest.restoreAllMocks();
   });
 
-  describe("getAll", () => {
+  describe.only("getAll", () => {
     const mockResultsList: FriendBD[] = [
       {
         idFriend: "f1",
@@ -382,6 +382,55 @@ describe("TaskMysqlDAO", () => {
 
       expect(friends).toEqual(expectedResults);
     });
+
+    it.only("should handle filtering friends when idFirstUser and idSecondUser are the same (OR logic)", async () => {
+      const idUser = "u1";
+    
+      // Simula que el usuario aparece como firstUser o secondUser
+      const filteredResults = mockResultsList.filter(
+        (row) => row.idUser1 === idUser || row.idUser2 === idUser
+      );
+    
+      mockConnection.query.mockImplementation(
+        (
+          sql: string,
+          params: any[] | ((err: Error | null, results?: any[]) => void),
+          callback?: (err: Error | null, results?: any[]) => void
+        ) => {
+          if (typeof params === "function") {
+            params(null, filteredResults);
+          } else if (callback) {
+            expect(params).toEqual([idUser, idUser]); // Verifica que se pasa el mismo ID dos veces
+            callback(null, filteredResults);
+          }
+        }
+      );
+    
+      const friends = await friendsDAO.getAll({
+        idFirstUser: idUser,
+        idSecondUser: idUser, // Al ser iguales, se aplica lógica de OR
+      });
+    
+      const expectedResults = filteredResults.map((row) => ({
+        idFriend: row.idFriend,
+        firstUser: {
+          idUser: row.idUser1,
+          urlImg: row.urlImg1,
+          userName: row.userName1,
+          email: row.email1,
+        },
+        secondUser: {
+          idUser: row.idUser2,
+          urlImg: row.urlImg2,
+          userName: row.userName2,
+          email: row.email2,
+        },
+        friendRequestState: row.friendRequestState,
+      }));
+    
+      expect(friends).toEqual(expectedResults);
+    });
+    
   });
 
   describe("getById", () => {

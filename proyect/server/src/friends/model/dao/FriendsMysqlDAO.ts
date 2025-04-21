@@ -40,14 +40,24 @@ export default class FriendsMysqlDAO implements IFriendsDAO {
 
       const params: (string | boolean)[] = [];
 
-      if (filters.idFirstUser) {
-        query += ` AND a.${FIELDS.idFirstUser} = ?`;
-        params.push(filters.idFirstUser);
-      }
+      if (
+        filters.idFirstUser &&
+        filters.idSecondUser &&
+        filters.idFirstUser === filters.idSecondUser
+      ) {
+        // OR lógico si ambos IDs son iguales
+        query += ` AND (a.${FIELDS.idFirstUser} = ? OR a.${FIELDS.idSecondUser} = ?)`;
+        params.push(filters.idFirstUser, filters.idSecondUser);
+      } else {
+        if (filters.idFirstUser) {
+          query += ` AND a.${FIELDS.idFirstUser} = ?`;
+          params.push(filters.idFirstUser);
+        }
 
-      if (filters.idSecondUser) {
-        query += ` AND a.${FIELDS.idSecondUser} = ?`;
-        params.push(filters.idSecondUser);
+        if (filters.idSecondUser) {
+          query += ` AND a.${FIELDS.idSecondUser} = ?`;
+          params.push(filters.idSecondUser);
+        }
       }
 
       if (typeof filters.friendRequestState === "boolean") {
@@ -58,10 +68,11 @@ export default class FriendsMysqlDAO implements IFriendsDAO {
       connection.query(query, params, (err, results: RowDataPacket[]) => {
         if (err) return reject(err);
 
-        if (!Array.isArray(results))
+        if (!Array.isArray(results)) {
           return reject(
             new Error("Expected array of results but got something else.")
           );
+        }
 
         const friends: Friend[] = results.map((row) => {
           const firstUser: UserFriends = {
