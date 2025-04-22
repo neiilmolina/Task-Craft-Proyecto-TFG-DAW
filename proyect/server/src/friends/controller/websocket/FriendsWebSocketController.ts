@@ -36,15 +36,11 @@ export default class FriendsWebSocketController {
     try {
       const decoded = jwt.verify(token, secretKey);
       this.socket.data.user = decoded;
-      console.log(
-        `✅ Usuario autenticado vía socket: ${this.socket.data.user.idUser}`
-      );
+      // console.log(
+      //   `✅ Usuario autenticado vía socket: ${this.socket.data.user.idUser}`
+      // );
 
       this.registerEvents();
-      this.getFriendRequests({
-        idFirstUser: this.socket.data.user.idUser,
-        idSecondUser: this.socket.data.user.idUser,
-      });
     } catch (error) {
       this.socket.emit("auth_error", "Token inválido o expirado");
       this.socket.disconnect();
@@ -56,36 +52,55 @@ export default class FriendsWebSocketController {
     this.socket.on("accept_friend_request", this.handleAcceptFriendRequest);
     this.socket.on("disconnect", this.handleDisconnect);
     this.socket.on("delete_friend_request", this.handleDeleteFriendRequest);
+    this.socket.on("get_friend_requests", this.getFriendRequests);
   }
 
   private getFriendRequests = async (filters?: FriendFilters) => {
     try {
+      // Validación de filtros
       if (filters) {
         const result = validateFriendFilters(filters);
-        if (!result.success) {
-          const errorMessages = result.errors
+        console.log("Resultado validación", result);
+  
+        if (!result || !result.success) {
+          const errorMessages = result?.errors
             ?.map((error) => error.message)
             .join(", ");
-          console.error("Validation errors:", errorMessages);
+          console.error("Errores de validación:", errorMessages);
           this.socket.emit("friend_requests_error", {
-            message: errorMessages,
+            message: `Filtro inválido: ${errorMessages}`,
           });
           return;
         }
       }
-
+  
+      // Obtener solicitudes de amistad
       const friendRequests = await this.friendsRepository.getAll(filters || {});
-      if (!friendRequests || friendRequests.length === 0)
+      console.log("Solicitudes de amistad:", friendRequests);
+  
+      // Si no hay solicitudes, lanzar un error
+      if (!friendRequests || friendRequests.length === 0) {
         throw new Error("No se encontraron solicitudes de amistad");
-
+      }
+  
+      // Emitir las solicitudes de amistad
       this.socket.emit("friend_requests", friendRequests);
     } catch (error) {
-      console.log(error);
+      // Manejo de errores
+      const errorMessage = error instanceof Error ? error.message : "Error desconocido";
+      console.log("Error:", errorMessage);
+      
+      if (error instanceof Error && error.stack) {
+        console.error("Stack trace:", error.stack);
+      }
+  
+      // Enviar el error al cliente
       this.socket.emit("friend_requests_error", {
-        message: error || "Error al recuperar solicitudes",
+        message: errorMessage,
       });
     }
   };
+  
 
   private handleSendFriendRequest = async (idSecondUser: string) => {
     try {
@@ -100,8 +115,6 @@ export default class FriendsWebSocketController {
         friendRequestState: false,
       };
 
-      console.log("friendData:", data);
-
       // Realizar la validación
       const result = validateFriendCreate(data);
       console.log("Validation result:", result);
@@ -110,13 +123,11 @@ export default class FriendsWebSocketController {
         const errorMessages = result.errors
           ?.map((error) => error.message)
           .join(", ");
-        console.error("Validation errors:", errorMessages); // Mostrar los errores de validación
         throw new Error(errorMessages);
       }
 
       // Generar un id para la amistad
       const idFriend = randomUUID();
-      console.log("Generated idFriend:", idFriend);
 
       // Verificar que el idFriend sea válido
       if (!UUID_REGEX.test(idFriend)) {
@@ -132,7 +143,6 @@ export default class FriendsWebSocketController {
       // Emitir el resultado exitoso
       this.socket.emit("friend_request_sent", { success: true, friend });
     } catch (error) {
-      console.error("Error en handleSendFriendRequest:", error); // Mostrar el error completo
       this.socket.emit("error", {
         message: "Error al enviar solicitud de amistad",
         error,

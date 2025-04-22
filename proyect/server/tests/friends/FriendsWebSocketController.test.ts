@@ -4,7 +4,12 @@ import { User } from "@/src/users/model/interfaces/interfacesUsers";
 import { randomUUID } from "crypto";
 import jwt from "jsonwebtoken";
 import { Socket } from "socket.io";
-import { FriendReturn } from "@/src/friends/model/interfaces/interfacesFriends";
+import {
+  Friend,
+  FriendFilters,
+  FriendReturn,
+} from "@/src/friends/model/interfaces/interfacesFriends";
+import { validateFriendFilters } from "@/src/friends/model/interfaces/schemasFriends";
 const KEY_ACCESS_COOKIE = "access_token";
 
 const originalConsoleError = console.error;
@@ -71,8 +76,84 @@ describe("FriendsWebSocketController", () => {
     // controller["socket"].data.user = userMock;
   });
 
+  describe("getFriendRequests", () => {
+    it("should retrieve all friend requests and emit the success message", async () => {
+      const mockFriendRequests: Friend[] = [
+        {
+          idFriend: randomUUID(),
+          firstUser: {
+            idUser: randomUUID(),
+            urlImg: null,
+            userName: "User One",
+            email: "user1@example.com",
+          },
+          secondUser: {
+            idUser: randomUUID(),
+            urlImg: "image1.jpg",
+            userName: "User Two",
+            email: "user2@example.com",
+          },
+          friendRequestState: false,
+        },
+      ];
+
+      const filters: FriendFilters = {
+        idFirstUser: mockFriendRequests[0].firstUser.idUser,
+        idSecondUser: mockFriendRequests[0].secondUser.idUser,
+      };
+      // Simulamos la validación exitosa de los filtros
+      (mockFriendsModel.getAll as jest.Mock).mockResolvedValue(
+        mockFriendRequests
+      );
+
+      await controller["getFriendRequests"](filters);
+
+      // Verifica que `getAll` haya sido llamado con los filtros correctos
+      expect(mockFriendsModel.getAll).toHaveBeenCalledWith(filters);
+      expect(socketMock.emit).toHaveBeenCalledWith(
+        "friend_requests",
+        mockFriendRequests
+      );
+    });
+
+    it("should emit an error if no friend requests are found", async () => {
+      const filters: FriendFilters = { idFirstUser: randomUUID()};
+    
+      mockFriendsModel.getAll.mockResolvedValue([]);
+    
+      await controller["getFriendRequests"](filters);
+    
+      expect(socketMock.emit).toHaveBeenCalledWith("friend_requests_error", {
+        message: "No se encontraron solicitudes de amistad",
+      });
+    });
+    
+    it("should emit an error if validation of filters fails", async () => {
+      const filters: FriendFilters = { idFirstUser: "user1" }; // Este valor puede ser inválido según tu esquema Zod
+    
+      await controller["getFriendRequests"](filters);
+    
+      expect(socketMock.emit).toHaveBeenCalledWith("friend_requests_error", {
+        message: "Filtro inválido: Invalid uuid",
+      });
+    });
+    
+    it("should emit an error if an unexpected error occurs", async () => {
+      const filters: FriendFilters = { idFirstUser: randomUUID() };
+    
+      mockFriendsModel.getAll.mockRejectedValue(new Error("Unexpected error"));
+    
+      await controller["getFriendRequests"](filters);
+    
+      expect(socketMock.emit).toHaveBeenCalledWith("friend_requests_error", {
+        message: "Unexpected error",
+      });
+    });
+    
+  });
+
   describe("handleSendFriendRequest", () => {
-    it.only("should send a friend request and emit the success message", async () => {
+    it("should send a friend request and emit the success message", async () => {
       const idSecondUser = randomUUID();
       const idFriend = randomUUID(); // Este será el mismo que el generado dentro del método
 
@@ -119,9 +200,193 @@ describe("FriendsWebSocketController", () => {
         error: mockError,
       });
     });
+
+    it("should emit an error if firstUser is not available", async () => {
+      socketMock.data.user = undefined;
+
+      await controller["handleSendFriendRequest"]("any-user-id");
+
+      expect(socketMock.emit).toHaveBeenCalledWith(
+        "error",
+        expect.objectContaining({
+          message: "Error al enviar solicitud de amistad",
+        })
+      );
+    });
+
+    it("should emit an error if validation fails", async () => {
+      const invalidId = ""; // ID inválido
+      socketMock.data.user = { idUser: invalidId };
+
+      await controller["handleSendFriendRequest"]("invalid-id");
+
+      expect(socketMock.emit).toHaveBeenCalledWith(
+        "error",
+        expect.objectContaining({
+          message: "Error al enviar solicitud de amistad",
+        })
+      );
+    });
+
+    it("should emit an error if idFriend is invalid", async () => {
+      const idSecondUser = randomUUID();
+      const invalidIdFriend = "not-a-valid-uuid";
+
+      jest
+        .spyOn(require("crypto"), "randomUUID")
+        .mockReturnValue(invalidIdFriend);
+
+      await controller["handleSendFriendRequest"](idSecondUser);
+
+      expect(socketMock.emit).toHaveBeenCalledWith(
+        "error",
+        expect.objectContaining({
+          message: "Error al enviar solicitud de amistad",
+        })
+      );
+    });
+
+    it("should emit an error if friend creation returns null", async () => {
+      const idSecondUser = randomUUID();
+      const idFriend = randomUUID();
+
+      jest.spyOn(require("crypto"), "randomUUID").mockReturnValue(idFriend);
+      mockFriendsModel.create.mockResolvedValue(null);
+
+      await controller["handleSendFriendRequest"](idSecondUser);
+
+      expect(socketMock.emit).toHaveBeenCalledWith(
+        "error",
+        expect.objectContaining({
+          message: "Error al enviar solicitud de amistad",
+        })
+      );
+    });
   });
 
+  describe("handleAcceptFriendRequest", () => {
+    it("should accept a friend request and emit the success message", async () => {
+      const friendId = randomUUID();
+      const updatedFriend = {
+        idFriend: friendId,
+        firstUser: "user1",
+        secondUser: "user2",
+        friendRequestState: true,
+      };
+
+      mockFriendsModel.update.mockResolvedValue(updatedFriend);
+
+      await controller["handleAcceptFriendRequest"](friendId);
+
+      expect(mockFriendsModel.update).toHaveBeenCalledWith(friendId);
+      expect(socketMock.emit).toHaveBeenCalledWith("friend_request_accepted", {
+        success: true,
+        result: updatedFriend,
+      });
+    });
+
+    it("should emit an error if friendId is invalid", async () => {
+      const invalidId = "invalid-uuid";
+
+      await controller["handleAcceptFriendRequest"](invalidId);
+
+      expect(socketMock.emit).toHaveBeenCalledWith(
+        "error",
+        expect.objectContaining({
+          message: "Error al aceptar solicitud de amistad",
+        })
+      );
+    });
+
+    it("should emit an error if the update returns null", async () => {
+      const friendId = randomUUID();
+
+      mockFriendsModel.update.mockResolvedValue(null);
+
+      await controller["handleAcceptFriendRequest"](friendId);
+
+      expect(socketMock.emit).toHaveBeenCalledWith(
+        "error",
+        expect.objectContaining({
+          message: "Error al aceptar solicitud de amistad",
+        })
+      );
+    });
+
+    it("should emit an error if the repository throws an exception", async () => {
+      const friendId = randomUUID();
+
+      mockFriendsModel.update.mockRejectedValue(new Error("DB Error"));
+
+      await controller["handleAcceptFriendRequest"](friendId);
+
+      expect(socketMock.emit).toHaveBeenCalledWith(
+        "error",
+        expect.objectContaining({
+          message: "Error al aceptar solicitud de amistad",
+        })
+      );
+    });
+  });
+
+  describe("handleDeleteFriendRequest", () => {
+    it("should delete a friend request and emit the success message", async () => {
+      const friendId = randomUUID();
+      const deletedFriend = {
+        idFriend: friendId,
+        firstUser: "user1",
+        secondUser: "user2",
+        friendRequestState: false,
+      };
+
+      // Simulamos que el repositorio devuelve true (indicando éxito)
+      mockFriendsModel.delete.mockResolvedValue(true);
+
+      // Llamamos al método para manejar la eliminación
+      await controller["handleDeleteFriendRequest"](friendId);
+
+      // Verificamos que la función de eliminación fue llamada con el ID correcto
+      expect(mockFriendsModel.delete).toHaveBeenCalledWith(friendId);
+
+      // Verificamos que el socket emite el mensaje adecuado con un éxito
+      expect(socketMock.emit).toHaveBeenCalledWith("friend_request_deleted", {
+        success: true,
+        result: true,
+      });
+    });
+
+    it("should emit an error if friendId is invalid", async () => {
+      const invalidId = "not-a-uuid";
+
+      await controller["handleDeleteFriendRequest"](invalidId);
+
+      expect(socketMock.emit).toHaveBeenCalledWith(
+        "error",
+        expect.objectContaining({
+          message: "Error al eliminar solicitud de amistad",
+        })
+      );
+    });
+
+    it("should emit an error if the repository throws an exception", async () => {
+      const friendId = randomUUID();
+
+      mockFriendsModel.delete.mockRejectedValue(new Error("DB error"));
+
+      await controller["handleDeleteFriendRequest"](friendId);
+
+      expect(socketMock.emit).toHaveBeenCalledWith(
+        "error",
+        expect.objectContaining({
+          message: "Error al eliminar solicitud de amistad",
+        })
+      );
+    });
+  });
   afterEach(() => {
     jest.restoreAllMocks();
   });
 });
+function uuidv4(): string {
+  throw new Error("Function not implemented.");
+}

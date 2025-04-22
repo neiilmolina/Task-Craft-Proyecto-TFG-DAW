@@ -15,7 +15,6 @@ const setupWebSocket = (server: ServerHTTP, IFriendsDAO: IFriendsDAO) => {
   io.on("connection", (socket: Socket) => {
     console.log(`🔌 Cliente conectado: ${socket.id}`);
     new FriendsWebSocketController(socket, IFriendsDAO);
-    // createWebSocketController(io, socket); // tu lógica de friends
   });
 };
 
