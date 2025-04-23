@@ -8,7 +8,7 @@ import {
   DiaryCreate,
   DiaryReturn,
   DiaryUpdate,
-} from "task-craft-models/src/model/diaries/interfaces/interfacesDiaries";
+} from "task-craft-models";
 
 const originalConsoleError = console.error;
 beforeAll(() => {

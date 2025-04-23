@@ -124,7 +124,7 @@ describe("Estados Routes", () => {
       const estadoInvalido = {}; // Sin estado
 
       // Mock the validation function
-      jest.mock("task-craft-models/src/model/states/interfaces/schemasStates.ts", () => ({
+      jest.mock("task-craft-models.ts", () => ({
         validateEstadoNoId: jest
           .fn()
           .mockReturnValue({ success: false, error: "Estado es requerido" }),

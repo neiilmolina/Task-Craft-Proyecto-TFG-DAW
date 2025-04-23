@@ -1,7 +1,7 @@
 import { RequestHandler } from "express";
 import RolesRepository from "@/src/roles/model/RolesRepository";
-import { validateRoleNoId } from "task-craft-models/src/model/roles/interfaces/schemasRoles";
-import { RoleNoId } from "task-craft-models/src/model/roles/interfaces/interfacesRoles";
+import { validateRoleNoId } from "task-craft-models";
+import { RoleNoId } from "task-craft-models";
 import IRolesDAO from "@/src/roles/model/dao/IRolesDAO";
 
 export default class RolesController {

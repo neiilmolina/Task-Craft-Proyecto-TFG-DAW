@@ -2,7 +2,7 @@ import { z } from "zod";
 import {
   UserCreate,
   UserUpdate,
-} from "../../../model/users/interfaces/interfacesUsers";
+} from "./interfacesUsers";
 
 const passwordSchema = z
   .string()

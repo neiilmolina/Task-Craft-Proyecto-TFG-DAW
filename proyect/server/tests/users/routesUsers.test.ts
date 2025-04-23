@@ -6,7 +6,7 @@ import {
   UserCreate,
   UserReturn,
   UserUpdate,
-} from "task-craft-models/src/model/users/interfaces/interfacesUsers";
+} from "task-craft-models";
 import IUsersDAO from "@/src/users/model/dao/IUsersDAO";
 
 const originalConsoleError = console.error;

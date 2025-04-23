@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Role, RoleNoId } from "../../../model/roles/interfaces/interfacesRoles";
+import { Role, RoleNoId } from "./interfacesRoles";
 
 export const roleSchema = z.object({
   idRole: z.number().optional(),

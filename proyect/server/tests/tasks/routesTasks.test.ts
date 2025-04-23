@@ -7,7 +7,7 @@ import {
   TaskCreate,
   TaskReturn,
   TaskUpdate,
-} from "task-craft-models/src/model/tasks/interfaces/interfacesTasks";
+} from "task-craft-models";
 import { Temporal } from "@js-temporal/polyfill";
 
 const originalConsoleError = console.error;

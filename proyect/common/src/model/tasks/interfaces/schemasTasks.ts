@@ -3,7 +3,7 @@ import { Temporal } from "@js-temporal/polyfill";
 import {
   TaskCreate,
   TaskUpdate,
-} from "../../../model/tasks/interfaces/interfacesTasks";
+} from "./interfacesTasks";
 
 // Constantes para los tipos de validación
 const title = z.string().min(1, "El título es obligatorio");

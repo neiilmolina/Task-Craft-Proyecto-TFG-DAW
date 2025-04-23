@@ -4,7 +4,7 @@ This package provides the **data models** (TypeScript interfaces and Zod validat
 
 ## 📦 What’s included
 
-- **TypeScript interfaces** for core entities: Users, Tasks, Friends, Diaries, States, Types, and Roles.
+- **TypeScript interfaces** for core entities: Users, Tasks, Friends, Friends_Has_Task, Diaries, States, Types, and Roles.
 - **Zod schemas** for runtime validation of each entity.
 - Organized modularly by domain (`/model/[entity]/interfaces/`).
 

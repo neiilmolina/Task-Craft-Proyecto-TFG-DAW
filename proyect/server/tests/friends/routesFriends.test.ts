@@ -7,7 +7,7 @@ import {
   Friend,
   FriendReturn,
   FriendFilters,
-} from "task-craft-models/src/model/friends/interfaces/interfacesFriends";
+} from "task-craft-models";
 import { v4 as uuidv4 } from "uuid";
 const originalConsoleError = console.error;
 beforeAll(() => {

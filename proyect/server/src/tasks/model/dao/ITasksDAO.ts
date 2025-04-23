@@ -3,7 +3,7 @@ import {
   TaskCreate,
   TaskReturn,
   TaskUpdate,
-} from "task-craft-models/src/model/tasks/interfaces/interfacesTasks";
+} from "task-craft-models";
 
 export default interface ITaskDAO {
   getAll(idUser?: string): Promise<Task[]>;

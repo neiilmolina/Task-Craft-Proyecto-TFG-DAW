@@ -5,7 +5,7 @@ import {
   User,
   UserBD,
   UserUpdate,
-} from "task-craft-models/src/model/users/interfaces/interfacesUsers";
+} from "task-craft-models";
 import bcrypt from "bcryptjs";
 
 jest.mock("mysql2", () => ({

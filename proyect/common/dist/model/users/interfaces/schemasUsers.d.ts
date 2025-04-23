@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { UserCreate, UserUpdate } from "../../../model/users/interfaces/interfacesUsers";
+import { UserCreate, UserUpdate } from "./interfacesUsers";
 export declare const userCreateSchema: z.ZodObject<{
     userName: z.ZodOptional<z.ZodString>;
     password: z.ZodString;

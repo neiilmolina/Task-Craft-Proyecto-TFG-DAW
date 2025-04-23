@@ -5,11 +5,11 @@ import {
   validatePassword,
   validateUserCreate,
   validateUserUpdate,
-} from "task-craft-models/src/model/users/interfaces/schemasUsers";
+} from "task-craft-models";
 import {
   UserCreate,
   UserUpdate,
-} from "task-craft-models/src/model/users/interfaces/interfacesUsers";
+} from "task-craft-models";
 import { randomUUID } from "crypto";
 import bcrypt from "bcryptjs";
 import { UUID_REGEX } from "@/src/core/constants";

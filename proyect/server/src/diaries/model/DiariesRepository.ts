@@ -1,7 +1,7 @@
 import {
   DiaryCreate,
   DiaryUpdate,
-} from "task-craft-models/src/model/diaries/interfaces/interfacesDiaries";
+} from "task-craft-models";
 import IDiariesDAO from "@/src/diaries/model/dao/IDiariesDAO";
 
 export default class DiariesRepository {

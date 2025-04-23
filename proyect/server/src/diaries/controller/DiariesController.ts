@@ -5,12 +5,12 @@ import { RequestHandler } from "express";
 import {
   validateDiaryCreate,
   validateDiaryUpdate,
-} from "task-craft-models/src/model/diaries/interfaces/schemasDiaries";
+} from "task-craft-models";
 import DiariesRepository from "@/src/diaries/model/DiariesRepository";
 import {
   DiaryCreate,
   DiaryUpdate,
-} from "task-craft-models/src/model/diaries/interfaces/interfacesDiaries";
+} from "task-craft-models";
 
 export default class DiariesController {
   private diariesRepository: DiariesRepository;

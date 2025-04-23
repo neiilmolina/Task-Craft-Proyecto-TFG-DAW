@@ -2,7 +2,7 @@ import { z } from "zod";
 import {
   FriendCreate,
   FriendFilters,
-} from "../../../model/friends/interfaces/interfacesFriends";
+} from "./interfacesFriends";
 
 const uuid = z.string().uuid();
 

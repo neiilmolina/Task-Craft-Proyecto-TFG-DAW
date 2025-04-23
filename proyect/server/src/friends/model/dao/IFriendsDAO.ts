@@ -3,7 +3,7 @@ import {
   Friend,
   FriendReturn,
   FriendFilters,
-} from "task-craft-models/src/model/friends/interfaces/interfacesFriends";
+} from "task-craft-models";
 
 export default interface IFriendsDAO {
   getAll(filters: FriendFilters): Promise<Friend[]>;

@@ -3,7 +3,7 @@ import {
   UserCreate,
   UserReturn,
   UserUpdate,
-} from "task-craft-models/src/model/users/interfaces/interfacesUsers";
+} from "task-craft-models";
 
 export default interface IUsersDAO {
   getAll(idRol?: number, stringSearch?: string): Promise<User[]>;

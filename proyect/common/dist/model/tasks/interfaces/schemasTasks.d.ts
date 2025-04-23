@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { TaskCreate, TaskUpdate } from "../../../model/tasks/interfaces/interfacesTasks";
+import { TaskCreate, TaskUpdate } from "./interfacesTasks";
 export declare const TaskCreateSchema: z.ZodObject<{
     title: z.ZodString;
     description: z.ZodString;

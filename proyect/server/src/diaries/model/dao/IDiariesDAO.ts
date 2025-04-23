@@ -3,7 +3,7 @@ import {
   DiaryCreate,
   DiaryUpdate,
   DiaryReturn,
-} from "task-craft-models/src/model/diaries/interfaces/interfacesDiaries";
+} from "task-craft-models";
 
 export default interface IDiariesDAO {
   getAll(idUser?: string): Promise<Diary[]>;

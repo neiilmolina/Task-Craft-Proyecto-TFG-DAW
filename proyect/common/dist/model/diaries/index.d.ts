@@ -1,2 +1,2 @@
-export * from '../diaries/interfaces/interfacesDiaries';
-export * from '../diaries/interfaces/schemasDiaries';
+export * from './interfaces/interfacesDiaries';
+export * from './interfaces/schemasDiaries';

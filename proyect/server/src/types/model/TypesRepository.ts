@@ -2,7 +2,7 @@ import ITiposDAO from "@/src/types/model/dao/ITypesDAO";
 import {
   TypeCreate,
   TypeUpdate,
-} from "task-craft-models/src/model/types/interfaces/interfacesTypes";
+} from "task-craft-models";
 
 export default class TypesRepository {
   constructor(private typesDAO: ITiposDAO) {}

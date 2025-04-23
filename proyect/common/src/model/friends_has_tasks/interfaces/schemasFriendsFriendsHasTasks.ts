@@ -1,23 +1,23 @@
 import { z } from "zod";
 import {
-  FriendCreate,
-  FriendFilters,
-} from "../../friends/interfaces/interfacesFriends";
+  FriendHasTasksCreate,
+  FriendHasTasksFilters,
+} from "./interfacesFriendsHasTasks";
 
 const uuid = z.string().uuid();
 
 const request = z.boolean().default(false);
 
 const friendCreateSchema = z.object({
-  firstUser: uuid,
-  secondUser: uuid,
-  friendRequestState: request,
+  idAssignedUser: uuid,
+  idTask: uuid,
+  friendHasTaskRequestState: request,
 });
 
 const friendFiltersSchema = z.object({
-  idFirstUser: uuid.optional(),
-  idSecondUser: uuid.optional(),
-  friendRequestState: z
+  idAssignedUser: uuid.optional(),
+  idTask: uuid.optional(),
+  friendHasTaskRequestState: z
     .preprocess((val) => {
       if (val === "true") return true;
       if (val === "false") return false;
@@ -25,7 +25,7 @@ const friendFiltersSchema = z.object({
     }, z.boolean())
     .optional(),
 });
-export const validateFriendCreate = (input: Partial<FriendCreate>) => {
+export const validateFriendHasTasksCreate = (input: Partial<FriendHasTasksCreate>) => {
   const result = friendCreateSchema.safeParse(input);
   if (result.success) {
     return { success: true, input: result.data };
@@ -34,7 +34,7 @@ export const validateFriendCreate = (input: Partial<FriendCreate>) => {
   }
 };
 
-export const validateFriendFilters = (input: Partial<FriendFilters>) => {
+export const validateFriendHasTasksFilters = (input: Partial<FriendHasTasksFilters>) => {
   const result = friendFiltersSchema.safeParse(input);
   if (result.success) {
     return { success: true, input: result.data };

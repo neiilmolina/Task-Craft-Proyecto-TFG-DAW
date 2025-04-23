@@ -1,4 +1,4 @@
-import { Role, RoleNoId } from "task-craft-models/src/model/roles/interfaces/schemasRoles";
+import { Role, RoleNoId } from "task-craft-models";
 
 export default interface IRolesDAO {
   getAll(): Promise<Role[]>;

@@ -1,4 +1,4 @@
-import { Role, RoleNoId } from "task-craft-models/src/model/roles/interfaces/schemasRoles";
+import { Role, RoleNoId } from "task-craft-models";
 import connection from "@/config/mysql";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import IRolesDAO from "./IRolesDAO";

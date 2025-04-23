@@ -1,2 +1,2 @@
-export * from "../../model/friends/interfaces/interfacesFriends";
-export * from "../../model/friends/interfaces/schemasFriends";
+export * from "./interfaces/interfacesFriends";
+export * from "./interfaces/schemasFriends";

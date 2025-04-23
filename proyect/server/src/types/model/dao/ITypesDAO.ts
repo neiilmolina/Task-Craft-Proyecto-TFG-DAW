@@ -2,7 +2,7 @@ import {
   Type,
   TypeCreate,
   TypeUpdate,
-} from "task-craft-models/src/model/types/interfaces/interfacesTypes";
+} from "task-craft-models";
 
 export default interface ITypesDAO {
   getAll(idUsuario?: string): Promise<Type[] | null>;

@@ -1,4 +1,4 @@
-import { State, StateNoId } from "task-craft-models/src/model/states/interfaces/interfacesStates"
+import { State, StateNoId } from "task-craft-models"
 
 export default interface IStatesDAO {
   getAll(): Promise<State[]>;

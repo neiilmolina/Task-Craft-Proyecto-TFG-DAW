@@ -1,4 +1,4 @@
-import { State, StateNoId } from "task-craft-models/src/model/states/interfaces/interfacesStates";
+import { State, StateNoId } from "task-craft-models";
 import IStatesDAO from "@/src/states/model/dao/IStatesDAO";
 
 export default class StatesRepository {

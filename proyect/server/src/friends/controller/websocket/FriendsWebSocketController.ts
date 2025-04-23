@@ -4,13 +4,13 @@ import FriendsRepository from "@/src/friends/model/FriendsRepository";
 import {
   FriendCreate,
   FriendFilters,
-} from "task-craft-models/src/model/friends/interfaces/interfacesFriends";
+} from "task-craft-models";
 import IFriendsDAO from "@/src/friends/model/dao/IFriendsDAO";
 import { randomUUID } from "crypto";
 import {
   validateFriendCreate,
   validateFriendFilters,
-} from "task-craft-models/src/model/friends/interfaces/schemasFriends";
+} from "task-craft-models";
 import { UUID_REGEX } from "@/src/core/constants";
 
 const secretKey = process.env.JWT_SECRET as string;

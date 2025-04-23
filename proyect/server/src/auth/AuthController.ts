@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import cookies from "cookie-parser";
 import IUsersDAO from "@/src/users/model/dao/IUsersDAO";
 import UsersController from "@/src/users/controller/UsersController";
-import { User } from "task-craft-models/src/model/users/interfaces/interfacesUsers";
+import { User } from "task-craft-models";
 import UsersRepository from "@/src/users/model/UsersRepository";
 
 const secretKey = process.env.JWT_SECRET as string;

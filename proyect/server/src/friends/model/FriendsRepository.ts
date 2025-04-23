@@ -2,7 +2,7 @@ import IFriendsDAO from "@/src/friends/model/dao/IFriendsDAO";
 import {
   FriendCreate,
   FriendFilters,
-} from "task-craft-models/src/model/friends/interfaces/interfacesFriends";
+} from "task-craft-models";
 export default class FriendsRepository {
   constructor(private friendsDAO: IFriendsDAO) {}
 

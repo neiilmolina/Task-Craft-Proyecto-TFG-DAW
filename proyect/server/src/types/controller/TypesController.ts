@@ -2,11 +2,11 @@ import { RequestHandler } from "express";
 import {
   TypeCreate,
   TypeUpdate,
-} from "task-craft-models/src/model/types/interfaces/interfacesTypes";
+} from "task-craft-models";
 import {
   validateTypeCreate,
   validateTypeUpdate,
-} from "task-craft-models/src/model/types/interfaces/schemasTypes";
+} from "task-craft-models";
 import ITypesDAO from "@/src/types/model/dao/ITypesDAO";
 import TypesRepository from "@/src/types/model/TypesRepository";
 import { UUID_REGEX } from "@/src/core/constants";

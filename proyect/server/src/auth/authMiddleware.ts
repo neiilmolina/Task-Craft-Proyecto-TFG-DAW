@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { Response } from "express";
-import { User } from "../users/model/interfaces/interfacesUsers";
+import { User } from "task-craft-models";
 
 const secretKey = process.env.JWT_SECRET as string;
 

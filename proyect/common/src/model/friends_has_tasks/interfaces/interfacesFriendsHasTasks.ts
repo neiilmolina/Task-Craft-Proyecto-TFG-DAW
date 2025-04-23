@@ -1,45 +1,60 @@
+import { Task } from "../../tasks";
 import { UserFriends } from "../../users/interfaces/interfacesUsers";
+export interface FriendHasTasksBD {
+  idFriendHasTask: string;
+  friendHasTaskRequestState: boolean;
 
-export interface FriendBD {
-  idFriend: string;
+  // Datos del creador de la tarea
+  idUserCreator: string;
+  userNameCreator: string;
+  emailCreator: string;
+  urlImgCreator: string | null;
 
-  idUser1: string;
-  urlImg1: string | null;
-  userName1: string;
-  email1: string;
+  // Datos del amigo asignado
+  idUserAssigned: string;
+  userNameAssigned: string;
+  emailAssigned: string;
+  urlImgAssigned: string | null;
 
-  idUser2: string;
-  urlImg2: string | null;
-  userName2: string;
-  email2: string;
+  // Datos de la tarea
+  idTask: string;
+  title: string;
+  description: string;
+  activityDate: string;
 
-  friendRequestState: boolean;
+  // Estado
+  idState: number;
+  state: string;
+
+  // Tipo
+  idType: number;
+  type: string;
+  color: string;
 }
 
 export interface FriendHasTasksFilters {
-  idFirstUser?: string;
-  idSecondUser?: string;
-  idType?: number;
-  idState?: number;
-  friendRequestState?: boolean;
+  idCreatorUser?: string;
+  idAssignedUser?: string;
+  friendHasTaskRequestState?: boolean;
 }
 
-export interface Friend {
-  idFriend: string;
-  firstUser: UserFriends;
-  secondUser: UserFriends;
-  friendRequestState: boolean;
+export interface FriendHasTasks {
+  idFriendHasTasks: string;
+  creatorUser: UserFriends;
+  assignedUser: UserFriends;
+  friendHasTaskRequestState: boolean;
+  task: Task;
 }
 
-export interface FriendCreate {
-  firstUser: string;
-  secondUser: string;
-  friendRequestState: false;
+export interface FriendHasTasksCreate {
+  idAssignedUser: string;
+  idTask: string;
+  friendHasTaskRequestState: false;
 }
 
-export interface FriendReturn {
-  idFriend: string;
-  firstUser: string;
-  secondUser: string;
-  friendRequestState: boolean;
+export interface FriendHasTasksReturn {
+  idFriendHasTasks: string;
+  idAssignedUser: string;
+  idTask: string;
+  friendHasTaskRequestState: false;
 }

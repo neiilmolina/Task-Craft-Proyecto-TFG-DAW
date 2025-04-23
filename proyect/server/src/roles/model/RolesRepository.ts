@@ -1,5 +1,5 @@
 import IRolesDAO from "@/src/roles/model/dao/IRolesDAO";
-import { RoleNoId } from "task-craft-models/src/model/roles/interfaces/schemasRoles";
+import { RoleNoId } from "task-craft-models";
 export default class RolesRepository {
   constructor(private rolesDAO: IRolesDAO) {}
 
