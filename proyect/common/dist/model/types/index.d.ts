@@ -1,2 +1,2 @@
-export * from "@/src/model/types/interfaces/interfacesTypes";
-export * from "@/src/model/types/interfaces/schemasTypes";
+export * from "./interfaces/interfacesTypes";
+export * from "./interfaces/schemasTypes";

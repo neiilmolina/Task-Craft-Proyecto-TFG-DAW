@@ -5,7 +5,7 @@
   "scripts": {
     "build": "npx tsc",
     "start": "ts-node -r tsconfig-paths/register ./server-mysql.ts",
-    "dev": "nodemon -r tsconfig-paths/register ./server-mysql.ts",
+    "dev": "nodemon --exec tsx ./server-mysql.ts --watch 'src/**/*' --watch './server-mysql.ts' --ext ts,tsx",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"
@@ -25,7 +25,7 @@
     "mysql2": "^3.14.0",
     "socket.io": "^4.8.1",
     "supabase": "^2.15.8",
-    "task-craft-models": "^1.1.2",
+    "task-craft-models": "^1.2.0",
     "uuid": "^11.1.0",
     "zod": "^3.24.1"
   },
@@ -39,11 +39,12 @@
     "concurrently": "^9.1.2",
     "jest": "^29.7.0",
     "jest-environment-node": "^29.7.0",
-    "nodemon": "^3.1.9",
+    "nodemon": "^3.1.10",
     "supertest": "^7.0.0",
     "ts-jest": "^29.2.6",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.19.3",
     "typescript": "^5.7.3"
   }
 }

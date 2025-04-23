@@ -1,2 +1,2 @@
-export * from "@/src/model/tasks/interfaces/interfacesTasks";
-export * from "@/src/model/tasks/interfaces/schemasTasks";
+export * from "./interfaces/interfacesTasks";
+export * from "./interfaces/schemasTasks";

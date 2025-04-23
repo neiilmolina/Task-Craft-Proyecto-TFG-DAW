@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { Temporal } from "@js-temporal/polyfill";
-import { DiaryCreate, DiaryUpdate } from "@/src/model/diaries/interfaces/interfacesDiaries";
+import { DiaryCreate, DiaryUpdate } from "./interfacesDiaries";
 
 // Constantes para los tipos de validación
 const title = z.string().min(1, "El título es obligatorio");

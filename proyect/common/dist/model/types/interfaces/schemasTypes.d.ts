@@ -1,4 +1,4 @@
-import { TypeCreate, TypeUpdate } from "@/src/model/types/interfaces/interfacesTypes";
+import { TypeCreate, TypeUpdate } from "../../../model/types/interfaces/interfacesTypes";
 export declare function validateTypeCreate(input: Partial<TypeCreate>): {
     success: boolean;
     error: string;

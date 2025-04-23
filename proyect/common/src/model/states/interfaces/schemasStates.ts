@@ -3,7 +3,7 @@ import { z } from "zod";
 import {
   State,
   StateNoId,
-} from "@/src/model/states/interfaces/interfacesStates";
+} from "../../../model/states/interfaces/interfacesStates";
 
 const statechema = z.object({
   idState: z.number().optional(), // Changed from id to idState and made it optional

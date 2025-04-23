@@ -1,4 +1,4 @@
-import { UserFriends } from "@/src/model/users/interfaces/interfacesUsers";
+import { UserFriends } from "../../../model/users/interfaces/interfacesUsers";
 export interface FriendBD {
     idFriend: string;
     idUser1: string;

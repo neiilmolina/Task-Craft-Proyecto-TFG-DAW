@@ -1,4 +1,4 @@
-import { Role } from "@/src/model/roles/interfaces/interfacesRoles";
+import { Role } from "../../../model/roles/interfaces/interfacesRoles";
 export interface UserBD {
     idUser: string;
     userName: string;

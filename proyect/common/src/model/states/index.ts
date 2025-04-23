@@ -1,2 +1,2 @@
-export * from "@/src/model/states/interfaces/interfacesStates";
-export * from "@/src/model/states/interfaces/schemasStates";
+export * from "./interfaces/interfacesStates";
+export * from "./interfaces/schemasStates";

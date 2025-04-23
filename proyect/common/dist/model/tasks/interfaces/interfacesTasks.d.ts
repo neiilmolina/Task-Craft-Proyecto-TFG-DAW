@@ -1,4 +1,4 @@
-import { State } from "@/src/model/states/interfaces/interfacesStates";
+import { State } from "../../../model/states/interfaces/interfacesStates";
 import { Temporal } from "@js-temporal/polyfill";
 interface TypeTask {
     idType: number;

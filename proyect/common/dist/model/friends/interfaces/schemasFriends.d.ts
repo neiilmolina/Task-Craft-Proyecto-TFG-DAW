@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { FriendCreate, FriendFilters } from "@/src/model/friends/interfaces/interfacesFriends";
+import { FriendCreate, FriendFilters } from "../../../model/friends/interfaces/interfacesFriends";
 export declare const validateFriendCreate: (input: Partial<FriendCreate>) => {
     success: boolean;
     input: {

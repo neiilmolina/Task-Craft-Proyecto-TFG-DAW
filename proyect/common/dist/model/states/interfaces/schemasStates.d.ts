@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { State, StateNoId } from "@/src/model/states/interfaces/interfacesStates";
+import { State, StateNoId } from "../../../model/states/interfaces/interfacesStates";
 export declare function validateState(input: Partial<State>): z.SafeParseReturnType<{
     state: string;
     idState?: number | undefined;

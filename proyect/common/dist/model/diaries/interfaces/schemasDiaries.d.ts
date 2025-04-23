@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DiaryCreate, DiaryUpdate } from "@/src/model/diaries/interfaces/interfacesDiaries";
+import { DiaryCreate, DiaryUpdate } from "./interfacesDiaries";
 export declare const DiaryCreateSchema: z.ZodObject<{
     title: z.ZodString;
     description: z.ZodString;

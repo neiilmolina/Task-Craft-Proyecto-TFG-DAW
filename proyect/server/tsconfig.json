@@ -2,15 +2,24 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["*"],
-      
+      "@/*": ["*"]
     },
-    "target": "es2016",
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,           
-    "strict": true,
-    "moduleResolution": "node",
-    "skipLibCheck": true
-  }
+    "target": "ESNext", // Usa ESNext como objetivo de salida para trabajar con características modernas.
+    "module": "ESNext", // Establece ESNext para usar módulos de ES6.
+    "esModuleInterop": true, // Habilita la interoperabilidad con módulos CommonJS.
+    "forceConsistentCasingInFileNames": true, // Asegura consistencia en los nombres de archivo.
+    "strict": true, // Habilita las verificaciones estrictas en el código.
+    "moduleResolution": "node", // Resuelve los módulos de la misma manera que Node.js.
+    "skipLibCheck": true, // Omite la comprobación de tipos en los archivos de definición de librerías.
+    "rootDir": "./", // Establece el directorio raíz para los archivos de entrada.
+    "outDir": "dist", // Define la carpeta de salida para los archivos compilados.
+    "resolveJsonModule": true // Permite importar archivos JSON como módulos.
+  },
+  "include": [
+    "src/**/*", // Incluye todos los archivos en la carpeta src.
+    "server-mysql.ts" // También incluye el archivo server-mysql.ts fuera de src.
+  ],
+  "exclude": [
+    "node_modules" // Excluye la carpeta node_modules de la compilación.
+  ]
 }

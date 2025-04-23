@@ -2,7 +2,7 @@ import { z } from "zod";
 import {
   TypeCreate,
   TypeUpdate,
-} from "@/src/model/types/interfaces/interfacesTypes";
+} from "../../../model/types/interfaces/interfacesTypes";
 
 const typeSchema = z.object({
   idType: z.number(),
