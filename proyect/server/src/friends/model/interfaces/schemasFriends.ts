@@ -2,7 +2,7 @@ import { z } from "zod";
 import {
   FriendCreate,
   FriendFilters,
-} from "@/src/friends/model/interfaces/interfacesFriends";
+} from "task-craft-models/src/model/friends/interfaces/interfacesFriends";
 
 const uuid = z.string().uuid();
 

@@ -3,14 +3,14 @@ import { RequestHandler } from "express";
 import {
   TaskCreate,
   TaskUpdate,
-} from "@/src/tasks/model/interfaces/interfacesTasks";
+} from "task-craft-models/src/model/tasks/interfaces/interfacesTasks";
 import { UUID_REGEX } from "@/src/core/constants";
 import { randomUUID } from "crypto";
 import TasksRepository from "@/src/tasks/model/TasksRepository";
 import {
   validateTaskCreate,
   validateTaskUpdate,
-} from "@/src/tasks/model/interfaces/schemasTasks";
+} from "task-craft-models/src/model/tasks/interfaces/schemasTasks";
 
 export default class TasksController {
   private tasksRepository: TasksRepository;

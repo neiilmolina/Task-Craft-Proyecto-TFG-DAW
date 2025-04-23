@@ -2,7 +2,7 @@ import createRolesRoute from "@/src/roles/controller/routesRoles";
 import express from "express";
 import request from "supertest";
 import IRolesDAO from "@/src/roles/model/dao/IRolesDAO";
-import { Role } from "@/src/roles/model/interfaces/interfacesRoles";
+import { Role } from "task-craft-models/src/model/roles/interfaces/interfacesRoles";
 const originalConsoleError = console.error;
 beforeAll(() => {
   console.error = jest.fn();

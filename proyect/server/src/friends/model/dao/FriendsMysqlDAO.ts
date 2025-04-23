@@ -6,8 +6,8 @@ import {
   FriendCreate,
   FriendFilters,
   FriendReturn,
-} from "@/src/friends/model/interfaces/interfacesFriends";
-import { UserFriends } from "@/src/users/model/interfaces/interfacesUsers";
+} from "task-craft-models/src/model/friends/interfaces/interfacesFriends";
+import { UserFriends } from "task-craft-models/src/model/users/interfaces/interfacesUsers";
 
 const TABLE_NAME = "amigos";
 const FIELDS = {

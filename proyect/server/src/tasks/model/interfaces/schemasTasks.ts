@@ -3,8 +3,7 @@ import { Temporal } from "@js-temporal/polyfill";
 import {
   TaskCreate,
   TaskUpdate,
-} from "@/src/tasks/model/interfaces/interfacesTasks";
-import { UUID_REGEX } from "@/src/core/constants";
+} from "task-craft-models/src/model/tasks/interfaces/interfacesTasks";
 
 // Constantes para los tipos de validación
 const title = z.string().min(1, "El título es obligatorio");
@@ -23,11 +22,7 @@ const idState = z
 const idType = z
   .number()
   .min(1, "El tipo debe ser un número válido y mayor que 0");
-const idUser = z.string().refine((val) => UUID_REGEX.test(val), {
-  message:
-    "El ID del usuario debe ser un UUID válido, como 'bb89888b-2921-453f-b8c2-49dc2668595f'",
-});
-
+const idUser = z.string().uuid();
 // Esquema para TaskCreate
 export const TaskCreateSchema = z.object({
   title: title,

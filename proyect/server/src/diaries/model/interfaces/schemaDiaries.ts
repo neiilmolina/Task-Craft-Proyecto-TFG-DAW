@@ -3,8 +3,7 @@ import { Temporal } from "@js-temporal/polyfill";
 import {
   DiaryCreate,
   DiaryUpdate,
-} from "@/src/diaries/model/interfaces/interfacesDiaries";
-import { UUID_REGEX } from "@/src/core/constants";
+} from "task-craft-models/src/model/diaries/interfaces/interfacesDiaries";
 
 // Constantes para los tipos de validación
 const title = z.string().min(1, "El título es obligatorio");
@@ -18,9 +17,7 @@ const activityDate = z.string().refine((value) => {
   }
 }, "activityDate debe ser una fecha válida en formato ISO");
 
-const idUser = z.string().refine((val) => UUID_REGEX.test(val), {
-  message: "El ID del usuario debe ser un UUID válido",
-});
+const idUser = z.string().uuid();
 
 // Esquema para DiaryCreate
 export const DiaryCreateSchema = z.object({

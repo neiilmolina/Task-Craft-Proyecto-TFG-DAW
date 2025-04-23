@@ -5,14 +5,14 @@ import {
   Friend,
   FriendReturn,
   FriendFilters,
-} from "@/src/friends/model/interfaces/interfacesFriends";
+} from "task-craft-models/src/model/friends/interfaces/interfacesFriends";
 import { UUID_REGEX } from "@/src/core/constants";
 import { randomUUID } from "crypto";
 import FriendsRepository from "@/src/friends/model/FriendsRepository";
 import {
   validateFriendCreate,
   validateFriendFilters,
-} from "@/src/friends/model/interfaces/schemasFriends";
+} from "task-craft-models/src/model/friends/interfaces/schemasFriends";
 
 export default class FriendsHTTPController {
   private friendsRepository: FriendsRepository;

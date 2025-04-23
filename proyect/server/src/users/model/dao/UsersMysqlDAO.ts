@@ -3,7 +3,7 @@ import {
   UserCreate,
   UserReturn,
   UserUpdate,
-} from "@/src/users/model/interfaces/interfacesUsers";
+} from "task-craft-models/src/model/users/interfaces/interfacesUsers";
 import IUsersDAO from "@/src/users/model/dao/IUsersDAO";
 import connection from "@/config/mysql";
 import { ResultSetHeader, RowDataPacket } from "mysql2";

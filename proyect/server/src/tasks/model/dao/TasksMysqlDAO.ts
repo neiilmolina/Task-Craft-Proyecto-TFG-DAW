@@ -4,7 +4,7 @@ import {
   TaskCreate,
   TaskUpdate,
   TaskReturn,
-} from "@/src/tasks/model/interfaces/interfacesTasks";
+} from "task-craft-models/src/model/tasks/interfaces/interfacesTasks";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import ITaskDAO from "@/src/tasks/model/dao/ITasksDAO";
 import { Temporal } from "@js-temporal/polyfill";

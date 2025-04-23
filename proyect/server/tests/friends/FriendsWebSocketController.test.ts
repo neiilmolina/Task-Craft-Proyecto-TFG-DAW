@@ -1,6 +1,6 @@
 import IFriendsDAO from "@/src/friends/model/dao/IFriendsDAO";
 import FriendsWebSocketController from "@/src/friends/controller/websocket/FriendsWebSocketController";
-import { User } from "@/src/users/model/interfaces/interfacesUsers";
+import { User } from "task-craft-models/src/model/users/interfaces/interfacesUsers";
 import { randomUUID } from "crypto";
 import jwt from "jsonwebtoken";
 import { Socket } from "socket.io";
@@ -8,8 +8,8 @@ import {
   Friend,
   FriendFilters,
   FriendReturn,
-} from "@/src/friends/model/interfaces/interfacesFriends";
-import { validateFriendFilters } from "@/src/friends/model/interfaces/schemasFriends";
+} from "task-craft-models/src/model/friends/interfaces/interfacesFriends";
+import { validateFriendFilters } from "task-craft-models/src/model/friends/interfaces/schemasFriends";
 const KEY_ACCESS_COOKIE = "access_token";
 
 const originalConsoleError = console.error;

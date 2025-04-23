@@ -1,6 +1,6 @@
 import mysql from "@/tests/__mocks__/mysql";
 import RolesMysqlDAO from "@/src/roles/model/dao/RolesMysqlDAO";
-import { Role, RoleNoId } from "@/src/roles/model/interfaces/interfacesRoles";
+import { Role, RoleNoId } from "task-craft-models/src/model/roles/interfaces/interfacesRoles";
 import { ResultSetHeader } from "mysql2";
 
 // Reemplaza mysql2 con el mock de conexión

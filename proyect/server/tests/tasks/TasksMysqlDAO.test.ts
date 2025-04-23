@@ -6,7 +6,7 @@ import {
   TaskCreate,
   TaskReturn,
   TaskUpdate,
-} from "@/src/tasks/model/interfaces/interfacesTasks";
+} from "task-craft-models/src/model/tasks/interfaces/interfacesTasks";
 import TaskMysqlDAO from "@/src/tasks/model/dao/TasksMysqlDAO";
 import { Temporal } from "@js-temporal/polyfill";
 

@@ -1,6 +1,6 @@
 // src/estados/schemasEstados.ts
 import { z } from "zod";
-import { State, StateNoId } from "@/src/states/model/interfaces/interfacesStates";
+import { State, StateNoId } from "task-craft-models/src/model/states/interfaces/interfacesStates";
 
 const statechema = z.object({
   idState: z.number().optional(), // Changed from id to idState and made it optional

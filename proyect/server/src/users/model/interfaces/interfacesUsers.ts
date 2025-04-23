@@ -1,4 +1,4 @@
-import { Role } from "@/src/roles/model/interfaces/interfacesRoles";
+import { Role } from "task-craft-models/src/model/roles/interfaces/interfacesRoles";
 
 export interface UserBD {
   idUser: string;

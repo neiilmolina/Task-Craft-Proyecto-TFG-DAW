@@ -7,7 +7,7 @@ import {
   DiaryCreate,
   DiaryReturn,
   DiaryUpdate,
-} from "@/src/diaries/model/interfaces/interfacesDiaries";
+} from "task-craft-models/src/model/diaries/interfaces/interfacesDiaries";
 
 jest.mock("mysql2", () => ({
   createConnection: mysql.createConnection,

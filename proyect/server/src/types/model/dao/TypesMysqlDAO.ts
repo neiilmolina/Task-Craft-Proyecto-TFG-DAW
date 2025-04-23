@@ -3,7 +3,7 @@ import {
   Type,
   TypeCreate,
   TypeUpdate,
-} from "@/src/types/model/interfaces/interfacesTypes";
+} from "task-craft-models/src/model/types/interfaces/interfacesTypes";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import connection from "@/config/mysql";
 

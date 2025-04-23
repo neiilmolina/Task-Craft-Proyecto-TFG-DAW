@@ -1,4 +1,4 @@
-import { UserFriends } from "@/src/users/model/interfaces/interfacesUsers";
+import { UserFriends } from "task-craft-models/src/model/users/interfaces/interfacesUsers";
 
 export interface FriendBD {
   idFriend: string;

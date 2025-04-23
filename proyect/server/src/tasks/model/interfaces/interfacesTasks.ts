@@ -1,4 +1,4 @@
-import { State } from "@/src/states/model/interfaces/interfacesStates";
+import { State } from "task-craft-models/src/model/states/interfaces/interfacesStates";
 import { Temporal } from "@js-temporal/polyfill";
 
 interface TypeTask {

@@ -1,7 +1,7 @@
 import createTiposRoute from "@/src/types/controller/routesTypes";
 import express from "express";
 import request from "supertest";
-import { Type, TypeUpdate } from "@/src/types/model/interfaces/interfacesTypes";
+import { Type, TypeUpdate } from "task-craft-models/src/model/types/interfaces/interfacesTypes";
 import ITypesDAO from "@/src/types/model/dao/ITypesDAO";
 
 const originalConsoleError = console.error;

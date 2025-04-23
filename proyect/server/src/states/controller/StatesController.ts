@@ -1,8 +1,8 @@
 // src/estados/EstadosController.ts
 import { RequestHandler } from "express";
-import { validateStateNoId } from "@/src/states/model/interfaces/schemasStates";
+import { validateStateNoId } from "task-craft-models/src/model/states/interfaces/schemasStates";
 import StatesRepository from "@/src/states/model/StatesRepository";
-import { StateNoId } from "@/src/states/model/interfaces/interfacesStates";
+import { StateNoId } from "task-craft-models/src/model/states/interfaces/interfacesStates";
 import IStatesDAO from "@/src/states/model/dao/IStatesDAO";
 
 export default class StatesController {

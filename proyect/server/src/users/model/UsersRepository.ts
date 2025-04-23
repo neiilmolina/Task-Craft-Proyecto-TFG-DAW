@@ -2,7 +2,7 @@ import IUsersDAO from "@/src/users/model/dao/IUsersDAO";
 import {
   UserCreate,
   UserUpdate,
-} from "@/src/users/model/interfaces/interfacesUsers";
+} from "task-craft-models/src/model/users/interfaces/interfacesUsers";
 
 export default class UsersRepository {
   constructor(private usersDAO: IUsersDAO) {}

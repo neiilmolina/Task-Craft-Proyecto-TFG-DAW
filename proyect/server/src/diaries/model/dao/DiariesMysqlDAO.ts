@@ -4,7 +4,7 @@ import {
   DiaryCreate,
   DiaryUpdate,
   DiaryReturn,
-} from "@/src/diaries/model/interfaces/interfacesDiaries";
+} from "task-craft-models/src/model/diaries/interfaces/interfacesDiaries";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { Temporal } from "@js-temporal/polyfill";
 import IDiariesDAO from "@/src/diaries/model/dao/IDiariesDAO";

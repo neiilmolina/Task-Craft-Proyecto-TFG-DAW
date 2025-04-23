@@ -2,7 +2,7 @@ import { z } from "zod";
 import {
   UserCreate,
   UserUpdate,
-} from "@/src/users/model/interfaces/interfacesUsers";
+} from "task-craft-models/src/model/users/interfaces/interfacesUsers";
 
 const passwordSchema = z
   .string()

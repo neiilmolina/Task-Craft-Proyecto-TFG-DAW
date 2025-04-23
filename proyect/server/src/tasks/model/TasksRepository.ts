@@ -1,7 +1,7 @@
 import {
   TaskCreate,
   TaskUpdate,
-} from "@/src/tasks/model/interfaces/interfacesTasks";
+} from "task-craft-models/src/model/tasks/interfaces/interfacesTasks";
 import ITasksDAO from "@/src/tasks/model/dao/ITasksDAO";
 
 export default class TasksRepository {

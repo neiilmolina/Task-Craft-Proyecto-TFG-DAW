@@ -5,7 +5,7 @@ import {
   FriendBD,
   FriendCreate,
   FriendReturn,
-} from "@/src/friends/model/interfaces/interfacesFriends";
+} from "task-craft-models/src/model/friends/interfaces/interfacesFriends";
 
 import FriendsMysqlDAO from "@/src/friends/model/dao/FriendsMysqlDAO";
 
