@@ -1,5 +1,5 @@
 import { ResultSetHeader } from "mysql2";
-import mysql from "@/tests/__mocks__/mysql";
+import mysql from "../__mocks__/mysql";
 import {
   Task,
   TaskBD,
@@ -7,7 +7,7 @@ import {
   TaskReturn,
   TaskUpdate,
 } from "task-craft-models";
-import TaskMysqlDAO from "@/src/tasks/model/dao/TasksMysqlDAO";
+import TaskMysqlDAO from "../../src/tasks/model/dao/TasksMysqlDAO";
 import { Temporal } from "@js-temporal/polyfill";
 
 jest.mock("mysql2", () => ({
@@ -214,7 +214,7 @@ describe("TaskMysqlDAO", () => {
     });
   });
 
-  describe("getById", () => {
+  describe.only("getById", () => {
     const mockConnection = mysql.createConnection();
 
     const mockTaskRow = {

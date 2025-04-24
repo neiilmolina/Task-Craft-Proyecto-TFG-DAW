@@ -1,13 +1,9 @@
 import connection from "@/config/mysql";
-import {
-  Task,
-  TaskCreate,
-  TaskUpdate,
-  TaskReturn,
-} from "task-craft-models";
+import { Task, TaskCreate, TaskUpdate, TaskReturn } from "task-craft-models";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import ITaskDAO from "@/src/tasks/model/dao/ITasksDAO";
 import { Temporal } from "@js-temporal/polyfill";
+import { buildTaskFromFields } from "@/src/core/buildTaskFromFields";
 
 const TABLE_NAME = "tareas";
 const FIELDS = {
@@ -67,38 +63,20 @@ export default class TaskMysqlDAO implements ITaskDAO {
           );
         }
 
-        const tasks: Task[] = results.map((row: RowDataPacket, i) => {
+        const tasks: Task[] = results.map((row: RowDataPacket) => {
           try {
-            const rawDate = row[FIELDS.activityDate];
-            let dateFormatted;
-
-            if (rawDate instanceof Date) {
-              const isoString = rawDate.toISOString().replace("Z", "");
-              dateFormatted = Temporal.PlainDateTime.from(isoString);
-            } else if (typeof rawDate === "string") {
-              dateFormatted = Temporal.PlainDateTime.from(
-                rawDate.replace(" ", "T")
-              );
-            } else {
-              throw new Error("❌ Tipo de fecha inesperado: " + typeof rawDate);
-            }
-
-            return {
+            return buildTaskFromFields({
               idTask: row[FIELDS.idTask],
               title: row[FIELDS.title],
               description: row[FIELDS.description],
-              activityDate: dateFormatted,
-              state: {
-                idState: row[FIELDS.idState],
-                state: row[FIELDS.state],
-              },
-              type: {
-                idType: row[FIELDS.idType],
-                type: row[FIELDS.type],
-                color: row[FIELDS.color],
-              },
+              activityDate: row[FIELDS.activityDate],
+              idState: row[FIELDS.idState],
+              state: row[FIELDS.state],
+              idType: row[FIELDS.idType],
+              type: row[FIELDS.type],
+              color: row[FIELDS.color],
               idUser: row[FIELDS.idUser],
-            };
+            });
           } catch (err) {
             throw err;
           }
@@ -153,28 +131,18 @@ export default class TaskMysqlDAO implements ITaskDAO {
               );
             }
 
-            const activityDate = Temporal.PlainDateTime.from(
-              typeof row[FIELDS.activityDate] === "string"
-                ? row[FIELDS.activityDate]
-                : row[FIELDS.activityDate].toISOString().slice(0, 19)
-            );
-
-            const task: Task = {
+            const task: Task = buildTaskFromFields({
               idTask: row[FIELDS.idTask],
               title: row[FIELDS.title],
               description: row[FIELDS.description],
-              activityDate: activityDate, // Asignamos la fecha procesada
-              state: {
-                idState: row[FIELDS.idState],
-                state: row[FIELDS.state],
-              },
-              type: {
-                idType: row[FIELDS.idType],
-                type: row[FIELDS.type],
-                color: row[FIELDS.color],
-              },
+              activityDate: row[FIELDS.activityDate],
+              idState: row[FIELDS.idState],
+              state: row[FIELDS.state],
+              idType: row[FIELDS.idType],
+              type: row[FIELDS.type],
+              color: row[FIELDS.color],
               idUser: row[FIELDS.idUser],
-            };
+            });
             resolve(task);
           } else {
             resolve(null);
