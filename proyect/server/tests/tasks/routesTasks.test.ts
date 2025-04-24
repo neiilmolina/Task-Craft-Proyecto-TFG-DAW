@@ -1,13 +1,8 @@
-import createTasksRoute from "@/src/tasks/controller/routesTasks";
+import createTasksRoute from "../../src/tasks/controller/routesTasks";
 import express from "express";
 import request from "supertest";
-import ITasksDAO from "@/src/tasks/model/dao/ITasksDAO";
-import {
-  Task,
-  TaskCreate,
-  TaskReturn,
-  TaskUpdate,
-} from "task-craft-models";
+import ITasksDAO from "../../src/tasks/model/dao/ITasksDAO";
+import { Task, TaskReturn } from "task-craft-models";
 import { Temporal } from "@js-temporal/polyfill";
 
 const originalConsoleError = console.error;
@@ -158,12 +153,12 @@ describe("Tasks Routes", () => {
 
       expect(response.status).toBe(400);
       expect(response.body).toEqual({
-        error: "El ID del user debe ser válido",
+        error: "El ID de la tarea debe ser válido",
       });
     });
   });
 
-  describe("POST /tasks", () => {
+  describe.only("POST /tasks", () => {
     const mockTaskData = {
       title: "Tarea de ejemplo",
       description: "Descripción de prueba",

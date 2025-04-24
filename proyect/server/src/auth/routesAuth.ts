@@ -20,10 +20,7 @@ const createAuthRoute = (usuariosDAO: IUsersDAO) => {
   router.post("/logout", (req, res) => authController.logout(req, res));
 
   router.get("/protected", (req, res) => authController.protected(req, res));
-  //   router.put(
-  //     "/updatePassword/:idUsuario",
-  //     authController.updateUsuarioPassword
-  //   );
+  router.post("/refresh", (req, res) => authController.refreshToken(req, res));
 
   return router;
 };

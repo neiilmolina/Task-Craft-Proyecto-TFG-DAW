@@ -1,21 +1,13 @@
 import { z } from "zod";
 import { Temporal } from "@js-temporal/polyfill";
-import {
-  TaskCreate,
-  TaskUpdate,
-} from "./interfacesTasks";
+import { TaskCreate, TaskUpdate } from "./interfacesTasks";
+import { validateFutureDate } from "../../../validations/dateValidations";
+import { validateString } from "@/src/validations/stringValidations";
 
 // Constantes para los tipos de validación
-const title = z.string().min(1, "El título es obligatorio");
-const description = z.string().min(1, "La descripción es obligatoria");
-const activityDate = z.string().refine((value) => {
-  try {
-    Temporal.PlainDateTime.from(value); // Intentar convertir el string a Temporal.PlainDateTime
-    return true;
-  } catch {
-    return false;
-  }
-}, "activityDate debe ser una fecha válida en formato ISO, como '2025-04-11T10:00:00'");
+const title = validateString("titulo", 1);
+const description = validateString("descripción", 1, 20);
+const activityDate = validateFutureDate("fecha");
 const idState = z
   .number()
   .min(1, "El estado debe ser un número válido y mayor que 0");
@@ -37,7 +29,7 @@ export const TaskCreateSchema = z.object({
 export const TaskUpdateSchema = z.object({
   title: title.optional(),
   description: description.optional(),
-  activityDate: activityDate.optional(),
+  activityDate: validateFutureDate("fecha").optional(),
   idState: idState.optional(),
   idType: idType.optional(),
   idUser: idUser.optional(),

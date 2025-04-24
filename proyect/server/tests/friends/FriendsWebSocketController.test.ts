@@ -1,16 +1,10 @@
-import IFriendsDAO from "@/src/friends/model/dao/IFriendsDAO";
-import FriendsWebSocketController from "@/src/friends/controller/websocket/FriendsWebSocketController";
+import IFriendsDAO from "../../src/friends/model/dao/IFriendsDAO";
+import FriendsWebSocketController from "../../src/friends/controller/websocket/FriendsWebSocketController";
 import { User } from "task-craft-models";
 import { randomUUID } from "crypto";
 import jwt from "jsonwebtoken";
 import { Socket } from "socket.io";
-import {
-  Friend,
-  FriendFilters,
-  FriendReturn,
-} from "task-craft-models";
-import { validateFriendFilters } from "task-craft-models";
-const KEY_ACCESS_COOKIE = "access_token";
+import { Friend, FriendFilters, FriendReturn } from "task-craft-models";
 
 const originalConsoleError = console.error;
 beforeAll(() => {
@@ -25,6 +19,11 @@ jest.mock("jsonwebtoken", () => ({
   sign: jest.fn().mockReturnValue("mockToken123"),
   verify: jest.fn(),
 }));
+
+jest.mock("cookie-parser", () =>
+  jest.fn(() => (req: any, res: any, next: any) => next())
+);
+jest.mock("express-session", () => jest.fn(() => ({ user: null })));
 
 describe("FriendsWebSocketController", () => {
   let userMock: User;
@@ -117,39 +116,38 @@ describe("FriendsWebSocketController", () => {
     });
 
     it("should emit an error if no friend requests are found", async () => {
-      const filters: FriendFilters = { idFirstUser: randomUUID()};
-    
+      const filters: FriendFilters = { idFirstUser: randomUUID() };
+
       mockFriendsModel.getAll.mockResolvedValue([]);
-    
+
       await controller["getFriendRequests"](filters);
-    
+
       expect(socketMock.emit).toHaveBeenCalledWith("friend_requests_error", {
         message: "No se encontraron solicitudes de amistad",
       });
     });
-    
+
     it("should emit an error if validation of filters fails", async () => {
       const filters: FriendFilters = { idFirstUser: "user1" }; // Este valor puede ser inválido según tu esquema Zod
-    
+
       await controller["getFriendRequests"](filters);
-    
+
       expect(socketMock.emit).toHaveBeenCalledWith("friend_requests_error", {
         message: "Filtro inválido: Invalid uuid",
       });
     });
-    
+
     it("should emit an error if an unexpected error occurs", async () => {
       const filters: FriendFilters = { idFirstUser: randomUUID() };
-    
+
       mockFriendsModel.getAll.mockRejectedValue(new Error("Unexpected error"));
-    
+
       await controller["getFriendRequests"](filters);
-    
+
       expect(socketMock.emit).toHaveBeenCalledWith("friend_requests_error", {
         message: "Unexpected error",
       });
     });
-    
   });
 
   describe("handleSendFriendRequest", () => {

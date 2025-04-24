@@ -34,8 +34,6 @@ export default class AuthController {
   async login(req: Request, res: Response): Promise<void> {
     try {
       const { email, password } = req.body;
-      console.log("Email y contraseña recibidos:", email, password);
-
       if (!email || !password) {
         res
           .status(400)
@@ -101,6 +99,35 @@ export default class AuthController {
     } catch (error: any) {
       console.error("Error en ruta protegida:", error);
       res.status(500).json({ error: "Error interno del servidor" });
+    }
+  }
+
+  async refreshToken(req: Request, res: Response): Promise<void> {
+    try {
+      const token = req.cookies[KEY_ACCESS_COOKIE];
+
+      if (!token) {
+        res.status(401).json({ error: "Token inválido o expirado" });
+        return;
+      }
+
+      // Verificar el token
+      const decoded = jwt.verify(token, secretKey) as User;
+
+      // Generar un nuevo token con una nueva expiración
+      const newToken = jwt.sign({ ...decoded }, secretKey, { expiresIn: "1h" });
+
+      // Actualizar la cookie con el nuevo token
+      res.cookie(KEY_ACCESS_COOKIE, newToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        expires: new Date(Date.now() + 3600 * 1000), // Expiración en 1 hora
+      });
+
+      res.status(200).json({ message: "Token actualizado con éxito" });
+    } catch (error: any) {
+      console.error("Error al actualizar el token:", error);
+      res.status(500).json({ error: "Error al refrescar el token" });
     }
   }
 }

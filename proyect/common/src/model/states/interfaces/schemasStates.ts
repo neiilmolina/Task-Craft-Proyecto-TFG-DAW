@@ -1,16 +1,11 @@
 // src/estados/schemasEstados.ts
 import { z } from "zod";
-import {
-  State,
-  StateNoId,
-} from "./interfacesStates";
+import { State, StateNoId } from "./interfacesStates";
+import { validateString } from "@/src/validations/stringValidations";
 
 const statechema = z.object({
   idState: z.number().optional(), // Changed from id to idState and made it optional
-  state: z.string({
-    required_error: "Estado es requerido",
-    message: "Estado debe ser un string",
-  }),
+  state: validateString("estado", 1),
 });
 
 // For validating a complete Estado object (with idState)

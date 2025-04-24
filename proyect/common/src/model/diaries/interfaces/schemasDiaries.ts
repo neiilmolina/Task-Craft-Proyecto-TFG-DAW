@@ -1,18 +1,15 @@
 import { z } from "zod";
 import { Temporal } from "@js-temporal/polyfill";
 import { DiaryCreate, DiaryUpdate } from "./interfacesDiaries";
+import {
+  validateFutureDate,
+} from "../../../validations/dateValidations";
+import { validateString } from "../../../validations/stringValidations";
 
 // Constantes para los tipos de validación
-const title = z.string().min(1, "El título es obligatorio");
-const description = z.string().min(1, "La descripción es obligatoria");
-const activityDate = z.string().refine((value) => {
-  try {
-    Temporal.PlainDateTime.from(value); // Intentar convertir el string a Temporal.PlainDateTime
-    return true;
-  } catch {
-    return false;
-  }
-}, "activityDate debe ser una fecha válida en formato ISO");
+const title = validateString("title", 1, 10);
+const description = validateString("descripcion", 1, 100);
+const activityDate = validateFutureDate("activityDate");
 
 const idUser = z.string().uuid();
 
@@ -28,7 +25,7 @@ export const DiaryCreateSchema = z.object({
 export const DiaryUpdateSchema = z.object({
   title: title.optional(),
   description: description.optional(),
-  activityDate: activityDate.optional(),
+  activityDate: validateFutureDate("activityDate").optional(),
   idUser: idUser.optional(),
 });
 

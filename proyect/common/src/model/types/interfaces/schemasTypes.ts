@@ -1,15 +1,10 @@
 import { z } from "zod";
-import {
-  TypeCreate,
-  TypeUpdate,
-} from "./interfacesTypes";
+import { TypeCreate, TypeUpdate } from "./interfacesTypes";
+import { validateString } from "../../../validations/stringValidations";
 
 const typeSchema = z.object({
   idType: z.number(),
-  type: z.string({
-    required_error: "Tipo es requerido",
-    message: "Tipo debe ser un string",
-  }),
+  type: validateString("tipo", 1, 10),
   color: z.string().regex(/^#?([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/, {
     message: "Color debe ser un valor hexadecimal válido ",
   }),

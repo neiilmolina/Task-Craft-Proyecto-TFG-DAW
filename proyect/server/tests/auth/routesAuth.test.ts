@@ -1,8 +1,9 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import request from "supertest";
-import IUsersDAO from "@/src/users/model/dao/IUsersDAO";
-import createAuthRoute from "@/src/auth/routesAuth";
+import IUsersDAO from "../../src/users/model/dao/IUsersDAO";
+import createAuthRoute from "../../src/auth/routesAuth";
+import cookieParser from "cookie-parser";
 const KEY_ACCESS_COOKIE = "access_token";
 
 const originalConsoleError = console.error;
@@ -16,6 +17,7 @@ afterAll(() => {
 // Mockear jwt.sign para que devuelva un token predecible
 jest.mock("jsonwebtoken", () => ({
   sign: jest.fn().mockReturnValue("mockToken123"),
+  verify: jest.fn(),
 }));
 
 describe("Auth Routes", () => {
@@ -36,6 +38,7 @@ describe("Auth Routes", () => {
     secretKey = process.env.JWT_SECRET as string;
 
     app = express();
+    app.use(cookieParser());
     app.use(express.json());
     app.use("/auth", createAuthRoute(mockUsersModel)); // Ajusta la ruta si es necesario
   });
@@ -161,6 +164,58 @@ describe("Auth Routes", () => {
       expect(response.headers["set-cookie"][0]).toContain(
         "token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT"
       );
+    });
+  });
+
+  describe.only("POST /refreshToken", () => {
+    it("should return 401 if no token is provided", async () => {
+      const response = await request(app)
+        .post("/auth/refresh")
+        .set("Cookie", [])
+        .send();
+
+      expect(response.status).toBe(401);
+      expect(response.body.error).toBe("No se ha proporcionado un token");
+    });
+
+    it("should return 401 if the token is invalid", async () => {
+      const response = await request(app)
+        .post("/auth/refresh")
+        .set("Cookie", ["dasdasdas"])
+        .send();
+
+      expect(response.status).toBe(401);
+      expect(response.body.error).toBe("No se ha proporcionado un token");
+    });
+
+    it("should return a new token and set it in the cookie if token is valid", async () => {
+      const response = await request(app)
+        .post("/auth/refresh")
+        .set("Cookie", [`${KEY_ACCESS_COOKIE}=mockToken123`])
+        .send();
+
+      expect(response.status).toBe(200);
+      expect(response.body.message).toBe("Token actualizado con éxito");
+
+      // Verificar si el token se establece correctamente en la cookie
+      const setCookieHeader = response.header["set-cookie"];
+      const tokenInCookie = setCookieHeader && setCookieHeader[0].split(";")[0]; // Solo obtener el token
+
+      expect(tokenInCookie).toContain(KEY_ACCESS_COOKIE); // Verificar que el token esté presente en la cookie
+    });
+
+    it("should return 500 if an error occurs during token refresh", async () => {
+      jest.spyOn(jwt, "sign").mockImplementationOnce(() => {
+        throw new Error("Error al firmar el token");
+      });
+
+      const response = await request(app)
+        .post("/auth/refresh")
+        .set("Cookie", [`${KEY_ACCESS_COOKIE}=mockToken123`])
+        .send();
+
+      expect(response.status).toBe(500);
+      expect(response.body.error).toBe("Error al refrescar el token");
     });
   });
 });

@@ -1,15 +1,10 @@
 import { z } from "zod";
 import { Role, RoleNoId } from "./interfacesRoles";
+import { validateString } from "@/src/validations/stringValidations";
 
 export const roleSchema = z.object({
   idRole: z.number().optional(),
-  role: z
-    .string({
-      required_error: "Rol es requerido",
-      message: "Rol debe ser un string",
-    })
-    .trim()
-    .min(1, { message: "El rol no puede estar vacío" }),
+  role: validateString("rol", 1),
 });
 
 export function validateRole(input: Partial<Role>) {

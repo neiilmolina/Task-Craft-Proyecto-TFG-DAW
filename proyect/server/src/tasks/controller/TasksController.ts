@@ -1,16 +1,10 @@
 import ITasksDAO from "@/src/tasks/model/dao/ITasksDAO";
 import { RequestHandler } from "express";
-import {
-  TaskCreate,
-  TaskUpdate,
-} from "task-craft-models";
+import { TaskCreate, TaskUpdate } from "task-craft-models";
 import { UUID_REGEX } from "@/src/core/constants";
 import { randomUUID } from "crypto";
 import TasksRepository from "@/src/tasks/model/TasksRepository";
-import {
-  validateTaskCreate,
-  validateTaskUpdate,
-} from "task-craft-models";
+import { validateTaskCreate, validateTaskUpdate } from "task-craft-models";
 
 export default class TasksController {
   private tasksRepository: TasksRepository;
@@ -69,6 +63,7 @@ export default class TasksController {
       const taskData: TaskCreate = req.body;
 
       const result = validateTaskCreate(taskData);
+      console.log(result);
       if (!result.success) {
         res.status(400).json({ error: result.errors });
         return;
