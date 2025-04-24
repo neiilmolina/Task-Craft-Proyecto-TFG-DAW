@@ -7,7 +7,6 @@ import { validateString } from "@/src/validations/stringValidations";
 // Constantes para los tipos de validación
 const title = validateString("titulo", 1);
 const description = validateString("descripción", 1, 20);
-const activityDate = validateFutureDate("fecha");
 const idState = z
   .number()
   .min(1, "El estado debe ser un número válido y mayor que 0");
@@ -19,7 +18,7 @@ const idUser = z.string().uuid();
 export const TaskCreateSchema = z.object({
   title: title,
   description: description,
-  activityDate: activityDate,
+  activityDate: validateFutureDate("fecha"),
   idState: idState,
   idType: idType,
   idUser: idUser,

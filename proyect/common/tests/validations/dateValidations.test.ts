@@ -20,18 +20,19 @@ describe("validateFutureDate", () => {
   });
 
   it("should accept a future date", () => {
-    // Fecha futura: 1 de mayo de 2025
+    const date = Temporal.Now.plainDateISO().add({ days: 1 }).toString();
     const result = TestSchema.safeParse({
-      date: "2025-05-01T10:00:00",
+      date: date,
     });
 
     expect(result.success).toBe(true);
   });
 
   it("should reject a past date", () => {
+    const date = Temporal.Now.plainDateISO().subtract({ days: 1 }).toString();
     // Fecha pasada: 11 de abril de 2025
     const result = TestSchema.safeParse({
-      date: "2025-04-11T10:00:00",
+      date: date,
     });
 
     expect(result.success).toBe(false);
@@ -43,9 +44,10 @@ describe("validateFutureDate", () => {
   });
 
   it("should reject today's date", () => {
-    // Fecha actual: 24 de abril de 2025
+    const date = Temporal.Now.plainDateISO().toString();
+
     const result = TestSchema.safeParse({
-      date: "2025-04-24T10:00:00",
+      date: date,
     });
 
     expect(result.success).toBe(false);

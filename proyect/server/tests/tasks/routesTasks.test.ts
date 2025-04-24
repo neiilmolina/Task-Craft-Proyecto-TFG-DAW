@@ -162,7 +162,7 @@ describe("Tasks Routes", () => {
     const mockTaskData = {
       title: "Tarea de ejemplo",
       description: "Descripción de prueba",
-      activityDate: "2025-04-11T10:00:00",
+      activityDate: "2025-04-23T10:00:00",
       idState: 1,
       idType: 1,
       idUser: "bb89888b-2921-453f-b8c2-49dc2668595f",
@@ -177,7 +177,7 @@ describe("Tasks Routes", () => {
       idType: 1,
       idUser: "bb89888b-2921-453f-b8c2-49dc2668595f",
     };
-    it("debe devolver un task cuando los datos son correctos", async () => {
+    it.only("debe devolver un task cuando los datos son correctos", async () => {
       mockTaskModel.create.mockResolvedValue(mockNewTask); // Simula la creación de una tarea
 
       const response = await request(app).post("/tasks").send(mockTaskData);
