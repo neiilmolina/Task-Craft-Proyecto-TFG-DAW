@@ -22,7 +22,7 @@ Este proyecto hace uso de las siguientes tecnologías:
   - **TailwindCSS**: Para el diseño y estilo de la interfaz.
 - **Backend**:
   - **Node.js**: Entorno de ejecución de JavaScript para el backend.
-  - **Supabase**: Plataforma de base de datos en la nube que utiliza **PostgreSQL** para gestionar los datos.
+  - **Mysql**: SGBD relacional que está alojada en AWS
 - **Otros**:
   - **JWT (JSON Web Tokens)**: Para la autenticación de usuarios.
   - **Git/GitHub**: Para versionar el código.
