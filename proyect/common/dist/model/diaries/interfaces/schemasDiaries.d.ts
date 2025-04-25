@@ -7,13 +7,13 @@ export declare const DiaryCreateSchema: z.ZodObject<{
     idUser: z.ZodString;
 }, "strip", z.ZodTypeAny, {
     title: string;
-    description: string;
     activityDate: string;
+    description: string;
     idUser: string;
 }, {
     title: string;
-    description: string;
     activityDate: string;
+    description: string;
     idUser: string;
 }>;
 export declare const DiaryUpdateSchema: z.ZodObject<{
@@ -23,43 +23,34 @@ export declare const DiaryUpdateSchema: z.ZodObject<{
     idUser: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
     title?: string | undefined;
-    description?: string | undefined;
     activityDate?: string | undefined;
+    description?: string | undefined;
     idUser?: string | undefined;
 }, {
     title?: string | undefined;
-    description?: string | undefined;
     activityDate?: string | undefined;
+    description?: string | undefined;
     idUser?: string | undefined;
 }>;
 export declare const validateDiaryCreate: (input: Partial<DiaryCreate>) => {
-    success: boolean;
-    input: {
-        title: string;
-        description: string;
-        activityDate: string;
-        idUser: string;
-    };
-    errors?: undefined;
-} | {
-    success: boolean;
+    success: false;
     errors: {
-        path: string;
+        field: string;
         message: string;
+        code: string;
     }[];
-    input?: undefined;
+} | {
+    success: true;
+    data: any;
 };
 export declare const validateDiaryUpdate: (input: Partial<DiaryUpdate>) => {
-    success: boolean;
-    input: {
-        title?: string | undefined;
-        description?: string | undefined;
-        activityDate?: string | undefined;
-        idUser?: string | undefined;
-    };
-    errors?: undefined;
+    success: false;
+    errors: {
+        field: string;
+        message: string;
+        code: string;
+    }[];
 } | {
-    success: boolean;
-    errors: z.ZodIssue[];
-    input?: undefined;
+    success: true;
+    data: any;
 };

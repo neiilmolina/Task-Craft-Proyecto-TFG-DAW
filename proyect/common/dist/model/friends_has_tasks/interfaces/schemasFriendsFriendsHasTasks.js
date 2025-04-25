@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validateFriendHasTasksFilters = exports.validateFriendHasTasksCreate = void 0;
 const zod_1 = require("zod");
+const formatMessages_1 = require("../../../validations/formatMessages");
 const uuid = zod_1.z.string().uuid();
 const request = zod_1.z.boolean().default(false);
 const friendCreateSchema = zod_1.z.object({
@@ -24,21 +25,11 @@ const friendFiltersSchema = zod_1.z.object({
 });
 const validateFriendHasTasksCreate = (input) => {
     const result = friendCreateSchema.safeParse(input);
-    if (result.success) {
-        return { success: true, input: result.data };
-    }
-    else {
-        return { success: false, errors: result.error.errors };
-    }
+    return (0, formatMessages_1.formatZodMessages)(result);
 };
 exports.validateFriendHasTasksCreate = validateFriendHasTasksCreate;
 const validateFriendHasTasksFilters = (input) => {
     const result = friendFiltersSchema.safeParse(input);
-    if (result.success) {
-        return { success: true, input: result.data };
-    }
-    else {
-        return { success: false, errors: result.error.errors };
-    }
+    return (0, formatMessages_1.formatZodMessages)(result);
 };
 exports.validateFriendHasTasksFilters = validateFriendHasTasksFilters;

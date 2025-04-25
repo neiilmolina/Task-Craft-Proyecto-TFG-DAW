@@ -13,20 +13,20 @@ export interface UserBD {
 export interface UserFriends {
   idUser: string;
   urlImg: string | null;
-  userName: string;
+  userName: string | null;
   email: string;
 }
 
 export interface User {
   idUser: string;
-  userName: string;
+  userName: string | null;
   email: string;
   urlImg: string | null;
   role: Role;
 }
 
 export interface UserCreate {
-  userName?: string;
+  userName?: string | null;
   email: string;
   password: string;
   urlImg?: string | null;
@@ -34,7 +34,7 @@ export interface UserCreate {
 }
 
 export interface UserUpdate {
-  userName: string;
+  userName?: string | null;
   email?: string;
   urlImg?: string | null;
   idRole?: number;
@@ -42,7 +42,7 @@ export interface UserUpdate {
 
 export interface UserReturn {
   idUser: string;
-  userName?: string;
+  userName?: string | null;
   email: string;
   urlImg?: string | null;
   idRole: number;

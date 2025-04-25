@@ -1,8 +1,6 @@
 import { z } from "zod";
-import {
-  UserCreate,
-  UserUpdate,
-} from "./interfacesUsers";
+import { UserCreate, UserUpdate } from "./interfacesUsers";
+import { formatZodMessages } from "../../../validations/formatMessages";
 
 const passwordSchema = z
   .string()
@@ -36,13 +34,16 @@ export const userUpdateSchema = z.object({
 });
 
 export function validateUserCreate(input: Partial<UserCreate>) {
-  return userCreateSchema.safeParse(input);
+  const result = userCreateSchema.safeParse(input);
+  return formatZodMessages(result);
 }
 
 export function validateUserUpdate(input: Partial<UserUpdate>) {
-  return userUpdateSchema.safeParse(input);
+  const result = userUpdateSchema.safeParse(input);
+  return formatZodMessages(result);
 }
 
 export function validatePassword(input: string) {
-  return passwordSchema.safeParse(input);
+  const result = passwordSchema.safeParse(input);
+  return formatZodMessages(result);
 }

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { TypeCreate, TypeUpdate } from "./interfacesTypes";
 import { validateString } from "../../../validations/stringValidations";
+import { formatZodMessages } from "../../../validations/formatMessages";
 
 const typeSchema = z.object({
   idType: z.number(),
@@ -17,18 +18,10 @@ const typeUpdateSchema = typeSchema.partial(); // Permite actualizar solo alguno
 
 export function validateTypeCreate(input: Partial<TypeCreate>) {
   const result = typeCreateSchema.safeParse(input);
-
-  if (!result.success)
-    return { success: false, error: result.error.errors[0].message };
-
-  return { success: true };
+  return formatZodMessages(result);
 }
 
 export function validateTypeUpdate(input: Partial<TypeUpdate>) {
   const result = typeUpdateSchema.safeParse(input);
-
-  if (!result.success)
-    return { success: false, error: result.error.errors[0].message }; // Mensaje del primer error
-
-  return { success: true };
+  return formatZodMessages(result);
 }

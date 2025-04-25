@@ -1,15 +1,23 @@
 import { TypeCreate, TypeUpdate } from "./interfacesTypes";
 export declare function validateTypeCreate(input: Partial<TypeCreate>): {
-    success: boolean;
-    error: string;
+    success: false;
+    errors: {
+        field: string;
+        message: string;
+        code: string;
+    }[];
 } | {
-    success: boolean;
-    error?: undefined;
+    success: true;
+    data: any;
 };
 export declare function validateTypeUpdate(input: Partial<TypeUpdate>): {
-    success: boolean;
-    error: string;
+    success: false;
+    errors: {
+        field: string;
+        message: string;
+        code: string;
+    }[];
 } | {
-    success: boolean;
-    error?: undefined;
+    success: true;
+    data: any;
 };

@@ -1,12 +1,6 @@
 import { RequestHandler } from "express";
-import {
-  TypeCreate,
-  TypeUpdate,
-} from "task-craft-models";
-import {
-  validateTypeCreate,
-  validateTypeUpdate,
-} from "task-craft-models";
+import { TypeCreate, TypeUpdate } from "task-craft-models";
+import { validateTypeCreate, validateTypeUpdate } from "task-craft-models";
 import ITypesDAO from "@/src/types/model/dao/ITypesDAO";
 import TypesRepository from "@/src/types/model/TypesRepository";
 import { UUID_REGEX } from "@/src/core/constants";
@@ -73,7 +67,13 @@ export default class TypesController {
 
       const result = validateTypeCreate(typeData);
       if (!result.success) {
-        res.status(400).json({ error: result.error });
+        res.status(400).json({
+          error: "Error de validación",
+          details: result.errors?.map((error) => ({
+            field: error.field,
+            message: error.message,
+          })),
+        });
         return;
       }
 
@@ -101,9 +101,15 @@ export default class TypesController {
     try {
       const typeData: TypeUpdate = req.body;
 
-      const { success, error } = validateTypeUpdate(typeData);
-      if (!success) {
-        res.status(400).json({ error });
+      const result = validateTypeUpdate(typeData);
+      if (!result.success) {
+        res.status(400).json({
+          error: "Error de validación",
+          details: result.errors?.map((error) => ({
+            field: error.field,
+            message: error.message,
+          })),
+        });
         return;
       }
 

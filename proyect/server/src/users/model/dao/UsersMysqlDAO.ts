@@ -177,24 +177,23 @@ export default class UsersMysqlDAO implements IUsersDAO {
         query,
         [
           idUser,
-          user.userName || "", // Si `nombreUsuario` es `undefined`, lo asignamos como una cadena vacía
+          user.userName ?? null, // Si `nombreUsuario` es `undefined`, lo asignamos como una cadena vacía
           user.email,
           user.password,
-          user.urlImg || "", // Si `urlImg` es `undefined`, lo asignamos como una cadena vacía
+          user.urlImg ?? null, // Si `urlImg` es `undefined`, lo asignamos como una cadena vacía
           user.idRole || 1, // Si `idRol` es `undefined`, lo asignamos como 1
         ],
         (err: any, results: any) => {
           if (err) {
-            if (err.code === "ER_DUP_ENTRY")
-              return reject(new Error("El email ya está en uso."));
+            if (err.code === "ER_DUP_ENTRY") return reject(err);
 
             return reject(new Error("Error en la inserción de usuario"));
           }
 
           resolve({
-            userName: user.userName ?? "",
+            userName: user.userName,
             email: user.email,
-            urlImg: user.urlImg ?? "",
+            urlImg: user.urlImg,
             idRole: user.idRole || 1,
             idUser: idUser,
           });

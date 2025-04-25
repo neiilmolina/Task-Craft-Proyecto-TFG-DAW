@@ -1,28 +1,23 @@
-import { z } from "zod";
 import { FriendCreate, FriendFilters } from "./interfacesFriends";
 export declare const validateFriendCreate: (input: Partial<FriendCreate>) => {
-    success: boolean;
-    input: {
-        firstUser: string;
-        secondUser: string;
-        friendRequestState: boolean;
-    };
-    errors?: undefined;
+    success: false;
+    errors: {
+        field: string;
+        message: string;
+        code: string;
+    }[];
 } | {
-    success: boolean;
-    errors: z.ZodIssue[];
-    input?: undefined;
+    success: true;
+    data: any;
 };
 export declare const validateFriendFilters: (input: Partial<FriendFilters>) => {
-    success: boolean;
-    input: {
-        friendRequestState?: boolean | undefined;
-        idFirstUser?: string | undefined;
-        idSecondUser?: string | undefined;
-    };
-    errors?: undefined;
+    success: false;
+    errors: {
+        field: string;
+        message: string;
+        code: string;
+    }[];
 } | {
-    success: boolean;
-    errors: z.ZodIssue[];
-    input?: undefined;
+    success: true;
+    data: any;
 };

@@ -65,7 +65,13 @@ export default class RolesController {
       // Validar la entrada con el esquema de validación
       const result = validateRoleNoId(rolData);
       if (!result.success) {
-        res.status(400).json({ error: result.error });
+        res.status(400).json({
+          error: "Error de validación",
+          details: result.errors?.map((error) => ({
+            field: error.field,
+            message: error.message,
+          })),
+        });
         return;
       }
 
@@ -97,7 +103,13 @@ export default class RolesController {
       const validationResult = validateRoleNoId(rolData);
 
       if (!validationResult.success) {
-        res.status(400).json({ error: validationResult.error });
+        res.status(400).json({
+          error: "Error de validación",
+          details: validationResult.errors?.map((error) => ({
+            field: error.field,
+            message: error.message,
+          })),
+        });
         return;
       }
 

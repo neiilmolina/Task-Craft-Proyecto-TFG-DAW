@@ -2,19 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validateDiaryUpdate = exports.validateDiaryCreate = exports.DiaryUpdateSchema = exports.DiaryCreateSchema = void 0;
 const zod_1 = require("zod");
-const polyfill_1 = require("@js-temporal/polyfill");
+const dateValidations_1 = require("../../../validations/dateValidations");
+const stringValidations_1 = require("../../../validations/stringValidations");
+const formatMessages_1 = require("../../../validations/formatMessages");
 // Constantes para los tipos de validación
-const title = zod_1.z.string().min(1, "El título es obligatorio");
-const description = zod_1.z.string().min(1, "La descripción es obligatoria");
-const activityDate = zod_1.z.string().refine((value) => {
-    try {
-        polyfill_1.Temporal.PlainDateTime.from(value); // Intentar convertir el string a Temporal.PlainDateTime
-        return true;
-    }
-    catch {
-        return false;
-    }
-}, "activityDate debe ser una fecha válida en formato ISO");
+const title = (0, stringValidations_1.validateString)("title", 1, 10);
+const description = (0, stringValidations_1.validateString)("descripcion", 1, 300);
+const activityDate = (0, dateValidations_1.validateFutureDate)("activityDate");
 const idUser = zod_1.z.string().uuid();
 // Esquema para DiaryCreate
 exports.DiaryCreateSchema = zod_1.z.object({
@@ -27,31 +21,17 @@ exports.DiaryCreateSchema = zod_1.z.object({
 exports.DiaryUpdateSchema = zod_1.z.object({
     title: title.optional(),
     description: description.optional(),
-    activityDate: activityDate.optional(),
+    activityDate: (0, dateValidations_1.validateFutureDate)("activityDate").optional(),
     idUser: idUser.optional(),
 });
 const validateDiaryCreate = (input) => {
     const result = exports.DiaryCreateSchema.safeParse(input);
-    if (result.success) {
-        return { success: true, input: result.data };
-    }
-    else {
-        const errors = result.error.errors.map((err) => ({
-            path: err.path.join("."),
-            message: err.message,
-        }));
-        return { success: false, errors };
-    }
+    return (0, formatMessages_1.formatZodMessages)(result);
 };
 exports.validateDiaryCreate = validateDiaryCreate;
 // Método para validar los datos con safeParse en DiaryUpdate
 const validateDiaryUpdate = (input) => {
     const result = exports.DiaryUpdateSchema.safeParse(input);
-    if (result.success) {
-        return { success: true, input: result.data };
-    }
-    else {
-        return { success: false, errors: result.error.errors };
-    }
+    return (0, formatMessages_1.formatZodMessages)(result);
 };
 exports.validateDiaryUpdate = validateDiaryUpdate;

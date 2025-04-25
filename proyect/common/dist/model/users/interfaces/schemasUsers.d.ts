@@ -35,28 +35,36 @@ export declare const userUpdateSchema: z.ZodObject<{
     urlImg?: string | undefined;
     idRol?: number | undefined;
 }>;
-export declare function validateUserCreate(input: Partial<UserCreate>): z.SafeParseReturnType<{
-    password: string;
-    email: string;
-    userName?: string | undefined;
-    urlImg?: string | undefined;
-    idRol?: number | undefined;
-}, {
-    password: string;
-    email: string;
-    userName?: string | undefined;
-    urlImg?: string | undefined;
-    idRol?: number | undefined;
-}>;
-export declare function validateUserUpdate(input: Partial<UserUpdate>): z.SafeParseReturnType<{
-    email: string;
-    userName?: string | undefined;
-    urlImg?: string | undefined;
-    idRol?: number | undefined;
-}, {
-    email: string;
-    userName?: string | undefined;
-    urlImg?: string | undefined;
-    idRol?: number | undefined;
-}>;
-export declare function validatePassword(input: string): z.SafeParseReturnType<string, string>;
+export declare function validateUserCreate(input: Partial<UserCreate>): {
+    success: false;
+    errors: {
+        field: string;
+        message: string;
+        code: string;
+    }[];
+} | {
+    success: true;
+    data: any;
+};
+export declare function validateUserUpdate(input: Partial<UserUpdate>): {
+    success: false;
+    errors: {
+        field: string;
+        message: string;
+        code: string;
+    }[];
+} | {
+    success: true;
+    data: any;
+};
+export declare function validatePassword(input: string): {
+    success: false;
+    errors: {
+        field: string;
+        message: string;
+        code: string;
+    }[];
+} | {
+    success: true;
+    data: any;
+};

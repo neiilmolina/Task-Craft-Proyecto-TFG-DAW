@@ -3,12 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.validateTypeCreate = validateTypeCreate;
 exports.validateTypeUpdate = validateTypeUpdate;
 const zod_1 = require("zod");
+const stringValidations_1 = require("../../../validations/stringValidations");
+const formatMessages_1 = require("../../../validations/formatMessages");
 const typeSchema = zod_1.z.object({
     idType: zod_1.z.number(),
-    type: zod_1.z.string({
-        required_error: "Tipo es requerido",
-        message: "Tipo debe ser un string",
-    }),
+    type: (0, stringValidations_1.validateString)("tipo", 1, 10),
     color: zod_1.z.string().regex(/^#?([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/, {
         message: "Color debe ser un valor hexadecimal válido ",
     }),
@@ -18,13 +17,9 @@ const typeCreateSchema = typeSchema.omit({ idType: true });
 const typeUpdateSchema = typeSchema.partial(); // Permite actualizar solo algunos campos
 function validateTypeCreate(input) {
     const result = typeCreateSchema.safeParse(input);
-    if (!result.success)
-        return { success: false, error: result.error.errors[0].message };
-    return { success: true };
+    return (0, formatMessages_1.formatZodMessages)(result);
 }
 function validateTypeUpdate(input) {
     const result = typeUpdateSchema.safeParse(input);
-    if (!result.success)
-        return { success: false, error: result.error.errors[0].message }; // Mensaje del primer error
-    return { success: true };
+    return (0, formatMessages_1.formatZodMessages)(result);
 }

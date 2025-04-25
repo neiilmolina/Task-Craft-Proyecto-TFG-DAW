@@ -112,10 +112,11 @@ export default class AuthController {
       }
 
       // Verificar el token
-      const decoded = jwt.verify(token, secretKey) as User;
+      const decoded = jwt.verify(token, secretKey) as any;
+      const { exp, iat, ...rest } = decoded;
 
       // Generar un nuevo token con una nueva expiración
-      const newToken = jwt.sign({ ...decoded }, secretKey, { expiresIn: "1h" });
+      const newToken = jwt.sign({ ...rest }, secretKey, { expiresIn: "1h" });
 
       // Actualizar la cookie con el nuevo token
       res.cookie(KEY_ACCESS_COOKIE, newToken, {

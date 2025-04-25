@@ -64,9 +64,15 @@ export default class TasksController {
       const taskData: TaskCreate = req.body;
 
       const result = validateTaskCreate(taskData);
-      
+
       if (!result.success) {
-        res.status(400).json({ error: result.errors });
+        res.status(400).json({
+          error: "Error de validación",
+          details: result.errors?.map((error) => ({
+            field: error.field,
+            message: error.message,
+          })),
+        });
         return;
       }
 
@@ -104,7 +110,13 @@ export default class TasksController {
       // Validación de datos de la tarea
       const result = validateTaskUpdate(taskData);
       if (!result.success) {
-        res.status(400).json({ error: result.errors });
+        res.status(400).json({
+          error: "Error de validación",
+          details: result.errors?.map((error) => ({
+            field: error.field,
+            message: error.message,
+          })),
+        });
         return;
       }
 

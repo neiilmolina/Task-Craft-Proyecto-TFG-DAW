@@ -43,7 +43,13 @@ export default class StatesController {
 
       const result = validateStateNoId({ state });
       if (!result.success) {
-        res.status(400).json({ error: result.error });
+          res.status(400).json({
+          error: "Error de validación",
+          details: result.errors?.map((error) => ({
+            field: error.field,
+            message: error.message,
+          })),
+        });
         return;
       }
 
@@ -64,7 +70,13 @@ export default class StatesController {
 
       const result = validateStateNoId({ state });
       if (!result.success) {
-        res.status(400).json({ error: result.error });
+          res.status(400).json({
+          error: "Error de validación",
+          details: result.errors?.map((error) => ({
+            field: error.field,
+            message: error.message,
+          })),
+        });
         return;
       }
 

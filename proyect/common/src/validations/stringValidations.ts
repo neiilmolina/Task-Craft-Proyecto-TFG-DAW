@@ -1,11 +1,15 @@
 import { z } from "zod";
 
-export const validateString = (
+export function validateString(
   atributeName: string,
   minLenght: number,
   maxLength: number = 10
-) =>
-  z
+) {
+  return z
     .string()
     .min(minLenght, `El campo ${atributeName} es obligatorio`)
-    .max(maxLength, "t");
+    .max(
+      maxLength,
+      `El campo ${atributeName} no puede ser mayor a ${maxLength} caracteres`
+    );
+}

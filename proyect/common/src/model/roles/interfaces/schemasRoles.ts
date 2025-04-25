@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { Role, RoleNoId } from "./interfacesRoles";
-import { validateString } from "@/src/validations/stringValidations";
+import { validateString } from "../../../validations/stringValidations";
+import { formatZodMessages } from "../../../validations/formatMessages";
 
 export const roleSchema = z.object({
   idRole: z.number().optional(),
@@ -8,14 +9,11 @@ export const roleSchema = z.object({
 });
 
 export function validateRole(input: Partial<Role>) {
-  return roleSchema.safeParse(input);
+  const result = roleSchema.safeParse(input);
+  return formatZodMessages(result);
 }
 
 export function validateRoleNoId(input: Partial<RoleNoId>) {
   const result = roleSchema.safeParse(input);
-
-  if (!result.success)
-    return { success: false, error: result.error.errors[0].message };
-
-  return { success: true };
+  return formatZodMessages(result);
 }

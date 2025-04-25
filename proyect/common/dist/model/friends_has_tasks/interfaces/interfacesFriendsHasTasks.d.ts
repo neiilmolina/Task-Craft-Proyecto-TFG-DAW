@@ -42,5 +42,5 @@ export interface FriendHasTasksReturn {
     idFriendHasTasks: string;
     idAssignedUser: string;
     idTask: string;
-    friendHasTaskRequestState: false;
+    friendHasTaskRequestState: boolean;
 }

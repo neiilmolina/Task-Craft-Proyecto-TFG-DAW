@@ -9,10 +9,7 @@ import {
 import { UUID_REGEX } from "@/src/core/constants";
 import { randomUUID } from "crypto";
 import FriendsRepository from "@/src/friends/model/FriendsRepository";
-import {
-  validateFriendCreate,
-  validateFriendFilters,
-} from "task-craft-models";
+import { validateFriendCreate, validateFriendFilters } from "task-craft-models";
 
 export default class FriendsHTTPController {
   private friendsRepository: FriendsRepository;
@@ -36,7 +33,13 @@ export default class FriendsHTTPController {
       const result = validateFriendFilters(filters);
 
       if (!result.success) {
-        res.status(400).json({ error: result.errors });
+        res.status(400).json({
+          error: "Error de validación",
+          details: result.errors?.map((error) => ({
+            field: error.field,
+            message: error.message,
+          })),
+        });
         return;
       }
       const { friendRequestState } = filters;
@@ -87,7 +90,13 @@ export default class FriendsHTTPController {
       const result = validateFriendCreate(friendData);
       console.log("result:", result);
       if (!result.success) {
-        res.status(400).json({ error: result.errors });
+        res.status(400).json({
+          error: "Error de validación",
+          details: result.errors?.map((error) => ({
+            field: error.field,
+            message: error.message,
+          })),
+        });
         return;
       }
 

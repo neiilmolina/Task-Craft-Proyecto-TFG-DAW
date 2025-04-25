@@ -10,17 +10,25 @@ export declare const roleSchema: z.ZodObject<{
     role: string;
     idRole?: number | undefined;
 }>;
-export declare function validateRole(input: Partial<Role>): z.SafeParseReturnType<{
-    role: string;
-    idRole?: number | undefined;
-}, {
-    role: string;
-    idRole?: number | undefined;
-}>;
-export declare function validateRoleNoId(input: Partial<RoleNoId>): {
-    success: boolean;
-    error: string;
+export declare function validateRole(input: Partial<Role>): {
+    success: false;
+    errors: {
+        field: string;
+        message: string;
+        code: string;
+    }[];
 } | {
-    success: boolean;
-    error?: undefined;
+    success: true;
+    data: any;
+};
+export declare function validateRoleNoId(input: Partial<RoleNoId>): {
+    success: false;
+    errors: {
+        field: string;
+        message: string;
+        code: string;
+    }[];
+} | {
+    success: true;
+    data: any;
 };

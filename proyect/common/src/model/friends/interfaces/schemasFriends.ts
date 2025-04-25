@@ -1,8 +1,6 @@
 import { z } from "zod";
-import {
-  FriendCreate,
-  FriendFilters,
-} from "./interfacesFriends";
+import { FriendCreate, FriendFilters } from "./interfacesFriends";
+import { formatZodMessages } from "../../../validations/formatMessages";
 
 const uuid = z.string().uuid();
 
@@ -27,18 +25,10 @@ const friendFiltersSchema = z.object({
 });
 export const validateFriendCreate = (input: Partial<FriendCreate>) => {
   const result = friendCreateSchema.safeParse(input);
-  if (result.success) {
-    return { success: true, input: result.data };
-  } else {
-    return { success: false, errors: result.error.errors };
-  }
+  return formatZodMessages(result);
 };
 
 export const validateFriendFilters = (input: Partial<FriendFilters>) => {
   const result = friendFiltersSchema.safeParse(input);
-  if (result.success) {
-    return { success: true, input: result.data };
-  } else {
-    return { success: false, errors: result.error.errors };
-  }
+  return formatZodMessages(result);
 };

@@ -3,6 +3,7 @@ import {
   FriendHasTasksCreate,
   FriendHasTasksFilters,
 } from "./interfacesFriendsHasTasks";
+import { formatZodMessages } from "../../../validations/formatMessages";
 
 const uuid = z.string().uuid();
 
@@ -25,20 +26,16 @@ const friendFiltersSchema = z.object({
     }, z.boolean())
     .optional(),
 });
-export const validateFriendHasTasksCreate = (input: Partial<FriendHasTasksCreate>) => {
+export const validateFriendHasTasksCreate = (
+  input: Partial<FriendHasTasksCreate>
+) => {
   const result = friendCreateSchema.safeParse(input);
-  if (result.success) {
-    return { success: true, input: result.data };
-  } else {
-    return { success: false, errors: result.error.errors };
-  }
+  return formatZodMessages(result);
 };
 
-export const validateFriendHasTasksFilters = (input: Partial<FriendHasTasksFilters>) => {
+export const validateFriendHasTasksFilters = (
+  input: Partial<FriendHasTasksFilters>
+) => {
   const result = friendFiltersSchema.safeParse(input);
-  if (result.success) {
-    return { success: true, input: result.data };
-  } else {
-    return { success: false, errors: result.error.errors };
-  }
+  return formatZodMessages(result);
 };

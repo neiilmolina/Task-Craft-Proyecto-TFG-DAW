@@ -9,15 +9,15 @@ export declare const TaskCreateSchema: z.ZodObject<{
     idUser: z.ZodString;
 }, "strip", z.ZodTypeAny, {
     title: string;
-    description: string;
     activityDate: string;
+    description: string;
     idUser: string;
     idState: number;
     idType: number;
 }, {
     title: string;
-    description: string;
     activityDate: string;
+    description: string;
     idUser: string;
     idState: number;
     idType: number;
@@ -31,51 +31,38 @@ export declare const TaskUpdateSchema: z.ZodObject<{
     idUser: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
     title?: string | undefined;
-    description?: string | undefined;
     activityDate?: string | undefined;
+    description?: string | undefined;
     idUser?: string | undefined;
     idState?: number | undefined;
     idType?: number | undefined;
 }, {
     title?: string | undefined;
-    description?: string | undefined;
     activityDate?: string | undefined;
+    description?: string | undefined;
     idUser?: string | undefined;
     idState?: number | undefined;
     idType?: number | undefined;
 }>;
 export declare const validateTaskCreate: (input: Partial<TaskCreate>) => {
-    success: boolean;
-    input: {
-        title: string;
-        description: string;
-        activityDate: string;
-        idUser: string;
-        idState: number;
-        idType: number;
-    };
-    errors?: undefined;
-} | {
-    success: boolean;
+    success: false;
     errors: {
-        path: string;
+        field: string;
         message: string;
+        code: string;
     }[];
-    input?: undefined;
+} | {
+    success: true;
+    data: any;
 };
 export declare const validateTaskUpdate: (input: Partial<TaskUpdate>) => {
-    success: boolean;
-    input: {
-        title?: string | undefined;
-        description?: string | undefined;
-        activityDate?: string | undefined;
-        idUser?: string | undefined;
-        idState?: number | undefined;
-        idType?: number | undefined;
-    };
-    errors?: undefined;
+    success: false;
+    errors: {
+        field: string;
+        message: string;
+        code: string;
+    }[];
 } | {
-    success: boolean;
-    errors: z.ZodIssue[];
-    input?: undefined;
+    success: true;
+    data: any;
 };

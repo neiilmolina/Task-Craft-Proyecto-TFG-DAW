@@ -2,15 +2,9 @@ import IDiariesDAO from "@/src/diaries/model/dao/IDiariesDAO";
 import { UUID_REGEX } from "@/src/core/constants";
 import { randomUUID } from "crypto";
 import { RequestHandler } from "express";
-import {
-  validateDiaryCreate,
-  validateDiaryUpdate,
-} from "task-craft-models";
+import { validateDiaryCreate, validateDiaryUpdate } from "task-craft-models";
 import DiariesRepository from "@/src/diaries/model/DiariesRepository";
-import {
-  DiaryCreate,
-  DiaryUpdate,
-} from "task-craft-models";
+import { DiaryCreate, DiaryUpdate } from "task-craft-models";
 
 export default class DiariesController {
   private diariesRepository: DiariesRepository;
@@ -69,10 +63,15 @@ export default class DiariesController {
 
       const result = validateDiaryCreate(diaryData);
       if (!result.success) {
-        res.status(400).json({ error: result.errors });
+        res.status(400).json({
+          error: "Error de validación",
+          details: result.errors?.map((error) => ({
+            field: error.field,
+            message: error.message,
+          })),
+        });
         return;
       }
-
       const idDiary = randomUUID();
       if (!UUID_REGEX.test(idDiary)) {
         res.status(400).json({ error: "El ID del diary debe ser válido" });
@@ -106,7 +105,13 @@ export default class DiariesController {
 
       const result = validateDiaryUpdate(diaryData);
       if (!result.success) {
-        res.status(400).json({ error: result.errors });
+        res.status(400).json({
+          error: "Error de validación",
+          details: result.errors?.map((error) => ({
+            field: error.field,
+            message: error.message,
+          })),
+        });
         return;
       }
 

@@ -1,8 +1,7 @@
-import { validateFutureDate } from "../../src/validations/dateValidations"; // Ajusta la ruta según tu estructura
+import { validateFutureDate } from "../../src/validations/dateValidations";
 import { z } from "zod";
-import { Temporal } from "@js-temporal/polyfill"; // Asegúrate de importar Temporal correctamente
+import { Temporal } from "@js-temporal/polyfill";
 
-// Mock para la fecha actual
 const mockNow = jest.spyOn(Temporal.Now, "plainDateTimeISO");
 
 describe("validateFutureDate", () => {
@@ -11,7 +10,6 @@ describe("validateFutureDate", () => {
   });
 
   beforeEach(() => {
-    // Establecemos una fecha fija para las pruebas: 24 de abril de 2025 a las 12:00:00
     mockNow.mockReturnValue(Temporal.PlainDateTime.from("2025-04-24T12:00:00"));
   });
 
@@ -30,7 +28,7 @@ describe("validateFutureDate", () => {
 
   it("should reject a past date", () => {
     const date = Temporal.Now.plainDateISO().subtract({ days: 1 }).toString();
-    // Fecha pasada: 11 de abril de 2025
+
     const result = TestSchema.safeParse({
       date: date,
     });
@@ -73,17 +71,14 @@ describe("validateFutureDate", () => {
   });
 
   it("should handle dates without time component", () => {
-    // Mock para PlainDate
     const mockPlainDateNow = jest.spyOn(Temporal.Now, "plainDateISO");
     mockPlainDateNow.mockReturnValue(Temporal.PlainDate.from("2025-04-24"));
 
-    // Fecha futura sin componente de hora
     const futureResult = TestSchema.safeParse({
       date: "2025-05-01",
     });
     expect(futureResult.success).toBe(true);
 
-    // Fecha pasada sin componente de hora
     const pastResult = TestSchema.safeParse({
       date: "2025-04-10",
     });
@@ -93,14 +88,12 @@ describe("validateFutureDate", () => {
   });
 
   it("should log comparison values for debugging", () => {
-    // Espía para console.log
     const consoleSpy = jest.spyOn(console, "log");
 
     TestSchema.safeParse({
       date: "2025-04-11T10:00:00",
     });
 
-    // Verificar que se están registrando valores de depuración
     expect(consoleSpy).toHaveBeenCalled();
 
     consoleSpy.mockRestore();

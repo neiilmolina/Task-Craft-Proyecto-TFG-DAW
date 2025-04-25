@@ -6,13 +6,11 @@ import {
   validateUserCreate,
   validateUserUpdate,
 } from "task-craft-models";
-import {
-  UserCreate,
-  UserUpdate,
-} from "task-craft-models";
+import { UserCreate, UserUpdate } from "task-craft-models";
 import { randomUUID } from "crypto";
 import bcrypt from "bcryptjs";
 import { UUID_REGEX } from "@/src/core/constants";
+import { error } from "console";
 
 export default class UsersController {
   private usersRepository: UsersRepository;
@@ -28,7 +26,7 @@ export default class UsersController {
         : undefined;
 
       const stringSearch = req.query.stringSearch
-        ? req.query.stringSearch as string
+        ? (req.query.stringSearch as string)
         : undefined;
       if (idRol !== undefined && isNaN(idRol)) {
         res
@@ -100,16 +98,19 @@ export default class UsersController {
       const userData: UserCreate = req.body;
 
       const result = validateUserCreate(userData);
-
-      // Validar campos obligatorios antes de continuar
       if (!result.success) {
-        res.status(400).json({ error: "Todos los campos son obligatorios" });
+        res.status(400).json({
+          error: "Error de validación",
+          details: result.errors?.map((error) => ({
+            field: error.field,
+            message: error.message,
+          })),
+        });
         return;
       }
 
       const { password } = userData;
-      const idUser = randomUUID(); // Generamos el UUID sin necesidad de validarlo con regex
-
+      const idUser = randomUUID();
       const hashedPassword = await bcrypt.hash(password, 10);
 
       const userConPasswordEncriptado = {
@@ -123,15 +124,21 @@ export default class UsersController {
         userConPasswordEncriptado
       );
 
-      if (!newUser) {
-        res.status(500).json({ error: "El user no se ha podido crear" });
+      res.status(201).json(newUser); // Usa 201 para creación exitosa
+      return;
+    } catch (error: any) {
+      console.error("Error al crear el user:", error);
+      // Verifica el código de error de MySQL
+      if (error.sqlMessage.includes("email")) {
+        res.status(409).json({ error: "El email ya está en uso." });
+        return;
+      } else if (error.sqlMessage.includes("nombreUsuario")) {
+        res.status(409).json({ error: "El nombre de usuario ya está en uso." });
         return;
       }
 
-      res.status(200).json(newUser);
-    } catch (error) {
-      console.error("Error al crear el user:", error);
       res.status(500).json({ error: "Error interno del servidor" });
+      return;
     }
   };
 
@@ -147,7 +154,13 @@ export default class UsersController {
       }
 
       if (!result.success) {
-        res.status(400).json({ error: result.error });
+        res.status(400).json({
+          error: "Error de validación",
+          details: result.errors?.map((error) => ({
+            field: error.field,
+            message: error.message,
+          })),
+        });
         return;
       }
 
@@ -177,7 +190,13 @@ export default class UsersController {
   //     }
 
   //     if (!result.success) {
-  //       res.status(400).json({ error: result.error });
+  //         res.status(400).json({
+  //   error: "Error de validación",
+  //   details: result.errors?.map((error) => ({
+  //     field: error.field,
+  //     message: error.message,
+  //   })),
+  // });
   //       return;
   //     }
 

@@ -5,6 +5,7 @@ exports.validateUserCreate = validateUserCreate;
 exports.validateUserUpdate = validateUserUpdate;
 exports.validatePassword = validatePassword;
 const zod_1 = require("zod");
+const formatMessages_1 = require("../../../validations/formatMessages");
 const passwordSchema = zod_1.z
     .string()
     .min(6, { message: "La contraseña debe tener al menos 6 caracteres" });
@@ -32,11 +33,14 @@ exports.userUpdateSchema = zod_1.z.object({
     idRol: idRol,
 });
 function validateUserCreate(input) {
-    return exports.userCreateSchema.safeParse(input);
+    const result = exports.userCreateSchema.safeParse(input);
+    return (0, formatMessages_1.formatZodMessages)(result);
 }
 function validateUserUpdate(input) {
-    return exports.userUpdateSchema.safeParse(input);
+    const result = exports.userUpdateSchema.safeParse(input);
+    return (0, formatMessages_1.formatZodMessages)(result);
 }
 function validatePassword(input) {
-    return passwordSchema.safeParse(input);
+    const result = passwordSchema.safeParse(input);
+    return (0, formatMessages_1.formatZodMessages)(result);
 }
