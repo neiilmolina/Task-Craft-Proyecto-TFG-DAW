@@ -1,6 +1,6 @@
 import { ResultSetHeader } from "mysql2";
-import mysql from "@/tests/__mocks__/mysql";
-import UsersMysqlDAO from "@/src/users/model/dao/UsersMysqlDAO";
+import mysql from "../__mocks__/mysql";
+import UsersMysqlDAO from "../..//src/users/model/dao/UsersMysqlDAO";
 import {
   User,
   UserBD,

@@ -1,9 +1,4 @@
-import {
-  User,
-  UserCreate,
-  UserReturn,
-  UserUpdate,
-} from "task-craft-models";
+import { User, UserCreate, UserReturn, UserUpdate } from "task-craft-models";
 import IUsersDAO from "@/src/users/model/dao/IUsersDAO";
 import connection from "@/config/mysql";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
@@ -190,8 +185,12 @@ export default class UsersMysqlDAO implements IUsersDAO {
         ],
         (err: any, results: any) => {
           if (err) {
-            return reject(new Error("Database insertion error")); // Lanza un error específico
+            if (err.code === "ER_DUP_ENTRY")
+              return reject(new Error("El email ya está en uso."));
+
+            return reject(new Error("Error en la inserción de usuario"));
           }
+
           resolve({
             userName: user.userName ?? "",
             email: user.email,
@@ -226,7 +225,7 @@ export default class UsersMysqlDAO implements IUsersDAO {
           const resultSet = results as ResultSetHeader;
 
           if (resultSet.affectedRows === 0) {
-            return reject(new Error("User not found"));
+            return reject(new Error("usuario no encontrado"));
           }
 
           // Resolver con el resultado
