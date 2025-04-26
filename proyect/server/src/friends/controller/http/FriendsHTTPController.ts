@@ -42,10 +42,6 @@ export default class FriendsHTTPController {
         });
         return;
       }
-      const { friendRequestState } = filters;
-
-      if (friendRequestState) {
-      }
 
       const friends = await this.friendsRepository.getAll(filters);
 

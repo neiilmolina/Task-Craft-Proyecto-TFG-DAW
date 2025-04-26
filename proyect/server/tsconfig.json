@@ -17,9 +17,11 @@
   },
   "include": [
     "src/**/*", // Incluye todos los archivos en la carpeta src.
-    "server-mysql.ts" // También incluye el archivo server-mysql.ts fuera de src.
+    "server-mysql.ts", // También incluye el archivo server-mysql.ts fuera de src.
+    "tests/**/*" // Incluye todos los archivos en la carpeta tests.
   ],
   "exclude": [
-    "node_modules" // Excluye la carpeta node_modules de la compilación.
+    "node_modules", // Excluye la carpeta node_modules de la compilación.
+    "dist"
   ]
 }
