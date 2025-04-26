@@ -2,11 +2,13 @@ import FriendsHasTasksHTTPController from "@/src/friends_has_tasks/controller/ht
 import { Router } from "express";
 import IFriendsHasTasksDAO from "@/src/friends_has_tasks/model/dao/IFriendsHasTasksDAO";
 
-const createFriendsHasTasksRoutes = (friendsDAO: IFriendsHasTasksDAO) => {
+const createFriendsHasTasksRoutes = (
+  friendsHasTasksDAO: IFriendsHasTasksDAO
+) => {
   const router = Router();
 
   const friendsHasTasksHTTPController = new FriendsHasTasksHTTPController(
-    friendsDAO
+    friendsHasTasksDAO
   );
 
   router.get("/", friendsHasTasksHTTPController.getFriendsHasTasks);

@@ -58,8 +58,9 @@ export default class FriendsHasTasksHTTPController {
 
   getFriendsHasTasksById: RequestHandler = async (req, res) => {
     try {
-      const idFriendHasTasks = req.params.idFriendHasTasks;
-      if (!UUID_REGEX.test(idFriendHasTasks)) {
+      console.log("req.params.idFriendsHasTasks", req.params.idFriendsHasTasks);
+      const idFriendsHasTasks = req.params.idFriendsHasTasks;
+      if (!UUID_REGEX.test(idFriendsHasTasks)) {
         res
           .status(400)
           .json({ error: "El ID de la tarea compartida debe ser válido" });
@@ -67,7 +68,7 @@ export default class FriendsHasTasksHTTPController {
       }
 
       const sharedTasks = await this.friendsHasTasksRepository.getById(
-        idFriendHasTasks
+        idFriendsHasTasks
       );
 
       if (!sharedTasks) {
@@ -100,8 +101,8 @@ export default class FriendsHasTasksHTTPController {
         return;
       }
 
-      const idFriendHasTasks = randomUUID();
-      if (!UUID_REGEX.test(idFriendHasTasks)) {
+      const idFriendsHasTasks = randomUUID();
+      if (!UUID_REGEX.test(idFriendsHasTasks)) {
         res
           .status(400)
           .json({ error: "El ID de la tarea compartida debe ser válido" });
@@ -109,7 +110,7 @@ export default class FriendsHasTasksHTTPController {
       }
 
       const newFriend = await this.friendsHasTasksRepository.create(
-        idFriendHasTasks,
+        idFriendsHasTasks,
         friendsHasTasksData
       );
 
@@ -126,10 +127,10 @@ export default class FriendsHasTasksHTTPController {
 
   updateFriendsHasTasks: RequestHandler = async (req, res) => {
     try {
-      const idFriendHasTasks = req.params.idFriendHasTasks;
+      const idFriendsHasTasks = req.params.idFriendsHasTasks;
 
       // Verificación de UUID
-      if (!UUID_REGEX.test(idFriendHasTasks)) {
+      if (!UUID_REGEX.test(idFriendsHasTasks)) {
         res
           .status(400)
           .json({ error: "El ID de la tarea compartida debe ser válido" });
@@ -137,7 +138,7 @@ export default class FriendsHasTasksHTTPController {
       }
 
       const friendHasTasks = await this.friendsHasTasksRepository.update(
-        idFriendHasTasks
+        idFriendsHasTasks
       );
 
       // Verificación si la tarea fue encontrada y actualizada
@@ -154,15 +155,15 @@ export default class FriendsHasTasksHTTPController {
 
   deleteFriendsHasTasks: RequestHandler = async (req, res) => {
     try {
-      const idFriendHasTask = req.params.idFriendHasTask;
-      if (!UUID_REGEX.test(idFriendHasTask)) {
+      const idFriendsHasTasks = req.params.idFriendsHasTasks;
+      if (!UUID_REGEX.test(idFriendsHasTasks)) {
         res
           .status(400)
           .json({ error: "El ID de la tarea compartida debe ser válido" });
         return;
       }
       const sharedTasks = await this.friendsHasTasksRepository.delete(
-        idFriendHasTask
+        idFriendsHasTasks
       );
 
       if (!sharedTasks) {
