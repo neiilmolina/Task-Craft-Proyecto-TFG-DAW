@@ -4,7 +4,6 @@ import FriendsHasTasksMysqlDAO from "@/src/friends_has_tasks/model/dao/FriendsHa
 import {
   FriendHasTasks,
   FriendHasTasksCreate,
-  FriendHasTasksFilters,
   FriendHasTasksReturn,
   FriendHasTasksBD,
 } from "task-craft-models";

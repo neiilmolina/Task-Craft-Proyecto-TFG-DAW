@@ -46,7 +46,7 @@ export default class FriendsHTTPController {
       const friends = await this.friendsRepository.getAll(filters);
 
       if (!friends) {
-        res.status(404).json({ error: "No se encontraron tareas" });
+        res.status(404).json({ error: "No se encontraron amistades" });
         return;
       }
       res.status(200).json(friends);
