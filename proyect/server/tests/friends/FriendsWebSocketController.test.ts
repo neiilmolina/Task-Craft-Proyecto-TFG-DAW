@@ -277,7 +277,7 @@ describe("FriendsWebSocketController", () => {
     });
   });
 
-  describe.only("handleAcceptFriendRequest", () => {
+  describe("handleAcceptFriendRequest", () => {
     it("should accept a friend request and emit the success message", async () => {
       const friendId = randomUUID();
       const updatedFriend = {

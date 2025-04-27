@@ -112,18 +112,18 @@ export default class FriendsHasTasksWebSocketsController {
         }
       }
 
-      // Obtener solicitudes de amistad
+      // Obtener solicitudes de tarea compartida
       const sharedTasksRequests = await this.friendsHasTasksRepository.getAll(
         filters || {}
       );
-      console.log("Solicitudes de amistad:", sharedTasksRequests);
+      console.log("Solicitudes de tarea compartida:", sharedTasksRequests);
 
       // Si no hay solicitudes, lanzar un error
       if (!sharedTasksRequests || sharedTasksRequests.length === 0) {
-        throw new Error("No se encontraron solicitudes de amistad");
+        throw new Error("No se encontraron solicitudes de tarea compartida");
       }
 
-      // Emitir las solicitudes de amistad
+      // Emitir las solicitudes de tarea compartida
       this.socket.emit(SOCKET_EVENTS_NAMES.EMIT, sharedTasksRequests);
     } catch (error) {
       // Manejo de errores
@@ -165,7 +165,7 @@ export default class FriendsHasTasksWebSocketsController {
 
       if (!result || !result.success) {
         this.socket.emit(SOCKET_EVENTS_NAMES.ERROR, {
-          message: "Error al crear la solicitud de amistad",
+          message: "Error al crear la solicitud de tarea compartida",
           details: result.errors.map((error) => ({
             field: error.field,
             message: error.message,
@@ -174,7 +174,7 @@ export default class FriendsHasTasksWebSocketsController {
         return;
       }
 
-      // Generar un id para la amistad
+      // Generar un id para la tarea compartida
       const idFriendsHasTasks = randomUUID();
 
       // Verificar que el idFriendsHasTasks sea válido
@@ -182,7 +182,7 @@ export default class FriendsHasTasksWebSocketsController {
         throw new Error("El ID al compartir la tarea debe ser válido");
       }
 
-      // Intentar crear la amistad
+      // Intentar crear la tarea compartida
       const friend = await this.friendsHasTasksRepository.create(
         idFriendsHasTasks,
         data
@@ -210,12 +210,12 @@ export default class FriendsHasTasksWebSocketsController {
 
     try {
       if (!UUID_REGEX.test(idFriendsHasTasks))
-        throw new Error("El ID de la amistad debe ser válido");
+        throw new Error("El ID de la tarea compartida debe ser válido");
 
       const result = await this.friendsHasTasksRepository.update(
         idFriendsHasTasks
       );
-      if (!result) throw new Error("Error al actualizar la amistad");
+      if (!result) throw new Error("Error al actualizar la tarea compartida");
 
       // Emitir el resultado exitoso
       this.socket.emit(SOCKET_EVENTS_NAMES.EMIT, { success: true, result });
