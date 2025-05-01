@@ -51,4 +51,12 @@ export interface TaskReturn {
     idType: number;
     idUser: string;
 }
+export interface TaskFilters {
+    idUser?: string;
+    stateString?: string;
+    typeString?: string;
+    title?: string;
+    pastDate?: string;
+    futureDate?: string;
+}
 export {};

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DiaryCreate, DiaryUpdate } from "./interfacesDiaries";
+import { DiaryCreate, DiaryFilters, DiaryUpdate } from "./interfacesDiaries";
 export declare const DiaryCreateSchema: z.ZodObject<{
     title: z.ZodString;
     description: z.ZodString;
@@ -7,13 +7,13 @@ export declare const DiaryCreateSchema: z.ZodObject<{
     idUser: z.ZodString;
 }, "strip", z.ZodTypeAny, {
     title: string;
-    activityDate: string;
     description: string;
+    activityDate: string;
     idUser: string;
 }, {
     title: string;
-    activityDate: string;
     description: string;
+    activityDate: string;
     idUser: string;
 }>;
 export declare const DiaryUpdateSchema: z.ZodObject<{
@@ -23,14 +23,30 @@ export declare const DiaryUpdateSchema: z.ZodObject<{
     idUser: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
     title?: string | undefined;
-    activityDate?: string | undefined;
     description?: string | undefined;
+    activityDate?: string | undefined;
     idUser?: string | undefined;
 }, {
     title?: string | undefined;
-    activityDate?: string | undefined;
     description?: string | undefined;
+    activityDate?: string | undefined;
     idUser?: string | undefined;
+}>;
+export declare const DiaryFiltersSchema: z.ZodObject<{
+    idUser: z.ZodOptional<z.ZodString>;
+    title: z.ZodOptional<z.ZodString>;
+    pastDate: z.ZodOptional<z.ZodEffects<z.ZodString, string, string>>;
+    futureDate: z.ZodOptional<z.ZodEffects<z.ZodString, string, string>>;
+}, "strip", z.ZodTypeAny, {
+    title?: string | undefined;
+    idUser?: string | undefined;
+    pastDate?: string | undefined;
+    futureDate?: string | undefined;
+}, {
+    title?: string | undefined;
+    idUser?: string | undefined;
+    pastDate?: string | undefined;
+    futureDate?: string | undefined;
 }>;
 export declare const validateDiaryCreate: (input: Partial<DiaryCreate>) => {
     success: false;
@@ -44,6 +60,17 @@ export declare const validateDiaryCreate: (input: Partial<DiaryCreate>) => {
     data: any;
 };
 export declare const validateDiaryUpdate: (input: Partial<DiaryUpdate>) => {
+    success: false;
+    errors: {
+        field: string;
+        message: string;
+        code: string;
+    }[];
+} | {
+    success: true;
+    data: any;
+};
+export declare const validateDiaryFilters: (input: Partial<DiaryFilters>) => {
     success: false;
     errors: {
         field: string;

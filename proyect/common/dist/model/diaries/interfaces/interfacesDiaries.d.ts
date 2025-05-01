@@ -32,3 +32,9 @@ export interface DiaryReturn {
     activityDate: Temporal.PlainDateTime;
     idUser: string;
 }
+export interface DiaryFilters {
+    idUser?: string;
+    futureDate?: string;
+    pastDate?: string;
+    title?: string;
+}

@@ -1,6 +1,11 @@
 import ITasksDAO from "@/src/tasks/model/dao/ITasksDAO";
 import { RequestHandler } from "express";
-import { TaskCreate, TaskUpdate } from "task-craft-models";
+import {
+  TaskCreate,
+  TaskFilters,
+  TaskUpdate,
+  validateTaskFilters,
+} from "task-craft-models";
 import { UUID_REGEX } from "@/src/core/constants";
 import { randomUUID } from "crypto";
 import TasksRepository from "@/src/tasks/model/TasksRepository";
@@ -16,14 +21,24 @@ export default class TasksController {
 
   getTasks: RequestHandler = async (req, res) => {
     try {
-      const idUser = (req.query.idUser as string) ?? undefined;
-
-      if (idUser && !UUID_REGEX.test(idUser)) {
+      const tasksFilters = (req.query as TaskFilters) ?? undefined;
+      const result = validateTaskFilters(tasksFilters);
+      if (!result.success) {
+        res.status(400).json({
+          error: "Error de validación en los filtros de tareas",
+          details: result.errors?.map((error) => ({
+            field: error.field,
+            message: error.message,
+          })),
+        });
+        return;
+      }
+      if (tasksFilters) {
         res.status(400).json({ error: "El ID del user debe ser válido" });
         return;
       }
 
-      const tasks = await this.tasksRepository.getAll(idUser);
+      const tasks = await this.tasksRepository.getAll(tasksFilters);
 
       if (!tasks) {
         res.status(404).json({ error: "No se encontraron tareas" });

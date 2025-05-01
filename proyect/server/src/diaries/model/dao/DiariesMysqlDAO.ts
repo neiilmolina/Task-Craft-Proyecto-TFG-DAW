@@ -4,10 +4,12 @@ import {
   DiaryCreate,
   DiaryUpdate,
   DiaryReturn,
+  DiaryFilters,
 } from "task-craft-models";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import { Temporal } from "@js-temporal/polyfill";
 import IDiariesDAO from "@/src/diaries/model/dao/IDiariesDAO";
+import { formatDate } from "@/src/core/formatDate";
 
 const TABLE_NAME = "diarios";
 const FIELDS = {
@@ -19,8 +21,10 @@ const FIELDS = {
 };
 
 export default class DiariesMysqlDAO implements IDiariesDAO {
-  async getAll(idUser?: string): Promise<Diary[]> {
+  async getAll(diaryFilters?: DiaryFilters): Promise<Diary[]> {
     return new Promise<Diary[]>((resolve, reject) => {
+      const { idUser, futureDate, pastDate, title } = diaryFilters || {};
+
       let query = `
           SELECT 
             d.${FIELDS.idDiary}, 
@@ -29,18 +33,33 @@ export default class DiariesMysqlDAO implements IDiariesDAO {
             d.${FIELDS.activityDate},
             d.${FIELDS.idUser} AS idUsuario
           FROM ${TABLE_NAME} d
+          WHERE 1=1
         `;
 
-      const conditions: string[] = [];
       const params: any[] = [];
 
       if (idUser) {
-        conditions.push(`d.${FIELDS.idUser} = ?`);
+        query += `AND d.${FIELDS.idUser} = ?`;
         params.push(idUser);
       }
 
-      if (conditions.length > 0) {
-        query += ` WHERE ` + conditions.join(" AND ");
+      if (title) {
+        query += ` AND d.${FIELDS.title} LIKE ?`;
+        params.push(`%${title}%`);
+      }
+
+      if (futureDate && pastDate) {
+        query += ` AND d.${FIELDS.activityDate} BETWEEN ? AND ?`;
+        params.push(pastDate.replace("T", " "), futureDate.replace("T", " "));
+      } else {
+        if (pastDate) {
+          query += ` AND d.${FIELDS.activityDate} BETWEEN ? AND CURDATE()`;
+          params.push(pastDate.replace("T", " "));
+        }
+        if (futureDate) {
+          query += ` AND d.${FIELDS.activityDate} BETWEEN CURDATE() AND ?`;
+          params.push(futureDate.replace("T", " "));
+        }
       }
 
       connection.query(query, params, (err: any, results: RowDataPacket[]) => {
@@ -56,25 +75,11 @@ export default class DiariesMysqlDAO implements IDiariesDAO {
 
         const diaries: Diary[] = results.map((row: RowDataPacket, i) => {
           try {
-            const rawDate = row[FIELDS.activityDate];
-            let dateFormatted;
-
-            if (rawDate instanceof Date) {
-              const isoString = rawDate.toISOString().replace("Z", "");
-              dateFormatted = Temporal.PlainDateTime.from(isoString);
-            } else if (typeof rawDate === "string") {
-              dateFormatted = Temporal.PlainDateTime.from(
-                rawDate.replace(" ", "T")
-              );
-            } else {
-              throw new Error("❌ Tipo de fecha inesperado: " + typeof rawDate);
-            }
-
             return {
               idDiary: row[FIELDS.idDiary],
               title: row[FIELDS.title],
               description: row[FIELDS.description],
-              activityDate: dateFormatted,
+              activityDate: formatDate(row[FIELDS.activityDate]),
               idUser: row[FIELDS.idUser],
             };
           } catch (err) {
@@ -123,17 +128,11 @@ export default class DiariesMysqlDAO implements IDiariesDAO {
               );
             }
 
-            const activityDate = Temporal.PlainDateTime.from(
-              typeof row[FIELDS.activityDate] === "string"
-                ? row[FIELDS.activityDate]
-                : row[FIELDS.activityDate].toISOString().slice(0, 19)
-            );
-
             const diary: Diary = {
               idDiary: row[FIELDS.idDiary],
               title: row[FIELDS.title],
               description: row[FIELDS.description],
-              activityDate: activityDate,
+              activityDate: formatDate(row[FIELDS.activityDate]),
               idUser: row[FIELDS.idUser],
             };
             resolve(diary);
@@ -235,7 +234,7 @@ export default class DiariesMysqlDAO implements IDiariesDAO {
       );
     });
   }
-  
+
   async delete(idDiary: string): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
       const query = `DELETE FROM ${TABLE_NAME} WHERE ${FIELDS.idDiary} = ?`;

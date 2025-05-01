@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateTaskUpdate = exports.validateTaskCreate = exports.TaskUpdateSchema = exports.TaskCreateSchema = void 0;
+exports.validateTaskFilters = exports.validateTaskUpdate = exports.validateTaskCreate = exports.TaskFiltersSchema = exports.TaskUpdateSchema = exports.TaskCreateSchema = void 0;
 const zod_1 = require("zod");
 const dateValidations_1 = require("../../../validations/dateValidations");
 const stringValidations_1 = require("../../../validations/stringValidations");
@@ -33,6 +33,14 @@ exports.TaskUpdateSchema = zod_1.z.object({
     idType: idType.optional(),
     idUser: idUser.optional(),
 });
+exports.TaskFiltersSchema = zod_1.z.object({
+    idUser: idUser.optional(),
+    stateString: (0, stringValidations_1.validateString)("estado", 1).optional(),
+    typeString: (0, stringValidations_1.validateString)("tipo", 1).optional(),
+    title: title.optional(),
+    pastDate: (0, dateValidations_1.validatePastDate)("fecha pasada").optional(),
+    futureDate: (0, dateValidations_1.validateFutureDate)("fecha futura").optional(),
+});
 const validateTaskCreate = (input) => {
     const result = exports.TaskCreateSchema.safeParse(input);
     return (0, formatMessages_1.formatZodMessages)(result);
@@ -44,3 +52,8 @@ const validateTaskUpdate = (input) => {
     return (0, formatMessages_1.formatZodMessages)(result);
 };
 exports.validateTaskUpdate = validateTaskUpdate;
+const validateTaskFilters = (input) => {
+    const result = exports.TaskFiltersSchema.safeParse(input);
+    return (0, formatMessages_1.formatZodMessages)(result);
+};
+exports.validateTaskFilters = validateTaskFilters;

@@ -2,7 +2,12 @@ import IDiariesDAO from "@/src/diaries/model/dao/IDiariesDAO";
 import { UUID_REGEX } from "@/src/core/constants";
 import { randomUUID } from "crypto";
 import { RequestHandler } from "express";
-import { validateDiaryCreate, validateDiaryUpdate } from "task-craft-models";
+import {
+  DiaryFilters,
+  validateDiaryCreate,
+  validateDiaryFilters,
+  validateDiaryUpdate,
+} from "task-craft-models";
 import DiariesRepository from "@/src/diaries/model/DiariesRepository";
 import { DiaryCreate, DiaryUpdate } from "task-craft-models";
 
@@ -15,14 +20,21 @@ export default class DiariesController {
 
   getDiaries: RequestHandler = async (req, res) => {
     try {
-      const idUser = (req.query.idUser as string) ?? undefined;
+      const diariesFilters = (req.query as DiaryFilters) ?? undefined;
 
-      if (idUser && !UUID_REGEX.test(idUser)) {
-        res.status(400).json({ error: "El ID del user debe ser válido" });
+      const result = validateDiaryFilters(diariesFilters);
+      if (!result.success) {
+        res.status(400).json({
+          error: "Error de validación en los filtros de diarios",
+          details: result.errors?.map((error) => ({
+            field: error.field,
+            message: error.message,
+          })),
+        });
         return;
       }
 
-      const diaries = await this.diariesRepository.getAll(idUser);
+      const diaries = await this.diariesRepository.getAll(diariesFilters);
 
       if (!diaries) {
         res.status(404).json({ error: "No se encontraron tareas" });
