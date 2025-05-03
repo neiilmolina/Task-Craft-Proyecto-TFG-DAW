@@ -6,7 +6,7 @@ const dateValidations_1 = require("../../../validations/dateValidations");
 const stringValidations_1 = require("../../../validations/stringValidations");
 const formatMessages_1 = require("../../../validations/formatMessages");
 // Constantes para los tipos de validación
-const title = (0, stringValidations_1.validateString)("title", 1, 10);
+const title = (0, stringValidations_1.validateString)("title", 1);
 const description = (0, stringValidations_1.validateString)("descripcion", 1, 300);
 const activityDate = (0, dateValidations_1.validateFutureDate)("fecha");
 const idUser = zod_1.z.string().uuid();

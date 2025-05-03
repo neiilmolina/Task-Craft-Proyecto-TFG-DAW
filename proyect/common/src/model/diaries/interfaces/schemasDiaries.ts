@@ -13,7 +13,7 @@ import { validateString } from "../../../validations/stringValidations";
 import { formatZodMessages } from "../../../validations/formatMessages";
 
 // Constantes para los tipos de validación
-const title = validateString("title", 1, 10);
+const title = validateString("title", 1);
 const description = validateString("descripcion", 1, 300);
 const activityDate = validateFutureDate("fecha");
 

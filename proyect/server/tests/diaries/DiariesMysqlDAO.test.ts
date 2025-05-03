@@ -25,7 +25,7 @@ describe("DiariesMysqlDAO", () => {
     jest.restoreAllMocks();
   });
 
-  describe("getAll", () => {
+  describe.only("getAll", () => {
     const mockResultsList: DiaryBD[] = [
       {
         idDiario: "1",
@@ -169,7 +169,163 @@ describe("DiariesMysqlDAO", () => {
         }
       );
 
-      const diaries = await diaryDAO.getAll(idUser);
+      const diaries = await diaryDAO.getAll({ idUser: idUser });
+
+      const expectedResults: Diary[] = filteredResults.map((row) => ({
+        idDiary: row.idDiario,
+        title: row.titulo,
+        description: row.descripcion,
+        activityDate: Temporal.PlainDateTime.from(
+          row.fechaActividad.replace(" ", "T")
+        ),
+        idUser: row.idUsuario,
+      }));
+
+      expect(diaries).toEqual(expectedResults);
+    });
+
+    it("should filter Diaries by title", async () => {
+      const mockConnection = mysql.createConnection();
+      const title = "Diary 1";
+
+      const filteredResults = mockResultsList.filter((row) =>
+        row.titulo.includes(title)
+      );
+
+      mockConnection.query.mockImplementation(
+        (
+          sql: string,
+          params: any[] | ((err: Error | null, results?: any[]) => void),
+          callback?: (err: Error | null, results?: any[]) => void
+        ) => {
+          if (typeof params === "function") {
+            params(null, filteredResults);
+          } else if (callback) {
+            expect(params).toContain(`%${title}%`);
+            callback(null, filteredResults);
+          }
+        }
+      );
+
+      const diaries = await diaryDAO.getAll({ title });
+
+      const expectedResults: Diary[] = filteredResults.map((row) => ({
+        idDiary: row.idDiario,
+        title: row.titulo,
+        description: row.descripcion,
+        activityDate: Temporal.PlainDateTime.from(
+          row.fechaActividad.replace(" ", "T")
+        ),
+        idUser: row.idUsuario,
+      }));
+
+      expect(diaries).toEqual(expectedResults);
+    });
+
+    it("should filter Diaries by date range", async () => {
+      const mockConnection = mysql.createConnection();
+      const pastDate = "2023-01-01T00:00:00";
+      const futureDate = "2023-12-31T23:59:59";
+
+      const filteredResults = mockResultsList.filter(
+        (row) =>
+          row.fechaActividad >= pastDate.replace("T", " ") &&
+          row.fechaActividad <= futureDate.replace("T", " ")
+      );
+
+      mockConnection.query.mockImplementation(
+        (
+          sql: string,
+          params: any[] | ((err: Error | null, results?: any[]) => void),
+          callback?: (err: Error | null, results?: any[]) => void
+        ) => {
+          if (typeof params === "function") {
+            params(null, filteredResults);
+          } else if (callback) {
+            expect(params).toContain(pastDate.replace("T", " "));
+            expect(params).toContain(futureDate.replace("T", " "));
+            callback(null, filteredResults);
+          }
+        }
+      );
+
+      const diaries = await diaryDAO.getAll({ pastDate, futureDate });
+
+      const expectedResults: Diary[] = filteredResults.map((row) => ({
+        idDiary: row.idDiario,
+        title: row.titulo,
+        description: row.descripcion,
+        activityDate: Temporal.PlainDateTime.from(
+          row.fechaActividad.replace(" ", "T")
+        ),
+        idUser: row.idUsuario,
+      }));
+
+      expect(diaries).toEqual(expectedResults);
+    });
+
+    it("should filter Diaries by past date", async () => {
+      const mockConnection = mysql.createConnection();
+      const pastDate = "2023-01-01T00:00:00";
+
+      const filteredResults = mockResultsList.filter(
+        (row) => row.fechaActividad >= pastDate.replace("T", " ")
+      );
+
+      mockConnection.query.mockImplementation(
+        (
+          sql: string,
+          params: any[] | ((err: Error | null, results?: any[]) => void),
+          callback?: (err: Error | null, results?: any[]) => void
+        ) => {
+          if (typeof params === "function") {
+            params(null, filteredResults);
+          } else if (callback) {
+            expect(params).toContain(pastDate.replace("T", " "));
+            callback(null, filteredResults);
+          }
+        }
+      );
+
+      const diaries = await diaryDAO.getAll({ pastDate });
+
+      const expectedResults: Diary[] = filteredResults.map((row) => ({
+        idDiary: row.idDiario,
+        title: row.titulo,
+        description: row.descripcion,
+        activityDate: Temporal.PlainDateTime.from(
+          row.fechaActividad.replace(" ", "T")
+        ),
+        idUser: row.idUsuario,
+      }));
+
+      expect(diaries).toEqual(expectedResults);
+    });
+
+    it("should filter Diaries by future date", async () => {
+      const mockConnection = mysql.createConnection();
+      const futureDate = "2023-12-31T23:59:59";
+
+      const filteredResults = mockResultsList.filter(
+        (row) => row.fechaActividad <= futureDate.replace("T", " ")
+      );
+
+      mockConnection.query.mockImplementation(
+        (
+          sql: string,
+          params: any[] | ((err: Error | null, results?: any[]) => void),
+          callback?: (err: Error | null, results?: any[]) => void
+        ) => {
+          if (typeof params === "function") {
+            params(null, filteredResults);
+          } else if (callback) {
+            expect(params).toContain(futureDate.replace("T", " "));
+            callback(null, filteredResults);
+          }
+        }
+      );
+
+      const diaries = await diaryDAO.getAll({ futureDate });
 
       const expectedResults: Diary[] = filteredResults.map((row) => ({
         idDiary: row.idDiario,

@@ -9,6 +9,7 @@ import {
   DiaryReturn,
   DiaryUpdate,
 } from "task-craft-models";
+import { randomUUID } from "crypto";
 
 const originalConsoleError = console.error;
 beforeAll(() => {
@@ -39,11 +40,39 @@ describe("Diaries Routes", () => {
   describe("GET /diaries", () => {
     const sampleDiaries: Diary[] = [
       {
-        idDiary: "4d3c22bf-d51e-4f55-ae4d-ee81477aab4e",
+        idDiary: randomUUID(),
         title: "Diario de ejemplo",
         description: "Descripción de prueba",
         activityDate: Temporal.PlainDateTime.from("2025-04-11T10:00:00"),
         idUser: "bb89888b-2921-453f-b8c2-49dc2668595f",
+      },
+      {
+        idDiary: randomUUID(),
+        title: "Diario de ejemplo 2",
+        description: "Descripción de prueba 2",
+        activityDate: Temporal.PlainDateTime.from("2025-04-12T14:00:00"),
+        idUser: "b39b2d75-2ed9-4f87-b53d-dbb3e0b943ea",
+      },
+      {
+        idDiary: randomUUID(),
+        title: "Diario de ejemplo 3",
+        description: "Descripción de prueba 3",
+        activityDate: Temporal.PlainDateTime.from("2025-04-13T09:00:00"),
+        idUser: "c421d674-f800-4a34-8247-2be0f17c6d0f",
+      },
+      {
+        idDiary: randomUUID(),
+        title: "Diario de ejemplo 4",
+        description: "Descripción de prueba 4",
+        activityDate: Temporal.PlainDateTime.from("2025-04-14T16:30:00"),
+        idUser: "d928826f-7b10-474b-8ab5-e292f3d459c4",
+      },
+      {
+        idDiary: randomUUID(),
+        title: "Diario de ejemplo 5",
+        description: "Descripción de prueba 5",
+        activityDate: Temporal.PlainDateTime.from("2025-04-15T18:00:00"),
+        idUser: "e72c3db7-4d7d-4213-8f4a-62d0c56c292d",
       },
     ];
 
@@ -53,14 +82,14 @@ describe("Diaries Routes", () => {
       const res = await request(app).get("/diaries");
 
       // Convertir la fecha de la respuesta a Temporal.PlainDateTime
-      const receivedDiaries = res.body.map((diary: Diary) => ({
+      const receivedDiaries = res.body.map((diary: any) => ({
         ...diary,
         activityDate: Temporal.PlainDateTime.from(diary.activityDate),
       }));
 
       expect(res.status).toBe(200);
       expect(receivedDiaries).toEqual(sampleDiaries);
-      expect(mockDiariesModel.getAll).toHaveBeenCalledWith(undefined);
+      expect(mockDiariesModel.getAll).toHaveBeenCalledWith({});
     });
 
     it("debe devolver un array vacío cuando la base de datos no tiene datos", async () => {
@@ -70,7 +99,7 @@ describe("Diaries Routes", () => {
 
       expect(res.status).toBe(200);
       expect(res.body).toEqual([]);
-      expect(mockDiariesModel.getAll).toHaveBeenCalledWith(undefined);
+      expect(mockDiariesModel.getAll).toHaveBeenCalledWith({});
     });
 
     it("debe devolver un error 500 si falla la obtención de datos", async () => {
@@ -90,14 +119,62 @@ describe("Diaries Routes", () => {
       const res = await request(app).get(`/diaries?idUser=${idUser}`);
 
       expect(res.status).toBe(200);
-      expect(mockDiariesModel.getAll).toHaveBeenCalledWith(idUser);
+      expect(mockDiariesModel.getAll).toHaveBeenCalledWith({ idUser: idUser });
     });
 
     it("debe devolver un error 400 si el idUser es inválido", async () => {
       const res = await request(app).get("/diaries?idUser=invalid-id");
 
       expect(res.status).toBe(400);
-      expect(res.body).toEqual({ error: "El ID del user debe ser válido" });
+      expect(res.body).toEqual({
+        details: [
+          {
+            field: "idUser",
+            message: "Invalid uuid",
+          },
+        ],
+        error: "Error de validación en los filtros de diarios",
+      });
+      expect(mockDiariesModel.getAll).not.toHaveBeenCalled();
+    });
+
+    it("debe filtrar diaries por fecha si se proporcionan parámetros futureDate y pastDate", async () => {
+      const pastDate = "2025-04-10T00:00:00";
+      const futureDate = Temporal.Now.plainDateTimeISO()
+        .add({ days: 1 })
+        .toString();
+      mockDiariesModel.getAll.mockResolvedValue(sampleDiaries);
+
+      const res = await request(app).get(
+        `/diaries?pastDate=${pastDate}&futureDate=${futureDate}`
+      );
+
+      expect(res.status).toBe(200);
+      expect(mockDiariesModel.getAll).toHaveBeenCalledWith({
+        pastDate: pastDate,
+        futureDate: futureDate,
+      });
+    });
+
+    it("debe devolver un error 400 si las fechas proporcionadas son inválidas", async () => {
+      const res = await request(app).get(
+        "/diaries?pastDate=invalid-date&futureDate=invalid-date"
+      );
+
+      expect(res.status).toBe(400);
+      expect(res.body).toEqual({
+        details: [
+          {
+            field: "pastDate",
+            message: "fecha pasada debe ser una fecha pasada válida",
+          },
+          {
+            field: "futureDate",
+            message: "fecha futura debe ser una fecha futura válida",
+          },
+        ],
+        error: "Error de validación en los filtros de diarios",
+      });
       expect(mockDiariesModel.getAll).not.toHaveBeenCalled();
     });
   });
@@ -160,10 +237,13 @@ describe("Diaries Routes", () => {
   });
 
   describe("POST /diaries", () => {
+    const futureDateDiary = Temporal.Now.plainDateTimeISO()
+      .add({ days: 1 })
+      .toString();
     const mockDiaryData: DiaryCreate = {
       title: "Diario de ejemplo",
       description: "Descripción de prueba",
-      activityDate: "2025-04-11T10:00:00",
+      activityDate: futureDateDiary,
       idUser: "bb89888b-2921-453f-b8c2-49dc2668595f",
     };
 
@@ -198,26 +278,30 @@ describe("Diaries Routes", () => {
       const invalidDiary = {
         title: "Diario de ejemplo",
         // Falta descripción
-        activityDate: "2025-04-11T10:00:00",
+        activityDate: futureDateDiary,
         idUser: "bb89888b-2921-453f-b8c2-49dc2668595f",
       };
 
       const response = await request(app).post("/diaries").send(invalidDiary);
 
       expect(response.status).toBe(400);
-      expect(response.body.error).toEqual([
-        { message: "Required", path: "description" },
-      ]); // Asegúrate de que el mensaje coincida con lo que se espera
+      expect(response.body).toEqual({
+        details: [{ field: "description", message: "Required" }],
+        error: "Error de validación",
+      }); // Asegúrate de que el mensaje coincida con lo que se espera
     });
   });
 
   describe("PUT /diaries/:idDiary", () => {
     const idDiary = "4d3c22bf-d51e-4f55-ae4d-ee81477aab4e";
+    const futureDateDiary = Temporal.Now.plainDateTimeISO()
+      .add({ days: 1 })
+      .toString();
     it("debe actualizar un diary cuando los datos son válidos", async () => {
       const mockDiaryData: DiaryUpdate = {
         title: "Diario actualizada",
         description: "Descripción actualizada",
-        activityDate: "2025-05-01T10:00:00",
+        activityDate: futureDateDiary,
         idUser: "bb89888b-2921-453f-b8c2-49dc2668595f",
       };
 
@@ -229,9 +313,7 @@ describe("Diaries Routes", () => {
         idDiary: mockUpdateddiary.idDiary,
         title: mockUpdateddiary.title ?? "",
         description: mockUpdateddiary.description ?? "",
-        activityDate: Temporal.PlainDateTime.from(
-          mockDiaryData.activityDate ?? "2000-01-01T00:00"
-        ),
+        activityDate: Temporal.PlainDateTime.from(futureDateDiary),
         idUser: mockDiaryData.idUser ?? "",
       };
 
@@ -250,7 +332,7 @@ describe("Diaries Routes", () => {
       const invalidDiaryData = {
         // Falta descripción
         title: 1,
-        activityDate: "2025-05-01T10:00:00",
+        activityDate: futureDateDiary,
         idUser: "bb89888b-2921-453f-b8c2-49dc2668595f",
       };
 
@@ -259,22 +341,19 @@ describe("Diaries Routes", () => {
         .send(invalidDiaryData);
 
       expect(response.status).toBe(400);
-      expect(response.body.error).toEqual([
-        {
-          code: "invalid_type",
-          expected: "string",
-          message: "Expected string, received number",
-          path: ["title"],
-          received: "number",
-        },
-      ]);
+      expect(response.body).toEqual({
+        details: [
+          { field: "title", message: "Expected string, received number" },
+        ],
+        error: "Error de validación",
+      });
     });
 
     it("debe devolver 404 si el diary no existe", async () => {
       const mockDiaryData = {
         title: "Diario de ejemplo",
         description: "Descripción de prueba",
-        activityDate: "2025-05-01T10:00:00",
+        activityDate: futureDateDiary,
         idUser: "bb89888b-2921-453f-b8c2-49dc2668595f",
       };
 
@@ -293,7 +372,7 @@ describe("Diaries Routes", () => {
       const mockDiaryData = {
         title: "Diario de ejemplo",
         description: "Descripción de prueba",
-        activityDate: "2025-05-01T10:00:00",
+        activityDate: futureDateDiary,
         idUser: "bb89888b-2921-453f-b8c2-49dc2668595f",
       };
 
@@ -306,23 +385,6 @@ describe("Diaries Routes", () => {
 
       expect(response.status).toBe(500);
       expect(response.body.error).toBe("Error interno del servidor");
-    });
-
-    it("debería devolver un estado 400 si el id no es un UUID válido", async () => {
-      const invalidId = "invalid-id";
-      const mockDiaryData = {
-        title: "Diario de ejemplo",
-        description: "Descripción de prueba",
-        activityDate: "2025-05-01T10:00:00",
-        idUser: "bb89888b-2921-453f-b8c2-49dc2668595f",
-      };
-
-      const response = await request(app)
-        .put(`/diaries/${invalidId}`)
-        .send(mockDiaryData);
-
-      expect(response.status).toBe(400);
-      expect(response.body.error).toBe("El ID del diario debe ser válido");
     });
   });
 

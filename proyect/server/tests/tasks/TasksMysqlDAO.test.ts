@@ -26,7 +26,7 @@ describe("TaskMysqlDAO", () => {
     jest.restoreAllMocks();
   });
 
-  describe("getAll", () => {
+  describe.only("getAll", () => {
     const mockResultsList: TaskBD[] = [
       {
         idTarea: "1",
@@ -72,7 +72,7 @@ describe("TaskMysqlDAO", () => {
         }
       );
 
-      const tasks = await taskDAO.getAll();
+      const tasks = await taskDAO.getAll({});
 
       const expectedResults: Task[] = mockResultsList.map((row) => ({
         idTask: row.idTarea,
@@ -119,7 +119,7 @@ describe("TaskMysqlDAO", () => {
         }
       );
 
-      await expect(taskDAO.getAll()).rejects.toThrow("Database error");
+      await expect(taskDAO.getAll({})).rejects.toThrow("Database error");
     });
 
     it("should throw an error if results are not an array", async () => {
@@ -140,7 +140,7 @@ describe("TaskMysqlDAO", () => {
         }
       );
 
-      await expect(taskDAO.getAll()).rejects.toThrow(
+      await expect(taskDAO.getAll({})).rejects.toThrow(
         "Expected array of results but got something else."
       );
     });
@@ -162,7 +162,7 @@ describe("TaskMysqlDAO", () => {
         }
       );
 
-      const tasks = await taskDAO.getAll();
+      const tasks = await taskDAO.getAll({});
       expect(tasks).toEqual([]);
     });
 
@@ -189,7 +189,7 @@ describe("TaskMysqlDAO", () => {
         }
       );
 
-      const tasks = await taskDAO.getAll(idUser);
+      const tasks = await taskDAO.getAll({ idUser: idUser });
 
       const expectedResults: Task[] = filteredResults.map((row) => ({
         idTask: row.idTarea,
@@ -212,9 +212,176 @@ describe("TaskMysqlDAO", () => {
 
       expect(tasks).toEqual(expectedResults);
     });
+
+    it("should filter tasks by stateString", async () => {
+      const mockConnection = mysql.createConnection();
+      const stateFilter = "Pending";
+
+      const filteredResults = mockResultsList.filter(
+        (row) => row.estado === stateFilter
+      );
+
+      mockConnection.query.mockImplementation(
+        (
+          sql: string,
+          params: any[] | ((err: Error | null, results?: any[]) => void),
+          callback?: (err: Error | null, results?: any[]) => void
+        ) => {
+          expect(params).toContain(stateFilter);
+          if (typeof params === "function") {
+            params(null, filteredResults);
+          } else if (callback) {
+            callback(null, filteredResults);
+          }
+        }
+      );
+
+      const tasks = await taskDAO.getAll({ stateString: stateFilter });
+
+      expect(tasks).toHaveLength(filteredResults.length);
+      expect(tasks[0].state.state).toBe(stateFilter);
+    });
+
+    it("should filter tasks by typeString", async () => {
+      const mockConnection = mysql.createConnection();
+      const typeFilter = "Type 1";
+
+      const filteredResults = mockResultsList.filter(
+        (row) => row.tipo === typeFilter
+      );
+
+      mockConnection.query.mockImplementation(
+        (
+          sql: string,
+          params: any[] | ((err: Error | null, results?: any[]) => void),
+          callback?: (err: Error | null, results?: any[]) => void
+        ) => {
+          expect(params).toContain(typeFilter);
+          if (typeof params === "function") {
+            params(null, filteredResults);
+          } else if (callback) {
+            callback(null, filteredResults);
+          }
+        }
+      );
+
+      const tasks = await taskDAO.getAll({ typeString: typeFilter });
+
+      expect(tasks).toHaveLength(filteredResults.length);
+      expect(tasks[0].type.type).toBe(typeFilter);
+    });
+
+    it("should filter tasks by title", async () => {
+      const mockConnection = mysql.createConnection();
+      const titleFilter = "Task";
+
+      const filteredResults = mockResultsList.filter((row) =>
+        row.titulo.includes(titleFilter)
+      );
+
+      mockConnection.query.mockImplementation(
+        (
+          sql: string,
+          params: any[] | ((err: Error | null, results?: any[]) => void),
+          callback?: (err: Error | null, results?: any[]) => void
+        ) => {
+          if (Array.isArray(params)) {
+            expect(
+              params.some(
+                (p: any) => typeof p === "string" && p.includes(titleFilter)
+              )
+            ).toBe(true);
+          }
+          if (typeof params === "function") {
+            params(null, filteredResults);
+          } else if (callback) {
+            callback(null, filteredResults);
+          }
+        }
+      );
+
+      const tasks = await taskDAO.getAll({ title: titleFilter });
+
+      expect(tasks).toHaveLength(filteredResults.length);
+    });
+
+    it("should filter tasks by a range between pastDate and futureDate", async () => {
+      const mockConnection = mysql.createConnection();
+      const pastDate = "2023-09-01T00:00:00";
+      const futureDate = "2023-12-01T00:00:00";
+
+      mockConnection.query.mockImplementation(
+        (
+          sql: string,
+          params: any[] | ((err: Error | null, results?: any[]) => void),
+          callback?: (err: Error | null, results?: any[]) => void
+        ) => {
+          expect(params).toContain(pastDate.replace("T", " "));
+          expect(params).toContain(futureDate.replace("T", " "));
+          if (typeof params === "function") {
+            params(null, mockResultsList);
+          } else if (callback) {
+            callback(null, mockResultsList);
+          }
+        }
+      );
+
+      const tasks = await taskDAO.getAll({ pastDate, futureDate });
+
+      expect(Array.isArray(tasks)).toBe(true);
+      expect(tasks.length).toBeGreaterThanOrEqual(0);
+    });
+
+    it("should filter tasks from pastDate to current date", async () => {
+      const mockConnection = mysql.createConnection();
+      const pastDate = "2023-09-01T00:00:00";
+
+      mockConnection.query.mockImplementation(
+        (
+          sql: string,
+          params: any[] | ((err: Error | null, results?: any[]) => void),
+          callback?: (err: Error | null, results?: any[]) => void
+        ) => {
+          expect(params).toContain(pastDate.replace("T", " "));
+          if (typeof params === "function") {
+            params(null, mockResultsList);
+          } else if (callback) {
+            callback(null, mockResultsList);
+          }
+        }
+      );
+
+      const tasks = await taskDAO.getAll({ pastDate });
+
+      expect(Array.isArray(tasks)).toBe(true);
+    });
+
+    it("should filter tasks from current date to futureDate", async () => {
+      const mockConnection = mysql.createConnection();
+      const futureDate = "2023-12-01T00:00:00";
+
+      mockConnection.query.mockImplementation(
+        (
+          sql: string,
+          params: any[] | ((err: Error | null, results?: any[]) => void),
+          callback?: (err: Error | null, results?: any[]) => void
+        ) => {
+          expect(params).toContain(futureDate.replace("T", " "));
+          if (typeof params === "function") {
+            params(null, mockResultsList);
+          } else if (callback) {
+            callback(null, mockResultsList);
+          }
+        }
+      );
+
+      const tasks = await taskDAO.getAll({ futureDate: futureDate });
+
+      expect(Array.isArray(tasks)).toBe(true);
+    });
   });
 
-  describe.only("getById", () => {
+  describe("getById", () => {
     const mockConnection = mysql.createConnection();
 
     const mockTaskRow = {

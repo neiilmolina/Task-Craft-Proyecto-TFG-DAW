@@ -3,7 +3,7 @@ import { z } from "zod";
 export function validateString(
   atributeName: string,
   minLenght: number,
-  maxLength: number = 10
+  maxLength: number = 20
 ) {
   return z
     .string()

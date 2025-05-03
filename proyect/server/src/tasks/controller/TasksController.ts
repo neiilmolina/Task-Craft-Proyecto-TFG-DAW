@@ -33,10 +33,6 @@ export default class TasksController {
         });
         return;
       }
-      if (tasksFilters) {
-        res.status(400).json({ error: "El ID del user debe ser válido" });
-        return;
-      }
 
       const tasks = await this.tasksRepository.getAll(tasksFilters);
 
@@ -124,6 +120,7 @@ export default class TasksController {
 
       // Validación de datos de la tarea
       const result = validateTaskUpdate(taskData);
+      console.log(result);
       if (!result.success) {
         res.status(400).json({
           error: "Error de validación",
