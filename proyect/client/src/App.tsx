@@ -5,12 +5,14 @@ import routes from "./core/routes";
 function App() {
   return (
     <Router>
-      <div className="bg-grey h-screen w-screen flex">
+      <div className="bg-grey h-screen w-screen flex flex-row">
         {/* Menu */}
-        <Menu />
+        <div className="w-1/7">
+          <Menu />
+        </div>
 
         {/* Contenedor de contenido */}
-        <div className="flex-[5] p-4">
+        <div className="p-4">
           {" "}
           {/* flex-1 para ocupar el resto del espacio */}
           <Routes>
