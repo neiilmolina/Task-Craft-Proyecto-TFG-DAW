@@ -6,8 +6,8 @@ function Input({
 }: InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
-      className={`py-2 px-4 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${className}`}
       {...rest}
+      className={`border-secondary border-2 rounded-lg bg-white focus:border-primary ${className}`}
     />
   );
 }

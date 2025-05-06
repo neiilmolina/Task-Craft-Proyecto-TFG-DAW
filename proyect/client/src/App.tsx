@@ -5,17 +5,20 @@ import routes from "./core/routes";
 function App() {
   return (
     <Router>
-      <div className="App">
+      <div className="bg-grey h-screen w-screen flex">
+        {/* Menu */}
         <Menu />
 
-        <div className="content">
-          {/* Usar Routes en lugar de Switch */}
+        {/* Contenedor de contenido */}
+        <div className="flex-[5] p-4">
+          {" "}
+          {/* flex-1 para ocupar el resto del espacio */}
           <Routes>
             {routes.map((route) => (
               <Route
                 key={route.path}
                 path={route.path}
-                element={<route.Component />} // Usar 'element' en lugar de 'render'
+                element={<route.Component />}
               />
             ))}
           </Routes>

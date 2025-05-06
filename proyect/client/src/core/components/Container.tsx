@@ -7,7 +7,7 @@ function Container({
 }: HTMLProps<HTMLDivElement>) {
   return (
     <div
-      className={`max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8 ${className}`}
+      className={`border-secondary border-2 rounded-lg p-4 bg-white ${className}`}
       {...rest}
     >
       {children}
