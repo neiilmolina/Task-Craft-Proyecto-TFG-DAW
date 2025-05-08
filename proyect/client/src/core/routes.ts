@@ -8,7 +8,6 @@ const routes: {
   Component: React.ComponentType;
   name: string;
 }[] = [
-  { path: "/", Component: TasksPages, name: "Inicio" },
   { path: "/tasks", Component: TasksPages, name: "Tareas" },
   { path: "/diaries", Component: DiariesPages, name: "Diarios" },
   // Agregar más rutas según sea necesario

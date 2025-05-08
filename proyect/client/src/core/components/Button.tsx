@@ -1,15 +1,46 @@
-import { ButtonHTMLAttributes } from "react";
+import { ButtonHTMLAttributes, ReactNode } from "react";
+
+const BUTTON_COLORS = {
+  error: {
+    base: "bg-error",
+    hover: "hover:bg-error/80",
+  },
+  primary: {
+    base: "bg-secondary",
+    hover: "hover:bg-primary",
+  },
+} as const;
+
+type ButtonColor = keyof typeof BUTTON_COLORS;
+
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  children: ReactNode;
+  /**
+   * Color del botón
+   * @default 'primary'
+   */
+  color?: ButtonColor;
+  className?: string;
+}
 
 function Button({
   children,
-  onClick,
+  color = "primary",
   className = "",
   ...rest
-}: ButtonHTMLAttributes<HTMLButtonElement>) {
+}: ButtonProps) {
+  const colorClasses = BUTTON_COLORS[color];
+
   return (
     <button
-      className={`py-2 px-4 bg-secondary text-white rounded ${className}`}
-      onClick={onClick}
+      className={`
+        py-2 px-4 
+        rounded
+        transition-colors duration-200
+        ${colorClasses.base}
+        ${colorClasses.hover}
+        ${className}
+      `}
       {...rest}
     >
       {children}

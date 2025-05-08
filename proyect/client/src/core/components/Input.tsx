@@ -6,8 +6,13 @@ function Input({
 }: InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
+      className={`
+        p-2.5
+        bg-white
+        border-secondary border-2 rounded-4xl
+        focus:outline-offset-1 focus:outline-primary ${className}
+      `}
       {...rest}
-      className={`border-secondary border-2 rounded-lg bg-white focus:border-primary ${className}`}
     />
   );
 }

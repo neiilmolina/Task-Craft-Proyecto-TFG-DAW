@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Select from "./Select"; // Asegúrate de que el componente Select esté correctamente importado
 import Button from "./Button"; // Asegúrate de que Button esté correctamente importado
+import useOpenElement from "../hooks/useOpenElement";
 
 function Dialog({
   values,
@@ -15,14 +16,7 @@ function Dialog({
   // Estado para el valor seleccionado
   const [showValue, setShowValue] = useState(defaultValue);
   const [selectedOption, setSelectedOption] = useState(defaultValue);
-
-  // Estado para manejar si el diálogo está abierto o cerrado
-  const [isOpen, setIsOpen] = useState(false);
-
-  // Abrir el diálogo
-  const handleOpen = () => {
-    setIsOpen(true);
-  };
+  const { isOpen, handleOpen, handleClose } = useOpenElement();
 
   // Manejar cambio del select
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -35,23 +29,53 @@ function Dialog({
       {/* Botón que abre el diálogo */}
       <button
         onClick={handleOpen}
-        className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+        className="
+          px-4 py-2
+          bg-gray-300
+          rounded hover:bg-gray-400
+        "
       >
         {showValue}
       </button>
 
       {/* El diálogo solo se muestra si isOpen es verdadero */}
       {isOpen && (
-        <dialog open>
-          <div className="p-6 w-96 bg-white rounded-lg shadow-lg">
-            <h2 className="text-xl font-semibold mb-4">
+        <dialog
+          open
+          className="
+            position:absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
+          "
+        >
+          <div
+            className="
+              w-96
+              p-6
+              bg-white
+              rounded-lg
+              shadow-lg
+            "
+          >
+            <h2
+              className="
+                mb-4
+                text-xl font-semibold
+              "
+            >
               Seleccione una opción
             </h2>
-            <form method="dialog" className="flex flex-col space-y-4">
+            <form
+              method="dialog"
+              className="
+                flex flex-col
+                space-y-4
+              "
+            >
               <Select
                 value={selectedOption}
                 onChange={handleSelectChange}
-                className="w-full"
+                className="
+                  w-full
+                "
               >
                 {values.map((value, index) => (
                   <option key={index} value={value}>
@@ -60,24 +84,29 @@ function Dialog({
                 ))}
               </Select>
 
-              <div className="flex justify-end space-x-4">
+              <div
+                className="
+                  flex
+                  space-x-4
+                  justify-end
+                "
+              >
                 <Button
                   onClick={(e) => {
                     e.preventDefault();
-                    setIsOpen(false);
+                    handleClose();
                   }}
-                  className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                  color="error"
                 >
                   Cancelar
                 </Button>
                 <Button
                   onClick={(e) => {
                     e.preventDefault();
-                    setIsOpen(false);
+                    handleClose();
                     setShowValue(selectedOption);
                     onClose();
                   }}
-                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
                 >
                   Aceptar
                 </Button>
