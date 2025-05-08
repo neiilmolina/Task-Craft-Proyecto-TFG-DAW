@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import routesAuth from "../routesAuth";
+import routesAuth from "./routesAuth";
 
 export default function AuthRoutes() {
   return (

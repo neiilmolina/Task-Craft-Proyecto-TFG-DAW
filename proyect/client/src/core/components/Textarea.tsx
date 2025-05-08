@@ -1,11 +1,11 @@
 import { InputHTMLAttributes } from "react";
 
-function Input({
+export function TextArea({
   className = "",
   ...rest
-}: InputHTMLAttributes<HTMLInputElement>) {
+}: InputHTMLAttributes<HTMLTextAreaElement>) {
   return (
-    <input
+    <TextArea
       className={`
         input-text
        ${className}
@@ -14,5 +14,3 @@ function Input({
     />
   );
 }
-
-export default Input;

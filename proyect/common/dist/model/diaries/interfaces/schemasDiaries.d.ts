@@ -48,36 +48,6 @@ export declare const DiaryFiltersSchema: z.ZodObject<{
     pastDate?: string | undefined;
     futureDate?: string | undefined;
 }>;
-export declare const validateDiaryCreate: (input: Partial<DiaryCreate>) => {
-    success: false;
-    errors: {
-        field: string;
-        message: string;
-        code: string;
-    }[];
-} | {
-    success: true;
-    data: any;
-};
-export declare const validateDiaryUpdate: (input: Partial<DiaryUpdate>) => {
-    success: false;
-    errors: {
-        field: string;
-        message: string;
-        code: string;
-    }[];
-} | {
-    success: true;
-    data: any;
-};
-export declare const validateDiaryFilters: (input: Partial<DiaryFilters>) => {
-    success: false;
-    errors: {
-        field: string;
-        message: string;
-        code: string;
-    }[];
-} | {
-    success: true;
-    data: any;
-};
+export declare const validateDiaryCreate: (input: Partial<DiaryCreate>) => import("../../../validations/formatMessages").FormatZodResult<z.ZodType<any, z.ZodTypeDef, any>>;
+export declare const validateDiaryUpdate: (input: Partial<DiaryUpdate>) => import("../../../validations/formatMessages").FormatZodResult<z.ZodType<any, z.ZodTypeDef, any>>;
+export declare const validateDiaryFilters: (input: Partial<DiaryFilters>) => import("../../../validations/formatMessages").FormatZodResult<z.ZodType<any, z.ZodTypeDef, any>>;

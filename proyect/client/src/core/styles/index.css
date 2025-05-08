@@ -1,6 +1,16 @@
 @import "tailwindcss";
 @import url("https://fonts.googleapis.com/css2?family=Palanquin:wght@100;200;300;400;500;600;700&display=swap");
 
+@theme {
+  --color-greyDark: #979797;
+  --color-grey: #f5f5f5;
+  --color-secondary: #91cefa;
+  --color-primary: #1a659e;
+  --color-error: #f89797;
+  --color-warning: #e0c600;
+  --color-correct: #a8f578;
+}
+
 @layer base {
   h1 {
     font-size: 40px;
@@ -11,9 +21,14 @@
     font-weight: bold;
   }
 
+  p,
+  a,
+  label,
+  button {
+    font-size: 20px;
+  }
   a {
     cursor: pointer;
-    font-size: 20px;
     text-decoration: none;
     font-weight: bold;
     color: var(--color-primary);
@@ -23,12 +38,15 @@
   }
 }
 
-@theme {
-  --color-greyDark: #979797;
-  --color-grey: #f5f5f5;
-  --color-secondary: #91cefa;
-  --color-primary: #1a659e;
-  --color-error: #f89797;
-  --color-warning: #e0c600;
-  --color-correct: #a8f578;
+@layer components {
+  .input-text {
+    padding: 10px;
+    background: white;
+    border: var(--color-secondary) 2px solid;
+    border-radius: 32px;
+    &:focus {
+      outline-offset: 1px;
+      outline-color: var(--color-primary);
+    }
+  }
 }

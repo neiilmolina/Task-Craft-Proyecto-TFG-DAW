@@ -66,36 +66,6 @@ export declare const TaskFiltersSchema: z.ZodObject<{
     stateString?: string | undefined;
     typeString?: string | undefined;
 }>;
-export declare const validateTaskCreate: (input: Partial<TaskCreate>) => {
-    success: false;
-    errors: {
-        field: string;
-        message: string;
-        code: string;
-    }[];
-} | {
-    success: true;
-    data: any;
-};
-export declare const validateTaskUpdate: (input: Partial<TaskUpdate>) => {
-    success: false;
-    errors: {
-        field: string;
-        message: string;
-        code: string;
-    }[];
-} | {
-    success: true;
-    data: any;
-};
-export declare const validateTaskFilters: (input: Partial<TaskFilters>) => {
-    success: false;
-    errors: {
-        field: string;
-        message: string;
-        code: string;
-    }[];
-} | {
-    success: true;
-    data: any;
-};
+export declare const validateTaskCreate: (input: Partial<TaskCreate>) => import("../../../validations/formatMessages").FormatZodResult<z.ZodType<any, z.ZodTypeDef, any>>;
+export declare const validateTaskUpdate: (input: Partial<TaskUpdate>) => import("../../../validations/formatMessages").FormatZodResult<z.ZodType<any, z.ZodTypeDef, any>>;
+export declare const validateTaskFilters: (input: Partial<TaskFilters>) => import("../../../validations/formatMessages").FormatZodResult<z.ZodType<any, z.ZodTypeDef, any>>;
