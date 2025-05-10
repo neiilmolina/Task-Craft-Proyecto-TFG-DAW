@@ -30,11 +30,10 @@ export default function TemplateAuthForm({
         p-10
         bg-primary
         items-center
-        h-screen
+        h-full
       "
     >
       <h1>{titlePage}</h1>
-      <p>{}</p>
       <div
         className="
           flex flex-col

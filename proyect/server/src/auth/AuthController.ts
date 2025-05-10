@@ -19,6 +19,7 @@ export default class AuthController {
 
   async getAuthenticatedUser(req: any, res: Response): Promise<void> {
     const user = req.session?.user;
+    console.log("user", user);
 
     if (!user) {
       res.status(401).json({ error: "No autenticado" });

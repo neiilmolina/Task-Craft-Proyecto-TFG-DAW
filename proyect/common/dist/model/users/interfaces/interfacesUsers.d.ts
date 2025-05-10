@@ -41,3 +41,7 @@ export interface UserReturn {
     urlImg?: string | null;
     idRole: number;
 }
+export interface UserToken extends User {
+    iat: number;
+    exp: number;
+}
