@@ -27,48 +27,44 @@ export default function TemplateAuthForm({
       className="
         flex flex-col
         min-h-screen
-        p-10
+        m-0
         bg-primary
         items-center
-        h-full
       "
     >
       <h1>{titlePage}</h1>
       <div
         className="
           flex flex-col
+          w-2/4
           mt-6 p-14
-          w-4/5
           bg-grey
-          gap-12
           border-[1px] rounded-lg
-          shadow-md justify-center
+          shadow-md
+          gap-12 justify-center
         "
       >
         <div
           className="
             flex flex-col
-            items-start
-            gap-2
             text-center
+            items-start gap-2
           "
         >
           <h2>{titleForm}</h2>
           <p>{messageForm}</p>
         </div>
         <form
+          onSubmit={onSubmit}
           className="
             flex flex-col
-            gap-8
-            items-center
-            justify-center
+            gap-8 items-center justify-center
           "
-          onSubmit={onSubmit}
         >
           {children}
           <Button type="submit">{textButton}</Button>
           <p>
-            {changeScreen.text}{" "}
+            <span>{changeScreen.text} </span>
             <Link to={changeScreen.href}>{changeScreen.action}</Link>
           </p>
         </form>

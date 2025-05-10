@@ -10,7 +10,6 @@ import { UserCreate, UserUpdate } from "task-craft-models";
 import { randomUUID } from "crypto";
 import bcrypt from "bcryptjs";
 import { UUID_REGEX } from "@/src/core/constants";
-import { error } from "console";
 
 export default class UsersController {
   private usersRepository: UsersRepository;

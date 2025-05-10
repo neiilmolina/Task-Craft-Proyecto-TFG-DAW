@@ -8,7 +8,7 @@ export type UserFormData = {
   username: string;
   email: string;
   password: string;
-  password_confirm?: string; // ahora es opcional
+  password_confirm?: string;
 };
 
-export const INPUT_WIDTH = "w-2/3";
+export const INPUT_WIDTH = "w-full";

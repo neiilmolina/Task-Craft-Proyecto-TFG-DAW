@@ -11,6 +11,8 @@ import useAuthActions from "../hooks/useAuthActions";
 import { validateUserCreate } from "task-craft-models";
 import { FormattedError } from "task-craft-models";
 import filterErrors from "../../../core/hooks/filterErrors";
+import PasswordInput from "../components/PasswordInput";
+
 export default function Register() {
   const { register } = useAuthActions();
   const changeScreen: ChangeScreen = {
@@ -66,7 +68,7 @@ export default function Register() {
 
     try {
       await register(userData);
-    } catch (error: unknown) {
+    } catch (error) {
       const response = error.response;
 
       // Error de validación con múltiples campos
@@ -144,22 +146,20 @@ export default function Register() {
             <ErrorLabel key={index} text={message} />
           ))}
 
-        <Input
+        <PasswordInput
           className={INPUT_WIDTH}
           placeholder="Pon tu contraseña"
           id="password"
           name="password"
-          type="password"
           value={formData.password}
           // required
           onChange={handleChange}
         />
-        <Input
+        <PasswordInput
           className={INPUT_WIDTH}
           placeholder="Confirmar contraseña"
           id="password_confirm"
           name="password_confirm"
-          type="password"
           value={formData.password_confirm}
           // required
           onChange={handleChange}
@@ -167,6 +167,11 @@ export default function Register() {
 
         {passwordErrors.length > 0 &&
           passwordErrors.map(({ message }, index) => (
+            <ErrorLabel key={index} text={message} />
+          ))}
+
+        {serverErrors.length > 0 &&
+          serverErrors.map(({ message }, index) => (
             <ErrorLabel key={index} text={message} />
           ))}
       </>
