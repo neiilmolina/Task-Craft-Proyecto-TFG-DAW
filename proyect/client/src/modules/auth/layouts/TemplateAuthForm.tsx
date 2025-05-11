@@ -25,23 +25,30 @@ export default function TemplateAuthForm({
   return (
     <div
       className="
-        flex flex-col
-        min-h-screen
-        m-0
-        bg-primary
-        items-center
-      "
+    flex flex-col
+    min-h-screen
+    m-0
+    px-16
+    bg-primary
+    justify-center
+    items-center
+    max-sm:text-center
+    max-lg:p-0
+    max-md:p-0
+    max-sm:p-10
+    overflow-hidden
+  "
     >
-      <h1>{titlePage}</h1>
+      <h1 className="mb-2.5">{titlePage}</h1>
       <div
         className="
           flex flex-col
-          w-2/4
-          mt-6 p-14
+          w-2/4 p-14
           bg-grey
           border-[1px] rounded-lg
           shadow-md
           gap-12 justify-center
+          max-sm:w-full
         "
       >
         <div

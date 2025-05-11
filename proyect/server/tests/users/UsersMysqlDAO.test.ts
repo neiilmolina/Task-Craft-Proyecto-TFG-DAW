@@ -580,14 +580,14 @@ describe("UsersMysqlDAO", () => {
     });
   });
 
-  describe("create", () => {
+  describe.only("create", () => {
     it("should insert a user and return the inserted user", async () => {
       const mockUsuario = {
         userName: "john_doe",
         email: "john@example.com",
         password: "hashed_password",
         urlImg: "https://example.com/image.jpg",
-        idRol: 2,
+        idRole: 2,
       };
       const mockidUser = "123";
 
@@ -605,7 +605,7 @@ describe("UsersMysqlDAO", () => {
         userName: mockUsuario.userName,
         email: mockUsuario.email,
         urlImg: mockUsuario.urlImg,
-        idRol: mockUsuario.idRol,
+        idRole: mockUsuario.idRole,
       });
     });
 
@@ -630,7 +630,7 @@ describe("UsersMysqlDAO", () => {
         userName: "",
         email: mockUsuario.email,
         urlImg: "",
-        idRol: 1,
+        idRole: 1,
       });
     });
 
@@ -640,7 +640,7 @@ describe("UsersMysqlDAO", () => {
         email: "john@example.com",
         password: "hashed_password",
         urlImg: "https://example.com/image.jpg",
-        idRol: 2,
+        idRole: 2,
       };
       const mockidUser = "789";
 

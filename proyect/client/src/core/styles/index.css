@@ -12,6 +12,10 @@
 }
 
 @layer base {
+  body {
+    font-family: "Palanquin", sans-serif;
+  }
+  
   h1 {
     font-size: 40px;
     font-weight: bold;
@@ -51,7 +55,8 @@
   }
 }
 
-body, html {
+body,
+html {
   margin: 0;
   padding: 0;
 }

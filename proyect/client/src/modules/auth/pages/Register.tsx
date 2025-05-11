@@ -12,8 +12,10 @@ import { validateUserCreate } from "task-craft-models";
 import { FormattedError } from "task-craft-models";
 import filterErrors from "../../../core/hooks/filterErrors";
 import PasswordInput from "../components/PasswordInput";
+import { AxiosError } from "axios";
 
 export default function Register() {
+  const navigate = useNavigate();
   const { register } = useAuthActions();
   const changeScreen: ChangeScreen = {
     text: "¿Tienes cuenta?",
@@ -27,7 +29,7 @@ export default function Register() {
   const [serverErrors, setServerErrors] = useState([] as FormattedError[]);
 
   const [formData, setFormData] = useState<UserFormData>({
-    username: "",
+    userName: "",
     email: "",
     password: "",
     password_confirm: "",
@@ -56,6 +58,8 @@ export default function Register() {
     const userData = { ...formData };
     delete userData.password_confirm;
 
+    console.log("userData", userData);
+
     const validationResult = validateUserCreate(userData);
 
     if (!validationResult.success) {
@@ -67,35 +71,38 @@ export default function Register() {
     }
 
     try {
+      if (formData.userName === "") {
+        formData.userName = null;
+      }
       await register(userData);
-    } catch (error) {
-      const response = error.response;
+      // navigate("/login?message=success");
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        const response = error.response;
 
-      // Error de validación con múltiples campos
-      if (response?.status === 400 && Array.isArray(response.data?.details)) {
-        const errors = response.data.details;
-        setUserNameErrors(filterErrors(errors, "username"));
-        setEmailErrors(filterErrors(errors, "email"));
-        setPasswordErrors(filterErrors(errors, "password"));
-        return;
+        if (response?.status === 400 && Array.isArray(response.data?.details)) {
+          const errors = response.data.details;
+          setUserNameErrors(filterErrors(errors, "username"));
+          setEmailErrors(filterErrors(errors, "email"));
+          setPasswordErrors(filterErrors(errors, "password"));
+          return;
+        }
+
+        if (
+          response?.status === 409 &&
+          typeof response.data?.error === "string"
+        ) {
+          setServerErrors([
+            {
+              code: "conflict",
+              message: response.data.error,
+              field: "server",
+            },
+          ]);
+          return;
+        }
       }
 
-      // Conflictos únicos (correo o nombre de usuario repetidos)
-      if (
-        response?.status === 409 &&
-        typeof response.data?.error === "string"
-      ) {
-        setServerErrors([
-          {
-            code: "conflict",
-            message: response.data.error,
-            field: "server",
-          },
-        ]);
-        return;
-      }
-
-      // Error interno u otro
       setServerErrors([
         {
           code: "internal",
@@ -121,7 +128,7 @@ export default function Register() {
           placeholder="Nombre de Usuario"
           id="username"
           name="username"
-          value={formData.username}
+          value={formData.userName ?? ""}
           onChange={handleChange}
           // required
         />
