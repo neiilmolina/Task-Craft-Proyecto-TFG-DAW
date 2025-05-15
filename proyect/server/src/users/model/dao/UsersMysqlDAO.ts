@@ -177,11 +177,11 @@ export default class UsersMysqlDAO implements IUsersDAO {
         query,
         [
           idUser,
-          user.userName ?? null, // Si `nombreUsuario` es `undefined`, lo asignamos como una cadena vacía
+          user.userName ?? null,
           user.email,
           user.password,
-          user.urlImg ?? null, // Si `urlImg` es `undefined`, lo asignamos como una cadena vacía
-          user.idRole || 1, // Si `idRol` es `undefined`, lo asignamos como 1
+          user.urlImg ?? null,
+          user.idRole ?? 1,
         ],
         (err: any, results: any) => {
           if (err) {
@@ -191,10 +191,10 @@ export default class UsersMysqlDAO implements IUsersDAO {
           }
 
           resolve({
-            userName: user.userName,
+            userName: user.userName ?? null,
             email: user.email,
-            urlImg: user.urlImg,
-            idRole: user.idRole || 1,
+            urlImg: user.urlImg ?? null,
+            idRole: user.idRole ?? 1,
             idUser: idUser,
           });
         }
@@ -218,7 +218,7 @@ export default class UsersMysqlDAO implements IUsersDAO {
           if (err) {
             return reject(
               new Error(`Database update error:  + ${err.message}`)
-            ); // Lanza un error con mensaje detallado
+            );
           }
 
           const resultSet = results as ResultSetHeader;
@@ -227,7 +227,6 @@ export default class UsersMysqlDAO implements IUsersDAO {
             return reject(new Error("usuario no encontrado"));
           }
 
-          // Resolver con el resultado
           resolve({
             idUser: id,
             userName: user.userName,

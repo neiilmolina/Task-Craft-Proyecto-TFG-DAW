@@ -10,5 +10,4 @@ export interface UserFormData extends UserCreate  {
   password_confirm?: string;
 };
 
-
 export const INPUT_WIDTH = "w-full";

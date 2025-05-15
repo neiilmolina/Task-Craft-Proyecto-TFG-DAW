@@ -125,7 +125,7 @@ export default class UsersController {
         userConPasswordEncriptado
       );
 
-      res.status(201).json(newUser); // Usa 201 para creación exitosa
+      res.status(201).json(newUser);
       return;
     } catch (error: any) {
       console.error("Error al crear el user:", error);

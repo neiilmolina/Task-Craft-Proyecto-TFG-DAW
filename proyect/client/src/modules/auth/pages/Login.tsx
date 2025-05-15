@@ -3,9 +3,17 @@ import { ChangeScreen, INPUT_WIDTH } from "../interfaces/AuthFormInterfaces";
 import Input from "../../../core/components/Input";
 import { useState } from "react";
 import useAuthActions from "../hooks/useAuthActions";
+import useQueryParam from "../../../core/hooks/useQueryParam";
+import { FormattedError } from "task-craft-models";
+import ErrorLabel from "../../../core/components/ErrorLabel";
+import { checkAllEmptyFields } from "../../../core/hooks/validations";
+import PasswordInput from "../components/PasswordInput";
 
 export default function Login() {
-  const { login } = useAuthActions();
+  const [errors, setErrors] = useState([] as FormattedError[]);
+
+  const { login, getAuthenticatedUser } = useAuthActions();
+  const success = useQueryParam("message");
 
   const changeScreen: ChangeScreen = {
     text: "¿No tienes cuenta?",
@@ -25,9 +33,36 @@ export default function Login() {
     });
   };
 
-  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    login(formData);
+
+    try {
+      if (checkAllEmptyFields(formData)) {
+        setErrors([
+          {
+            code: "empty_fields",
+            message: "Los campos no pueden estar vacíos",
+            field: "client",
+          },
+        ]);
+        return;
+      }
+      await login(formData);
+      
+      const result = await getAuthenticatedUser();
+      console.log(result);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      if (error?.isAxiosError) {
+        setErrors([
+          {
+            code: "invalid_credentials",
+            message: error.data?.error,
+            field: "server",
+          },
+        ]);
+      }
+    }
   };
 
   return (
@@ -40,6 +75,9 @@ export default function Login() {
       onSubmit={onSubmit}
     >
       <>
+        {success && (
+          <label className="text-correct font-bold">Usuario Registrado</label>
+        )}
         <Input
           className={INPUT_WIDTH}
           placeholder="Email"
@@ -47,14 +85,17 @@ export default function Login() {
           name="email"
           onChange={handleChange}
         />
-        <Input
+        <PasswordInput
           className={INPUT_WIDTH}
           placeholder="Pon tu contraseña"
           id="password"
           name="password"
-          type="password"
           onChange={handleChange}
         />
+        {errors.length > 0 &&
+          errors.map(({ message }, index) => (
+            <ErrorLabel key={index} text={message} />
+          ))}
       </>
     </TemplateAuthForm>
   );

@@ -1,20 +1,17 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import AuthRepository from "../AuthRepository";
-import { UserCreate, UserToken } from "task-craft-models";
+import { UserCreate, UserLogin, UserToken } from "task-craft-models";
+import { handleThunkError } from "../../../../core/hooks/captureErrors";
 
 const authRepository = new AuthRepository();
 
 export const loginThunk = createAsyncThunk(
   "auth/login",
-  async (
-    credentials: { email: string; password: string },
-    { rejectWithValue }
-  ) => {
+  async (credentials: UserLogin, { rejectWithValue }) => {
     try {
-      const user = await authRepository.login(credentials);
-      return user as UserToken;
-    } catch {
-      return rejectWithValue("Credenciales inválidas, ${error})");
+      await authRepository.login(credentials);
+    } catch (error) {
+      return handleThunkError(error, rejectWithValue, "Credenciales inválidas");
     }
   }
 );
@@ -23,10 +20,13 @@ export const registerThunk = createAsyncThunk(
   "auth/register",
   async (userData: UserCreate, { rejectWithValue }) => {
     try {
-      const user = await authRepository.register(userData);
-      return user as UserToken;
-    } catch {
-      return rejectWithValue("Error al registrar usuario, ${error})");
+      await authRepository.register(userData);
+    } catch (error) {
+      return handleThunkError(
+        error,
+        rejectWithValue,
+        "Error al registrar el usuario"
+      );
     }
   }
 );
@@ -37,8 +37,8 @@ export const getAuthenticatedUserThunk = createAsyncThunk(
     try {
       const user = await authRepository.getAuthenticatedUser();
       return user as UserToken;
-    } catch {
-      return rejectWithValue("No autenticado");
+    } catch(error) {
+      return handleThunkError(error, rejectWithValue, "Usuario no autenticado");
     }
   }
 );

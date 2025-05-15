@@ -26,15 +26,20 @@ export interface User {
 }
 
 export interface UserCreate {
-  userName?: string | null;
+  userName?: string;
   email: string;
   password: string;
   urlImg?: string | null;
   idRole?: number;
 }
 
+export interface UserLogin {
+  email: string;
+  password: string;
+}
+
 export interface UserUpdate {
-  userName?: string | null;
+  userName?: string;
   email?: string;
   urlImg?: string | null;
   idRole?: number;

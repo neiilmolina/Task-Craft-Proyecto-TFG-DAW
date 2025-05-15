@@ -1,48 +1,32 @@
 import AxiosSingleton from "../../../config/AxiosSingleton";
-import { UserCreate } from "task-craft-models";
-
-const axios = AxiosSingleton.getInstance();
+import { UserCreate, UserLogin } from "task-craft-models";
 
 export default class AuthRepository {
+  private api: ReturnType<typeof AxiosSingleton.getInstance>;
+
+  constructor() {
+    this.api = AxiosSingleton.getInstance();
+  }
+
   async getAuthenticatedUser(): Promise<unknown> {
-    try {
-      const response = await axios.get("/auth/");
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching authenticated user:", error);
-      throw error;
-    }
+    return await this.api.get("/auth/", {
+      withCredentials: true,
+    });
   }
 
   async register(user: UserCreate): Promise<unknown> {
-    try {
-      const response = await axios.post("/auth/register", user);
-      return response.data;
-    } catch (error) {
-      console.error("Error registering user:", error);
-      throw error;
-    }
+    return await this.api.post("/auth/register", user);
   }
 
-  async login({
-    email,
-    password,
-  }: {
-    email: string;
-    password: string;
-  }): Promise<unknown> {
-    try {
-      const response = await axios.post("/auth/login", { email, password });
-      return response.data;
-    } catch (error) {
-      console.error("Error login user:", error);
-      throw error;
-    }
+  async login(creedentials: UserLogin): Promise<unknown> {
+    const result = await this.api.post("/auth/login", creedentials);
+    console.log(result.data);
+    return result;
   }
 
   async logout(): Promise<unknown> {
     try {
-      const response = await axios.post("/auth/logout");
+      const response = await this.api.post("/auth/logout");
       return response.data;
     } catch (error) {
       console.error("Error at logout:", error);
@@ -52,7 +36,7 @@ export default class AuthRepository {
 
   async protected(): Promise<unknown> {
     try {
-      const response = await axios.get("/auth/protected");
+      const response = await this.api.get("/auth/protected");
       return response.data;
     } catch (error) {
       console.error("Error at protected:", error);
@@ -62,7 +46,7 @@ export default class AuthRepository {
 
   async refreshToken(): Promise<unknown> {
     try {
-      const response = await axios.post("/auth/refresh");
+      const response = await this.api.post("/auth/refresh");
       return response.data;
     } catch (error) {
       console.error("Error at refresh token:", error);

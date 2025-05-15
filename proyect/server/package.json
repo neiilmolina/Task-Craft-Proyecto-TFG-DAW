@@ -21,11 +21,12 @@
     "cookie-parser": "^1.4.7",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "express-session": "^1.18.1",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.14.0",
     "socket.io": "^4.8.1",
     "supabase": "^2.15.8",
-    "task-craft-models": "^2.3.2",
+    "task-craft-models": "^2.5.1",
     "uuid": "^11.1.0",
     "zod": "^3.24.1"
   },

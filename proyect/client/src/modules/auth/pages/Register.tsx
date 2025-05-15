@@ -10,11 +10,15 @@ import ErrorLabel from "../../../core/components/ErrorLabel";
 import useAuthActions from "../hooks/useAuthActions";
 import { validateUserCreate } from "task-craft-models";
 import { FormattedError } from "task-craft-models";
-import filterErrors from "../../../core/hooks/filterErrors";
+import {
+  checkAllEmptyFields,
+  filterErrors,
+} from "../../../core/hooks/validations";
 import PasswordInput from "../components/PasswordInput";
-import { AxiosError } from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
+  
   const navigate = useNavigate();
   const { register } = useAuthActions();
   const changeScreen: ChangeScreen = {
@@ -44,6 +48,18 @@ export default function Register() {
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (checkAllEmptyFields(formData)) {
+      setServerErrors([
+        {
+          code: "empty_fields",
+          message: "Por favor completa todos los campos",
+          field: "server",
+        },
+      ]);
+      return;
+    }
+
     if (formData.password !== formData.password_confirm) {
       setPasswordErrors([
         {
@@ -58,58 +74,56 @@ export default function Register() {
     const userData = { ...formData };
     delete userData.password_confirm;
 
-    console.log("userData", userData);
-
     const validationResult = validateUserCreate(userData);
 
     if (!validationResult.success) {
       const errors = validationResult.errors;
-      setUserNameErrors(filterErrors(errors, "username"));
+      setUserNameErrors(filterErrors(errors, "userName"));
       setEmailErrors(filterErrors(errors, "email"));
       setPasswordErrors(filterErrors(errors, "password"));
       return;
     }
 
     try {
-      if (formData.userName === "") {
-        formData.userName = null;
-      }
       await register(userData);
-      // navigate("/login?message=success");
-    } catch (error: unknown) {
-      if (error instanceof AxiosError) {
-        const response = error.response;
+      navigate("/login?message=success");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      if (error?.isAxiosError) {
+        const status = error.status;
+        const data = error.data;
 
-        if (response?.status === 400 && Array.isArray(response.data?.details)) {
-          const errors = response.data.details;
-          setUserNameErrors(filterErrors(errors, "username"));
-          setEmailErrors(filterErrors(errors, "email"));
-          setPasswordErrors(filterErrors(errors, "password"));
-          return;
-        }
+        if (status === 409) {
+          const errorMsg = data?.error || "Conflicto desconocido";
 
-        if (
-          response?.status === 409 &&
-          typeof response.data?.error === "string"
-        ) {
           setServerErrors([
             {
               code: "conflict",
-              message: response.data.error,
+              message: errorMsg,
+              field: errorMsg.toLowerCase().includes("email")
+                ? "email"
+                : "server",
+            },
+          ]);
+        } else {
+          setServerErrors([
+            {
+              code: `server-${status}`,
+              message: data?.error || `Error del servidor: ${status}`,
               field: "server",
             },
           ]);
-          return;
         }
+      } else {
+        // Error no controlado
+        setServerErrors([
+          {
+            code: "unknown",
+            message: "Error desconocido",
+            field: "server",
+          },
+        ]);
       }
-
-      setServerErrors([
-        {
-          code: "internal",
-          message: "Error interno del servidor. Intenta más tarde.",
-          field: "server",
-        },
-      ]);
     }
   };
 
@@ -126,9 +140,9 @@ export default function Register() {
         <Input
           className={INPUT_WIDTH}
           placeholder="Nombre de Usuario"
-          id="username"
-          name="username"
-          value={formData.userName ?? ""}
+          id="useName"
+          name="userName"
+          value={formData.userName}
           onChange={handleChange}
           // required
         />

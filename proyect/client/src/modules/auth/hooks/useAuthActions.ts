@@ -5,15 +5,18 @@ import {
   logoutThunk,
   getAuthenticatedUserThunk,
 } from "../store/redux/authThunks";
-import { UserCreate } from "task-craft-models";
+import { UserCreate, UserLogin } from "task-craft-models";
 
 const useAuthActions = () => {
   const dispatch = useAppDispatch();
 
-  const login = ({ email, password }: { email: string; password: string }) =>
-    dispatch(loginThunk({ email, password }));
+  const login = async (creedentials: UserLogin) => {
+    await dispatch(loginThunk(creedentials)).unwrap();
+  };
 
-  const register = (user: UserCreate) => dispatch(registerThunk(user));
+  const register = async (user: UserCreate) => {
+    await dispatch(registerThunk(user)).unwrap();
+  };
 
   const logout = () => dispatch(logoutThunk());
 

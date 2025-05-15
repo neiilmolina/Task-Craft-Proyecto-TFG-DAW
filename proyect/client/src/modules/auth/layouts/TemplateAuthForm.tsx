@@ -33,8 +33,8 @@ export default function TemplateAuthForm({
     justify-center
     items-center
     max-sm:text-center
-    max-lg:p-0
-    max-md:p-0
+    max-lg:p-10
+    max-md:p-10
     max-sm:p-10
     overflow-hidden
   "

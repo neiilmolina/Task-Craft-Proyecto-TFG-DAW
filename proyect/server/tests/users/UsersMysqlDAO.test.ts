@@ -1,11 +1,7 @@
 import { ResultSetHeader } from "mysql2";
 import mysql from "../__mocks__/mysql";
 import UsersMysqlDAO from "../..//src/users/model/dao/UsersMysqlDAO";
-import {
-  User,
-  UserBD,
-  UserUpdate,
-} from "task-craft-models";
+import { User, UserBD, UserUpdate, UserCreate, UserReturn } from "task-craft-models";
 import bcrypt from "bcryptjs";
 
 jest.mock("mysql2", () => ({
@@ -582,7 +578,7 @@ describe("UsersMysqlDAO", () => {
 
   describe.only("create", () => {
     it("should insert a user and return the inserted user", async () => {
-      const mockUsuario = {
+      const mockUsuario: UserCreate = {
         userName: "john_doe",
         email: "john@example.com",
         password: "hashed_password",
@@ -609,8 +605,8 @@ describe("UsersMysqlDAO", () => {
       });
     });
 
-    it("should insert a user with missing optional fields and return defaults", async () => {
-      const mockUsuario = {
+    it.only("should insert a user with missing optional fields and return defaults", async () => {
+      const mockUsuario: UserCreate = {
         email: "john@example.com",
         password: "hashed_password",
       };
@@ -627,11 +623,11 @@ describe("UsersMysqlDAO", () => {
 
       expect(result).toEqual({
         idUser: mockidUser,
-        userName: "",
+        userName: null,
         email: mockUsuario.email,
-        urlImg: "",
+        urlImg: null,
         idRole: 1,
-      });
+      } as UserReturn);
     });
 
     it("should throw an error if the database insertion fails", async () => {

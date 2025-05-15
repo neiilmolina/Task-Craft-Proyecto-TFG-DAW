@@ -35,9 +35,8 @@ const createApp = (
 ) => {
   const app = express();
   app.use(json());
-  app.use(cookieParser());
   app.disable("x-powered-by");
-
+  app.use(cookieParser()); 
   // Usar el middleware de CORS
   app.use(corsMiddleware);
 

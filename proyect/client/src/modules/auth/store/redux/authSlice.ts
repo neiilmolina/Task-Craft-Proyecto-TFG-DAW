@@ -5,12 +5,15 @@ import {
   logoutThunk,
   getAuthenticatedUserThunk,
 } from "./authThunks";
-import { UserToken } from "task-craft-models";
+import { User, UserToken } from "task-craft-models";
+import { ApiError, GenericError } from "../../../../core/interfaces/interfaceErrors";
+
+type AuthError = ApiError | GenericError | string | null;
 
 interface AuthState {
-  user: UserToken | null;
+  user: UserToken | null | User;
   loading: boolean;
-  error: string | null;
+  error: AuthError;
 }
 
 const initialState: AuthState = {
@@ -34,9 +37,8 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(loginThunk.fulfilled, (state, action) => {
+      .addCase(loginThunk.fulfilled, (state) => {
         state.loading = false;
-        state.user = action.payload;
       })
       .addCase(loginThunk.rejected, (state, action) => {
         state.loading = false;
@@ -47,13 +49,12 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(registerThunk.fulfilled, (state, action) => {
+      .addCase(registerThunk.fulfilled, (state) => {
         state.loading = false;
-        state.user = action.payload;
       })
       .addCase(registerThunk.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string;
+        state.error = action.payload as AuthError;
       })
       // getAuthenticatedUser
       .addCase(getAuthenticatedUserThunk.fulfilled, (state, action) => {

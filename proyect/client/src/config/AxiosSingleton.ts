@@ -2,9 +2,9 @@ import axios, { AxiosInstance } from "axios";
 
 class AxiosSingleton {
   private static instance: AxiosInstance;
-
+  
   private constructor() {}
-
+  
   public static getInstance(): AxiosInstance {
     if (!AxiosSingleton.instance) {
       AxiosSingleton.instance = axios.create({
@@ -14,16 +14,17 @@ class AxiosSingleton {
           "Content-Type": "application/json",
         },
       });
-
+      
       AxiosSingleton.instance.interceptors.response.use(
         (response) => response,
         (error) => {
-          console.error("Axios error:", error);
+          console.error("Axios error intercepted:", error);
+          // This is correct - returning a rejected promise allows error to propagate
           return Promise.reject(error);
         }
       );
     }
-
+    
     return AxiosSingleton.instance;
   }
 }
