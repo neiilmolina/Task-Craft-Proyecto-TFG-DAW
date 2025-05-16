@@ -35,8 +35,8 @@ export const getAuthenticatedUserThunk = createAsyncThunk(
   "auth/getAuthenticatedUser",
   async (_, { rejectWithValue }) => {
     try {
-      const user = await authRepository.getAuthenticatedUser();
-      return user as UserToken;
+    const response = await authRepository.getAuthenticatedUser();
+      return response as UserToken;
     } catch(error) {
       return handleThunkError(error, rejectWithValue, "Usuario no autenticado");
     }

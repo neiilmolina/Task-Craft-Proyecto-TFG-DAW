@@ -1,6 +1,5 @@
 import { Request, RequestHandler, Response } from "express";
 import jwt from "jsonwebtoken";
-import cookies from "cookie-parser";
 import IUsersDAO from "@/src/users/model/dao/IUsersDAO";
 import UsersController from "@/src/users/controller/UsersController";
 import { User } from "task-craft-models";
@@ -63,7 +62,7 @@ export default class AuthController {
         expires: new Date(Date.now() + 3600 * 1000), // Expiración en 1 hora
       });
 
-      res.status(200).json({ message: "Login exitoso", data: token });
+      res.status(200).json({ message: "Login exitoso"});
     } catch (error: any) {
       console.error("Error en el login:", error);
       res.status(500).json({

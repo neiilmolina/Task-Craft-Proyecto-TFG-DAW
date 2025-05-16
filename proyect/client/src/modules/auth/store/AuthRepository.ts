@@ -1,5 +1,5 @@
 import AxiosSingleton from "../../../config/AxiosSingleton";
-import { UserCreate, UserLogin } from "task-craft-models";
+import { UserCreate, UserLogin, UserToken } from "task-craft-models";
 
 export default class AuthRepository {
   private api: ReturnType<typeof AxiosSingleton.getInstance>;
@@ -8,7 +8,7 @@ export default class AuthRepository {
     this.api = AxiosSingleton.getInstance();
   }
 
-  async getAuthenticatedUser(): Promise<unknown> {
+  async getAuthenticatedUser(): Promise<UserToken> {
     return await this.api.get("/auth/", {
       withCredentials: true,
     });
@@ -19,14 +19,18 @@ export default class AuthRepository {
   }
 
   async login(creedentials: UserLogin): Promise<unknown> {
-    const result = await this.api.post("/auth/login", creedentials);
+    const result = await this.api.post("/auth/login", creedentials, {
+      withCredentials: true,
+    });
     console.log(result.data);
     return result;
   }
 
   async logout(): Promise<unknown> {
     try {
-      const response = await this.api.post("/auth/logout");
+      const response = await this.api.post("/auth/logout", {
+        withCredentials: true,
+      });
       return response.data;
     } catch (error) {
       console.error("Error at logout:", error);
