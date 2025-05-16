@@ -8,8 +8,10 @@ import { FormattedError } from "task-craft-models";
 import ErrorLabel from "../../../core/components/ErrorLabel";
 import { checkAllEmptyFields } from "../../../core/hooks/validations";
 import PasswordInput from "../components/PasswordInput";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
+  const navigate = useNavigate();
   const [errors, setErrors] = useState([] as FormattedError[]);
 
   const { login, getAuthenticatedUser } = useAuthActions();
@@ -51,6 +53,7 @@ export default function Login() {
       
       const result = await getAuthenticatedUser();
       console.log(result);
+      navigate("/dashboard");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       if (error?.isAxiosError) {

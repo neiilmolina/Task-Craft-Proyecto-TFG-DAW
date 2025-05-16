@@ -5,13 +5,13 @@ import {
   logoutThunk,
   getAuthenticatedUserThunk,
 } from "./authThunks";
-import { User, UserToken } from "task-craft-models";
+import { UserToken } from "task-craft-models";
 import { ApiError, GenericError } from "../../../../core/interfaces/interfaceErrors";
 
 type AuthError = ApiError | GenericError | string | null;
 
 interface AuthState {
-  user: UserToken | null | User;
+  user: UserToken | null;
   loading: boolean;
   error: AuthError;
 }

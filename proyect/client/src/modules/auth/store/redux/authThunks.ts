@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import AuthRepository from "../AuthRepository";
-import { UserCreate, UserLogin, UserToken } from "task-craft-models";
+import { UserCreate, UserLogin } from "task-craft-models";
 import { handleThunkError } from "../../../../core/hooks/captureErrors";
 
 const authRepository = new AuthRepository();
@@ -35,9 +35,9 @@ export const getAuthenticatedUserThunk = createAsyncThunk(
   "auth/getAuthenticatedUser",
   async (_, { rejectWithValue }) => {
     try {
-    const response = await authRepository.getAuthenticatedUser();
-      return response as UserToken;
-    } catch(error) {
+      const response = await authRepository.getAuthenticatedUser();
+      return response;
+    } catch (error) {
       return handleThunkError(error, rejectWithValue, "Usuario no autenticado");
     }
   }

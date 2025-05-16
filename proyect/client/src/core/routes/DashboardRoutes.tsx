@@ -1,10 +1,10 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom"; // Cambiar Switch por Routes
+import { Route, Routes } from "react-router-dom";
 import Menu from "../components/Menu";
-import routes from "../routes";
+import routes from "./routes";
 
-export default function Dashboard() {
+export default function DashboardRoutes() {
   return (
-    <Router>
+    <Route>
       <div
         className="
         flex flex-row
@@ -37,6 +37,6 @@ export default function Dashboard() {
           </Routes>
         </div>
       </div>
-    </Router>
+    </Route>
   );
 }

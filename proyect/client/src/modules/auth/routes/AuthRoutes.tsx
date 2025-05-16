@@ -1,9 +1,9 @@
-import { Routes, Route } from "react-router-dom";
+import {  Route } from "react-router-dom";
 import routesAuth from "./routesAuth";
 
 export default function AuthRoutes() {
   return (
-    <Routes>
+    <>
       {routesAuth.map((route) => (
         <Route
           key={route.path}
@@ -11,6 +11,6 @@ export default function AuthRoutes() {
           element={<route.Component />}
         />
       ))}
-    </Routes>
+    </>
   );
 }

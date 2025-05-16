@@ -9,9 +9,11 @@ export default class AuthRepository {
   }
 
   async getAuthenticatedUser(): Promise<UserToken> {
-    return await this.api.get("/auth/", {
+    const response = await this.api.get("/auth/", {
       withCredentials: true,
     });
+
+    return response.data.user;
   }
 
   async register(user: UserCreate): Promise<unknown> {
