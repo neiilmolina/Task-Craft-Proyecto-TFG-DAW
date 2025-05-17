@@ -20,7 +20,7 @@ function Menu() {
         {routes.map((route) => (
           <li key={route.path}>
             <Link
-              to={route.path}
+              to={`/dashboard/${route.path}`}
               className="
                 max-w-64
                 py-2 px-3

@@ -3,12 +3,12 @@ import Select from "./Select"; // Asegúrate de que el componente Select esté c
 import Button from "./Button"; // Asegúrate de que Button esté correctamente importado
 import useOpenElement from "../hooks/useOpenElement";
 
-function Dialog({
+function SelectDialog({
   values,
   onClose,
 }: {
   values: string[]; // Especificar que `values` es un array de strings
-  onClose: () => void;
+  onClose: (selected: string) => void;
 }) {
   // Valor por defecto
   const defaultValue = values[0] || ""; // Asegúrate de tener un valor por defecto si `values` está vacío
@@ -105,7 +105,7 @@ function Dialog({
                     e.preventDefault();
                     handleClose();
                     setShowValue(selectedOption);
-                    onClose();
+                    onClose(selectedOption);
                   }}
                 >
                   Aceptar
@@ -119,4 +119,4 @@ function Dialog({
   );
 }
 
-export default Dialog;
+export default SelectDialog;

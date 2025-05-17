@@ -3,7 +3,7 @@ import Container from "../../../core/components/Container";
 import Input from "../../../core/components/Input";
 import SelectDialog from "../../../core/components/SelectDialog";
 
-export default function DiariesPages() {
+export default function DiariesPage() {
   return (
     <div>
       <h1>Diaries Pages</h1>

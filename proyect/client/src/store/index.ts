@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "../modules/auth/store/redux/authSlice";
+import typesReducer from "../modules/types/store/redux/typesSlice";
 
 
 export const store = configureStore({
   // Reducers that defines the structure of the global state
   reducer: {
     auth: authReducer,
+    types: typesReducer,
   },
   // Middleware for the synchronization with the database
   middleware: (getDefaultMiddleware) =>

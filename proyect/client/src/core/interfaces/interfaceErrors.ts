@@ -13,3 +13,6 @@ export interface GenericError {
   message: string;
   error?: string;
 }
+
+
+export type ReduxError = ApiError | GenericError | string | null;

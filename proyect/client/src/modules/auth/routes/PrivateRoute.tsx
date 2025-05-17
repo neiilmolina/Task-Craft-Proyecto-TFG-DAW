@@ -1,13 +1,15 @@
-// src/components/PrivateRoute.tsx
-import { useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
-import { RootState } from "../../../store";
+import { Navigate, useLocation } from "react-router-dom";
+import { UserToken } from "task-craft-models";
 
-export default function PrivateRoute({ children }: { children: JSX.Element }) {
-  const user = useSelector((state: RootState) => state.auth.user);
+type PrivateRouteProps = {
+  children: JSX.Element;
+  user: UserToken | null;
+};
 
+export default function PrivateRoute({ children, user}: PrivateRouteProps ) {
+  const location = useLocation();
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return children;

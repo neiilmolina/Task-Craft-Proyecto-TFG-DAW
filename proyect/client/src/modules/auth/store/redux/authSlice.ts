@@ -6,14 +6,13 @@ import {
   getAuthenticatedUserThunk,
 } from "./authThunks";
 import { UserToken } from "task-craft-models";
-import { ApiError, GenericError } from "../../../../core/interfaces/interfaceErrors";
+import { ReduxError } from "../../../../core/interfaces/interfaceErrors";
 
-type AuthError = ApiError | GenericError | string | null;
 
 interface AuthState {
   user: UserToken | null;
   loading: boolean;
-  error: AuthError;
+  error: ReduxError;
 }
 
 const initialState: AuthState = {
@@ -54,7 +53,7 @@ const authSlice = createSlice({
       })
       .addCase(registerThunk.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as AuthError;
+        state.error = action.payload as ReduxError;
       })
       // getAuthenticatedUser
       .addCase(getAuthenticatedUserThunk.fulfilled, (state, action) => {

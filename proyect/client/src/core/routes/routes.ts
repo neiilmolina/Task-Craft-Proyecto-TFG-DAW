@@ -1,15 +1,14 @@
 // routes.ts
-import TasksPages from "../../modules/tasks/pages/TasksPages";
-import DiariesPages from "../../modules/diaries/pages/DiariesPages";
+import TasksPage from "../../modules/tasks/pages/TasksPage";
+import DiariesPage from "../../modules/diaries/pages/DiariesPage";
 
-// Definimos las rutas y sus componentes
 const routes: {
   path: string;
   Component: React.ComponentType;
   name: string;
 }[] = [
-  { path: "tasks", Component: TasksPages, name: "Tareas" },
-  { path: "diaries", Component: DiariesPages, name: "Diarios" },
+  { path: "tasks", Component: TasksPage, name: "Tareas" },
+  { path: "diaries", Component: DiariesPage, name: "Diarios" },
   // Agregar más rutas según sea necesario
 ];
 
