@@ -15,6 +15,7 @@ function Menu() {
           space-y-2 pt-40 p-2.5
           bg-primary
           justify-top
+          gap-3.5
         "
       >
         {routes.map((route) => (

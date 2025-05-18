@@ -9,7 +9,6 @@ export default class StatesRepository {
   }
   public async getStates(): Promise<State[]> {
     const response = await this.api.get("/states");
-    console.log(response.data);
     return response.data;
   }
 }

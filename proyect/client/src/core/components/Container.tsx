@@ -1,10 +1,11 @@
-import { HTMLProps } from "react";
+import React from "react";
 
-function Container({
-  className = "",
-  children,
-  ...rest
-}: HTMLProps<HTMLDivElement>) {
+interface ContainerProps extends React.HTMLAttributes<HTMLDivElement> {
+  className?: string;
+  children?: React.ReactNode;
+}
+
+function Container({ className = "", children, ...rest }: ContainerProps) {
   return (
     <div
       className={`border-secondary border-2 rounded-lg p-4 bg-white ${className}`}

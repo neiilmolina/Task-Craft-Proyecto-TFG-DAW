@@ -18,6 +18,7 @@ function App() {
     getAuthenticatedUser().finally(() => {
       setChecking(false);
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (checking) return <div>Cargando sesión...</div>;
