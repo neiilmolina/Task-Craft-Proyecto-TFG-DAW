@@ -1,115 +1,76 @@
-import React, { useState } from "react";
-import Select from "./Select"; // Asegúrate de que el componente Select esté correctamente importado
-import Button from "./Button"; // Asegúrate de que Button esté correctamente importado
+import React, { useState, ReactNode } from "react";
+import Select from "./Select";
+import Button from "./Button";
 import useOpenElement from "../hooks/useOpenElement";
 
 function SelectDialog({
-  values,
+  classNameButton,
+  selectionMessage,
+  displayMap,
+  children,
   onClose,
+  initialValue,
 }: {
-  values: string[]; // Especificar que `values` es un array de strings
+  classNameButton: string;
+  selectionMessage: string;
+  displayMap: Record<string, string>;
+  children: ReactNode;
   onClose: (selected: string) => void;
+  initialValue?: string;
 }) {
-  // Valor por defecto
-  const defaultValue = values[0] || ""; // Asegúrate de tener un valor por defecto si `values` está vacío
-
-  // Estado para el valor seleccionado
-  const [showValue, setShowValue] = useState(defaultValue);
-  const [selectedOption, setSelectedOption] = useState(defaultValue);
+  const [selectedOption, setSelectedOption] = useState("");
+  const [showValue, setShowValue] = useState(initialValue ?? selectionMessage);
   const { isOpen, handleOpen, handleClose } = useOpenElement();
 
-  // Manejar cambio del select
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const newValue = event.target.value as string;
-    setSelectedOption(newValue);
+    setSelectedOption(event.target.value);
+  };
+
+  const handleAccept = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    handleClose();
+    setShowValue(displayMap[selectedOption] || selectionMessage);
+    onClose(selectedOption);
+  };
+
+  const handleCancel = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    handleClose();
+  };
+
+  const handleOpenDialog = () => {
+    handleOpen();
+    setSelectedOption("");
   };
 
   return (
     <>
-      {/* Botón que abre el diálogo */}
       <button
-        onClick={handleOpen}
-        className="
-          px-4 py-2
-          bg-gray-300
-          rounded hover:bg-gray-400
-        "
+        onClick={handleOpenDialog}
+        className={`px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 ${classNameButton}`}
       >
         {showValue}
       </button>
 
-      {/* El diálogo solo se muestra si isOpen es verdadero */}
       {isOpen && (
         <dialog
           open
-          className="
-            position:absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2
-          "
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
         >
-          <div
-            className="
-              w-96
-              p-6
-              bg-white
-              rounded-lg
-              shadow-lg
-            "
-          >
-            <h2
-              className="
-                mb-4
-                text-xl font-semibold
-              "
-            >
+          <div className="w-96 p-6 bg-white rounded-lg shadow-lg">
+            <h2 className="mb-4 text-xl font-semibold">
               Seleccione una opción
             </h2>
-            <form
-              method="dialog"
-              className="
-                flex flex-col
-                space-y-4
-              "
-            >
-              <Select
-                value={selectedOption}
-                onChange={handleSelectChange}
-                className="
-                  w-full
-                "
-              >
-                {values.map((value, index) => (
-                  <option key={index} value={value}>
-                    {value}
-                  </option>
-                ))}
+            <form method="dialog" className="flex flex-col space-y-4">
+              <Select value={selectedOption} onChange={handleSelectChange}>
+                {children}
               </Select>
 
-              <div
-                className="
-                  flex
-                  space-x-4
-                  justify-end
-                "
-              >
-                <Button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleClose();
-                  }}
-                  color="error"
-                >
+              <div className="flex space-x-4 justify-end">
+                <Button onClick={handleCancel} color="error">
                   Cancelar
                 </Button>
-                <Button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleClose();
-                    setShowValue(selectedOption);
-                    onClose(selectedOption);
-                  }}
-                >
-                  Aceptar
-                </Button>
+                <Button onClick={handleAccept}>Aceptar</Button>
               </div>
             </form>
           </div>

@@ -1,14 +1,14 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import TypesRepository from "../TypesRepository";
+import StatesRepository from "../StatesRepository";
 import { handleThunkError } from "../../../../core/hooks/captureErrors";
 
-const typesRepository = new TypesRepository();
+const statesRepository = new StatesRepository();
 
-export const getTypesThunk = createAsyncThunk(
-  "/types/",
+export const getStatesThunk = createAsyncThunk(
+  "/states/",
   async (_, { rejectWithValue }) => {
     try {
-      return await typesRepository.getTypes();
+      return await statesRepository.getStates();
     } catch (error) {
       return handleThunkError(
         error,

@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "../modules/auth/store/redux/authSlice";
 import typesReducer from "../modules/types/store/redux/typesSlice";
+import statesReducer from "../modules/states/store/redux/statesSlice";
 
 
 export const store = configureStore({
@@ -8,6 +9,7 @@ export const store = configureStore({
   reducer: {
     auth: authReducer,
     types: typesReducer,
+    states: statesReducer,
   },
   // Middleware for the synchronization with the database
   middleware: (getDefaultMiddleware) =>

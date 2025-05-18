@@ -14,5 +14,4 @@ export interface GenericError {
   error?: string;
 }
 
-
 export type ReduxError = ApiError | GenericError | string | null;

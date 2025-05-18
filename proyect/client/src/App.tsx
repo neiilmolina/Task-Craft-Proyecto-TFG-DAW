@@ -15,22 +15,12 @@ function App() {
   const user = useSelector((state: RootState) => state.auth.user);
 
   useEffect(() => {
-    console.log("Intentando recuperar el usuario...");
-
-    getAuthenticatedUser()
-      .then(() => {
-        console.log("Usuario recuperado con éxito");
-      })
-      .catch((err) => {
-        console.log("No se pudo recuperar el usuario:", err);
-      })
-      .finally(() => {
-        setChecking(false);
-        console.log("Finalizó la verificación del usuario");
-      });
+    getAuthenticatedUser().finally(() => {
+      setChecking(false);
+    });
   }, []);
 
-  if (checking) return <div>Cargando sesión...</div>; // o un spinner
+  if (checking) return <div>Cargando sesión...</div>;
 
   return (
     <BrowserRouter>

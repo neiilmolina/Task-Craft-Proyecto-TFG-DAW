@@ -1,0 +1,44 @@
+import { State } from "task-craft-models";
+import { ReduxError } from "../../../../core/interfaces/interfaceErrors";
+import { createSlice } from "@reduxjs/toolkit";
+import { getStatesThunk } from "./statesThunks";
+
+interface StatesState {
+  types: State[] | null;
+  loading: boolean;
+  error: ReduxError;
+}
+
+const initialState: StatesState = {
+  types: null,
+  loading: false,
+  error: null,
+};
+
+const statesSlice = createSlice({
+  name: "states",
+  initialState,
+  reducers: {
+    clearError(state) {
+      state.error = null;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(getStatesThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getStatesThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.types = action.payload;
+      })
+      .addCase(getStatesThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as ReduxError;
+      });
+  },
+});
+
+export const { clearError } = statesSlice.actions;
+export default statesSlice.reducer;

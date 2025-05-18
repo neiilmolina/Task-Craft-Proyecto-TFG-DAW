@@ -3,25 +3,31 @@ import SelectDialog from "../../../core/components/SelectDialog";
 import useTypesActions from "../hooks/useTypesActions";
 import { Type } from "task-craft-models";
 
-export default function SelectTypes() {
+export default function SelectTypes({
+  classNameButton,
+  type,
+  setType,
+}: {
+  classNameButton: string;
+  type?: Type | null;
+  setType: React.Dispatch<React.SetStateAction<Type | null>>;
+}) {
   const { getTypes } = useTypesActions();
   const [types, setTypes] = useState<Type[]>([]);
-  const [selectedType, setSelectedType] = useState<Type | null>(null);
 
-  // Obtener los tipos al cargar
   useEffect(() => {
     getTypes().then((data) => {
-      setTypes(data); // data debe ser Type[]
-      console.log("Tipos:", data);
+      setTypes(data);
+      return;
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Callback cuando se cierra el diálogo
-  const handleClose = (selectedName: string) => {
-    const foundType = types.find((t) => t.type === selectedName);
+  const handleClose = (selectedId: string) => {
+    const id = parseInt(selectedId, 10);
+    const foundType = types.find((t) => t.idType === id);
     if (foundType) {
-      setSelectedType(foundType);
-      console.log("Tipo seleccionado:", foundType);
+      setType(foundType);
     }
   };
 
@@ -29,9 +35,20 @@ export default function SelectTypes() {
     <>
       {types.length > 0 && (
         <SelectDialog
-          values={types.map((t) => t.type)}
-          onClose={(selected) => handleClose(selected)}
-        />
+          classNameButton={classNameButton}
+          selectionMessage="Selecciona una categoria"
+          displayMap={Object.fromEntries(
+            types.map((t) => [t.idType.toString(), t.type])
+          )}
+          onClose={handleClose}
+          initialValue={type?.type}
+        >
+          {types.map((t) => (
+            <option key={t.idType} value={t.idType}>
+              {t.type}
+            </option>
+          ))}
+        </SelectDialog>
       )}
     </>
   );
