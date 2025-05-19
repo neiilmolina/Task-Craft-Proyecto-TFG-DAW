@@ -1,15 +1,19 @@
-import { Task } from "task-craft-models";
+import { TaskDTO } from "task-craft-models";
 import Container from "../../../core/components/Container";
+import { Temporal } from "@js-temporal/polyfill";
 
 interface TaskCardProps {
-  task: Task;
+  task: TaskDTO;
 }
 
 function TaskCard({ task }: TaskCardProps) {
   const { activityDate } = task;
 
-  const dateTimeString = `${activityDate.day}/${activityDate.month}/${activityDate.year}`;
-  const hourString = `${activityDate.hour}:${activityDate.minute}`;
+  const temporalDate = Temporal.PlainDateTime.from(activityDate);
+  console.log("temporalDate", temporalDate);
+
+  const dateTimeString = `${temporalDate.day}/${temporalDate.month}/${temporalDate.year}`;
+  const hourString = `${temporalDate.hour}:${temporalDate.minute}${temporalDate.second}`;
 
   return (
     <Container>

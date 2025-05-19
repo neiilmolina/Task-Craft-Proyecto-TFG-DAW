@@ -1,6 +1,5 @@
-import { Temporal } from "@js-temporal/polyfill";
 import AxiosSingleton from "../../../config/AxiosSingleton";
-import { Task, TaskFilters } from "task-craft-models";
+import { TaskDTO, TaskFilters } from "task-craft-models";
 
 export default class TasksRepository {
   private api: ReturnType<typeof AxiosSingleton.getInstance>;
@@ -9,14 +8,13 @@ export default class TasksRepository {
     this.api = AxiosSingleton.getInstance();
   }
 
-  async getTasks(taskFilters?: TaskFilters): Promise<Task[]> {
+  async getTasks(taskFilters?: TaskFilters): Promise<TaskDTO[]> {
     const params = new URLSearchParams();
 
     if (taskFilters?.idUser) {
       params.append("idUser", taskFilters.idUser);
     }
 
-    // Add the rest of the filters except idUser
     Object.entries(taskFilters || {}).forEach(([key, value]) => {
       if (
         key !== "idUser" &&
@@ -33,13 +31,9 @@ export default class TasksRepository {
 
     const response = await this.api.get(queryString);
 
-    const data = response.data as Task[];
+    const data = response.data as TaskDTO[];
 
-    return data.map((task) => {
-      return {
-        ...task,
-        activityDate: Temporal.PlainDateTime.from(task.activityDate),
-      };
-    });
+    console.log("TasksRepository.getTasks:", data);
+    return data;
   }
 }

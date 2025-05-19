@@ -1,16 +1,16 @@
-import { Task } from "task-craft-models";
+import { TaskDTO } from "task-craft-models";
 import { ReduxError } from "../../../../core/interfaces/interfaceErrors";
 import { createSlice } from "@reduxjs/toolkit";
 import { getTasksThunk } from "./tasksThunks";
 
 interface TasksState {
-  tasks: Task[] | null | [];
+  tasks: TaskDTO[];
   loading: boolean;
   error: ReduxError;
 }
 
 const initialState: TasksState = {
-  tasks: null,
+  tasks: [],
   loading: false,
   error: null,
 };
