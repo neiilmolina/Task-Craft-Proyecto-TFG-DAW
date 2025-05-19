@@ -9,20 +9,21 @@ import { useSelector } from "react-redux";
 import { RootState } from "./store";
 import NotFound from "./core/pages/NotFound";
 import TasksRoutes from "./modules/tasks/routes/TasksRoutes";
+import Spinner from "./core/components/Spinner";
 
 function App() {
-  const [checking, setChecking] = useState(true);
+  const [loading, setLoading] = useState(true);
   const { getAuthenticatedUser } = useAuthActions();
   const user = useSelector((state: RootState) => state.auth.user);
 
   useEffect(() => {
     getAuthenticatedUser().finally(() => {
-      setChecking(false);
+      setLoading(false);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (checking) return <div>Cargando sesión...</div>;
+  if (loading) return <Spinner />;
 
   return (
     <BrowserRouter>
@@ -50,7 +51,9 @@ function App() {
 
         <Route
           path="/"
-          element={<Navigate to={user ? "/dashboard/tasks" : "/login"} replace />}
+          element={
+            <Navigate to={user ? "/dashboard/tasks" : "/login"} replace />
+          }
         />
 
         <Route path="*" element={<NotFound />} />

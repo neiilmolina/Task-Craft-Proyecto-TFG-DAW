@@ -1,16 +1,8 @@
-import { InputHTMLAttributes } from "react";
+import { TextareaHTMLAttributes } from "react";
 
 export function TextArea({
   className = "",
   ...rest
-}: InputHTMLAttributes<HTMLTextAreaElement>) {
-  return (
-    <TextArea
-      className={`
-        input-text
-       ${className}
-      `}
-      {...rest}
-    />
-  );
+}: TextareaHTMLAttributes<HTMLTextAreaElement>) {
+  return <textarea className={`input-text ${className}`} {...rest} />;
 }
