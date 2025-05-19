@@ -10,7 +10,6 @@ export const getTasksThunk = createAsyncThunk(
   async (taskFilters: TaskFilters, { rejectWithValue }) => {
     try {
       const response = await tasksRepository.getTasks(taskFilters);
-      console.log(response);
       return response;
     } catch (error) {
       return handleThunkError(

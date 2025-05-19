@@ -32,18 +32,16 @@ export default function TemplateAuthForm({
     bg-primary
     justify-center
     items-center
-    max-sm:text-center
     max-lg:p-10
     max-md:p-10
     max-sm:p-10
-    overflow-hidden
   "
     >
-      <h1 className="mb-2.5">{titlePage}</h1>
+      <h1 className="mb-2.5 text-center">{titlePage}</h1>
       <div
         className="
           flex flex-col
-          w-2/4 p-14
+          w-1/3 p-10
           bg-grey
           border-[1px] rounded-lg
           shadow-md
@@ -70,7 +68,7 @@ export default function TemplateAuthForm({
         >
           {children}
           <Button type="submit">{textButton}</Button>
-          <p>
+          <p className="max-lg:text-center ">
             <span>{changeScreen.text} </span>
             <Link to={changeScreen.href}>{changeScreen.action}</Link>
           </p>

@@ -33,14 +33,12 @@ export default function DashboardRoutes() {
           <Route index element={<Navigate to="tasks" replace />} />
           {routes.map((route) => (
             <Route
-              key={route.path}
+              key={route.name}
               path={route.path}
               element={<route.Component />}
             />
           ))}
-
-          <Route path="*" element={<NotFound />} />
-          
+          <Route path="" element={<NotFound />} />
         </Routes>
       </div>
     </div>

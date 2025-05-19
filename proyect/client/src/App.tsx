@@ -8,6 +8,7 @@ import useAuthActions from "./modules/auth/hooks/useAuthActions";
 import { useSelector } from "react-redux";
 import { RootState } from "./store";
 import NotFound from "./core/pages/NotFound";
+import TasksRoutes from "./modules/tasks/routes/TasksRoutes";
 
 function App() {
   const [checking, setChecking] = useState(true);
@@ -18,7 +19,7 @@ function App() {
     getAuthenticatedUser().finally(() => {
       setChecking(false);
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (checking) return <div>Cargando sesión...</div>;
@@ -38,10 +39,18 @@ function App() {
             </PrivateRoute>
           }
         />
+        <Route
+          path="/tasks/*"
+          element={
+            <PrivateRoute user={user}>
+              <TasksRoutes />
+            </PrivateRoute>
+          }
+        />
 
         <Route
           path="/"
-          element={<Navigate to={user ? "/dashboard/*" : "/login"} replace />}
+          element={<Navigate to={user ? "/dashboard/tasks" : "/login"} replace />}
         />
 
         <Route path="*" element={<NotFound />} />

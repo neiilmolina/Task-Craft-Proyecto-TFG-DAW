@@ -15,7 +15,7 @@ type TaskSectionsProps = {
 export default function TaskSection({ tasks, type }: TaskSectionsProps) {
   return (
     <div className="flex flex-col gap-2 w-full">
-      <p className="text-greyDark text-xl">{type.type}</p>
+      <h2 className="text-greyDark text-xl">{type.type}</h2>
       <section className="flex flex-row gap-2 flex-wrap">
         {tasks.map((task) => (
           <TaskCard key={task.idTask} task={task} />

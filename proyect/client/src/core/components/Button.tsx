@@ -35,9 +35,10 @@ function Button({
     <button
       className={`
         py-2 px-4 
-        max-w-36
+        max-w-28
         rounded-2xl
         transition-colors duration-200
+        cursor-pointer
         ${colorClasses.base}
         ${colorClasses.hover}
         ${className}

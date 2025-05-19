@@ -25,34 +25,52 @@ function Menu() {
     <>
       {isMenuOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-30 lg:hidden transition-opacity duration-300 opacity-0 animate-fade-in"
           onClick={toggleMenu}
+          className="
+            z-30
+            bg-black/50
+            transition-opacity opacity-0 animate-fade-in
+            fixed inset-0 duration-300
+            md:hidden
+          "
         />
       )}
 
-      <nav className="h-full">
+      <nav
+        className="
+          h-full
+        "
+      >
         <button
           onClick={toggleMenu}
-          className={`lg:hidden
-             fixed top-4 left-4 z-50 p-2 text-2xl font-bold bg-primary rounded-xl transition-transform 
-             hover:scale-110`}
           aria-label="Toggle menu"
+          className={`
+            z-50
+            p-2.5
+            text-sm font-bold
+            bg-primary
+            rounded-[100px]
+            transition-transform
+            fixed top-4 left-4 hover:scale-110
+            md:hidden
+          `}
         >
           ☰
         </button>
 
         <div
           className={`
-            h-full 
-            flex flex-col 
+            flex flex-col
+            h-full
+            space-y-2 p-2.5 pt-20
             bg-primary
-            space-y-2 p-2.5
-            pt-20 lg:pt-10
-            transition-all duration-300 ease-in-out
+            transition-all
+            duration-300 ease-in-out
+            md:pt-10
             ${
               isMenuOpen
                 ? "fixed inset-0 z-40 w-64 animate-slide-in-left"
-                : "hidden lg:block lg:w-full"
+                : "hidden md:block md:w-full"
             }
           `}
         >
@@ -69,11 +87,11 @@ function Menu() {
                   onClick={() => setIsMenuOpen(false)}
                   className="
                     w-64 max-xl:hover:pr-8
+                    text-[18px]
                     py-2 px-3
                     text-black font-bold
                     transition-all
-                    backdrop-opacity-10 duration-200 hover:bg-secondary/15 hover:rounded-lg hover:pr-20
-                    hover:translate-x-2
+                    backdrop-opacity-10 duration-200 hover:bg-secondary/15 hover:rounded-lg hover:pr-20 hover:translate-x-2 hover:no-underline
                   "
                 >
                   {route.name}

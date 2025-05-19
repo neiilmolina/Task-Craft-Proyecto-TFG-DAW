@@ -17,11 +17,11 @@
   }
 
   h1 {
-    font-size: 40px;
+    font-size: 30px;
     font-weight: bold;
   }
   h2 {
-    font-size: 36px;
+    font-size: 22px;
     font-weight: bold;
   }
 
@@ -29,7 +29,7 @@
   a,
   label,
   button {
-    font-size: 20px;
+    font-size: 16px;
   }
   a {
     cursor: pointer;
@@ -47,6 +47,7 @@
     padding: 10px;
     background: white;
     border: var(--color-secondary) 2px solid;
+    font-size: 16px;
     border-radius: 32px;
     &:focus {
       outline-offset: 1px;
