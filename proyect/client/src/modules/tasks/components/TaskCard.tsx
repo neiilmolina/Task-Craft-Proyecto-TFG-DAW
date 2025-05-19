@@ -16,7 +16,7 @@ function TaskCard({ task }: TaskCardProps) {
   const hourString = `${temporalDate.hour}:${temporalDate.minute}${temporalDate.second}`;
 
   return (
-    <Container>
+    <Container className="w-40 h-32 p-2">
       <a>{task.title}</a>
       <p>{task.type.type}</p>
       <p>{dateTimeString}</p>

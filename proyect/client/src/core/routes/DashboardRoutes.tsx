@@ -15,7 +15,7 @@ export default function DashboardRoutes() {
     >
       <div
         className="
-          w-1/7
+          w-1/8
         "
       >
         <Menu />
@@ -23,7 +23,9 @@ export default function DashboardRoutes() {
 
       <div
         className="
-          p-4
+          py-4
+          pl-10
+          pr-4
         "
       >
         <Routes>

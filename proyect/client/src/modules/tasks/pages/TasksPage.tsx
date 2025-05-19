@@ -20,13 +20,14 @@ export default function TasksPage() {
   const [loading, setLoading] = useState(true);
   const [types, setTypes] = useState<TypeTask[]>([]);
 
-  useEffect(() => {
-    if (user) {
-      setLoading(true);
-      getTasks({ idUser: user.idUser }).finally(() => setLoading(false));
-      // DO THIS IN THE BACK END, NOT IN THE FRONT END
-      // GET TYPES
-      console.log(tasks)
+    useEffect(() => {
+      if (user) {
+        setLoading(true);
+        getTasks({ idUser: user.idUser }).finally(() => setLoading(false));
+      }
+    }, [user, getTasks]);
+
+    useEffect(() => {
       if (tasks) {
         setTypes(
           Array.from(
@@ -34,9 +35,7 @@ export default function TasksPage() {
           )
         );
       }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+    }, [tasks]);
 
   if (!user) return <div>Necesitas iniciar sesión</div>;
 
@@ -45,14 +44,20 @@ export default function TasksPage() {
   if (!tasks || tasks.length === 0) return <div>No hay tareas</div>;
 
   return (
-    <main>
+    <main className="flex flex-col gap-6 md:items-center">
       <h1>Tareas</h1>
       <Button color="primary">Añadir tarea</Button>
       {types.map((type) => {
         const tasksOfThisType: TaskDTO[] = tasks.filter(
           (task) => task.type.idType === type.idType
         );
-        return <TaskSections key={`section-task-${type.type}`} tasks={tasksOfThisType} type={type} />;
+        return (
+          <TaskSections
+            key={`section-task-${type.type}`}
+            tasks={tasksOfThisType}
+            type={type}
+          />
+        );
       })}
     </main>
   );
