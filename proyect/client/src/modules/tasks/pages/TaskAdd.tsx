@@ -1,57 +1,35 @@
-import { TaskCreate, } from "task-craft-models";
+import { TaskCreate, TaskUpdate } from "task-craft-models";
 import TaskFormLayout from "../layouts/TaskFormLayout";
-
-const INPUT_WIDTH = "";
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../store";
+import Button from "../../../core/components/Button";
 
 export default function TaskAdd() {
-  const handleSubmit = async (data: TaskCreate) => {
-    // Validar y enviar al backend
-    console.log("Tarea creada:", data);
+  const user = useSelector((state: RootState) => state.auth.user);
+
+  const [formData, setFormData] = useState<TaskCreate | TaskUpdate>({
+    activityDate: "",
+    description: "",
+    idState: 0,
+    idType: 0,
+    title: "",
+    idUser: user?.idUser ?? "",
+  });
+
+  const onSubmit = async () => {
+    console.log("Tarea creada:", formData);
   };
 
-  return <TaskFormLayout onSubmit={() => handleSubmit(formData)} key={"ADd"} />;
+  return (
+    <TaskFormLayout
+      action="create"
+      formData={formData}
+      setFormData={setFormData}
+      onSubmit={onSubmit}
+      key={"Add"}
+    >
+      <Button>Añadir</Button>
+    </TaskFormLayout>
+  );
 }
-
-// return (
-//   <form
-//     className="flex flex-col gap-4 p-20 bg-grey h-full"
-//     onSubmit={onSubmit}
-//   >
-//     <label>Titulo</label>
-//     <Input
-//       className={INPUT_WIDTH}
-//       placeholder=""
-//       id="title"
-//       name="title"
-//       value={formData.title}
-//       onChange={handleChange}
-//     />
-
-//     <div>
-//       <div>
-//         <label>Fecha</label>
-//         <DatePicker value={date} onChange={handleDateChange} />
-//       </div>
-//       <div>
-//         <label>Hora</label>
-//         <TimePickerTemporal value={time} onChange={handleTimeChange} />
-//       </div>
-//     </div>
-
-//     <div className="flex flex-row">
-//       <label>Categoría</label>
-//       <SelectTypes type={type} setType={setType} />
-//     </div>
-//     <div className="flex flex-row">
-//       <label>Estado</label>
-//       <SelectStates state={state} setState={setState} />
-//     </div>
-//     <label>Descripción</label>
-//     <TextArea
-//       name="description"
-//       id="description"
-//       placeholder="Escribe una descripción..."
-//       className={INPUT_WIDTH}
-//     />
-//   </form>
-// );

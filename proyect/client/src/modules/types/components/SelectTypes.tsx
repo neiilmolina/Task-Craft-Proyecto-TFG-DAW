@@ -14,6 +14,7 @@ export default function SelectTypes({
 }) {
   const { getTypes } = useTypesActions();
   const [types, setTypes] = useState<Type[]>([]);
+  const initialValue = "Selecciona una categoria";
 
   useEffect(() => {
     getTypes().then((data) => {
@@ -36,13 +37,14 @@ export default function SelectTypes({
       {types.length > 0 && (
         <SelectDialog
           classNameButton={`${classNameButton}`}
-          selectionMessage="Selecciona una categoria"
+          selectionMessage={initialValue}
           displayMap={Object.fromEntries(
             types.map((t) => [t.idType.toString(), t.type])
           )}
           onClose={handleClose}
           initialValue={type?.type}
         >
+          <option value="">{initialValue}</option>
           {types.map((t) => (
             <option key={t.idType} value={t.idType}>
               {t.type}

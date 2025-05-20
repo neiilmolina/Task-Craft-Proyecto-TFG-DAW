@@ -31,18 +31,20 @@ export default function SelectTypes({
     }
   };
 
+  const initialValue = "Selecciona un estado";
   return (
     <>
       {states.length > 0 && (
         <SelectDialog
           classNameButton={`${classNameButton}`}
-          selectionMessage="Selecciona un estado"
+          selectionMessage={initialValue}
           displayMap={Object.fromEntries(
             states.map((s) => [s.idState.toString(), s.state])
           )}
           onClose={handleClose}
           initialValue={state?.state}
         >
+          <option value="">{initialValue}</option>
           {states.map((s) => (
             <option key={s.idState} value={s.idState}>
               {s.state}

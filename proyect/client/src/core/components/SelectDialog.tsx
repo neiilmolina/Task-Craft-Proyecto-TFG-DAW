@@ -18,7 +18,7 @@ function SelectDialog({
   onClose: (selected: string) => void;
   initialValue?: string;
 }) {
-  const [selectedOption, setSelectedOption] = useState("");
+  const [selectedOption, setSelectedOption] = useState(initialValue ?? "");
   const [showValue, setShowValue] = useState(initialValue ?? selectionMessage);
   const { isOpen, handleOpen, handleClose } = useOpenElement();
 
@@ -28,8 +28,13 @@ function SelectDialog({
 
   const handleAccept = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    console.log(selectedOption)
+    if (selectedOption === "") {
+      window.alert("Opción no válida");
+      return;
+    }
     handleClose();
-    setShowValue(displayMap[selectedOption] || selectionMessage);
+    setShowValue(displayMap[selectedOption]);
     onClose(selectedOption);
   };
 
@@ -48,6 +53,7 @@ function SelectDialog({
       <button
         onClick={handleOpenDialog}
         className={`px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 ${classNameButton}`}
+        type="button"
       >
         {showValue}
       </button>
@@ -67,10 +73,10 @@ function SelectDialog({
               </Select>
 
               <div className="flex space-x-4 justify-end">
-                <Button onClick={handleCancel} color="error">
+                <Button onClick={handleCancel} type="button" color="error">
                   Cancelar
                 </Button>
-                <Button onClick={handleAccept}>Aceptar</Button>
+                <Button onClick={handleAccept} type="button">Aceptar</Button>
               </div>
             </div>
           </div>

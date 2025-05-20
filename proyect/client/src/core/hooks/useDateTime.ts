@@ -26,5 +26,7 @@ export function useDateTime() {
     datetime,
     handleDateChange,
     handleTimeChange,
+    setDate,
+    setTime,
   };
 }

@@ -54,6 +54,30 @@
       outline-color: var(--color-primary);
     }
   }
+
+  .section-input-text {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .section-input-datetime {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .section-input-select {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+  }
 }
 
 @keyframes fadeIn {
