@@ -61,7 +61,7 @@ function SelectDialog({
             <h2 className="mb-4 text-xl font-semibold">
               Seleccione una opción
             </h2>
-            <form method="dialog" className="flex flex-col space-y-4">
+            <div className="flex flex-col space-y-4">
               <Select value={selectedOption} onChange={handleSelectChange}>
                 {children}
               </Select>
@@ -72,7 +72,7 @@ function SelectDialog({
                 </Button>
                 <Button onClick={handleAccept}>Aceptar</Button>
               </div>
-            </form>
+            </div>
           </div>
         </dialog>
       )}

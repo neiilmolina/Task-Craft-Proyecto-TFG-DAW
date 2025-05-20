@@ -20,7 +20,7 @@ export default function SelectTypes({
       setTypes(data);
       return;
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleClose = (selectedId: string) => {
@@ -35,7 +35,7 @@ export default function SelectTypes({
     <>
       {types.length > 0 && (
         <SelectDialog
-          classNameButton={"" + classNameButton}
+          classNameButton={`${classNameButton}`}
           selectionMessage="Selecciona una categoria"
           displayMap={Object.fromEntries(
             types.map((t) => [t.idType.toString(), t.type])

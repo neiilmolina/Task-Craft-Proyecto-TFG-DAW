@@ -8,7 +8,7 @@ export default function SelectTypes({
   state,
   setState,
 }: {
-  classNameButton: string;
+  classNameButton?: string;
   state: State | null;
   setState: React.Dispatch<React.SetStateAction<State | null>>;
 }) {
@@ -35,7 +35,7 @@ export default function SelectTypes({
     <>
       {states.length > 0 && (
         <SelectDialog
-          classNameButton={classNameButton}
+          classNameButton={`${classNameButton}`}
           selectionMessage="Selecciona un estado"
           displayMap={Object.fromEntries(
             states.map((s) => [s.idState.toString(), s.state])
