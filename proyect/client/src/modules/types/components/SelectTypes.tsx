@@ -8,7 +8,7 @@ export default function SelectTypes({
   type,
   setType,
 }: {
-  classNameButton: string;
+  classNameButton?: string;
   type?: Type | null;
   setType: React.Dispatch<React.SetStateAction<Type | null>>;
 }) {
@@ -35,7 +35,7 @@ export default function SelectTypes({
     <>
       {types.length > 0 && (
         <SelectDialog
-          classNameButton={classNameButton}
+          classNameButton={"" + classNameButton}
           selectionMessage="Selecciona una categoria"
           displayMap={Object.fromEntries(
             types.map((t) => [t.idType.toString(), t.type])
