@@ -8,7 +8,8 @@ export default function DashboardRoutes() {
     <div
       className="
         flex flex-row
-        h-screen w-screen
+        min-h-screen
+        w-screen
         bg-grey
         position: relative
       "

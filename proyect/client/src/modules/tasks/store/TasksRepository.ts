@@ -1,5 +1,5 @@
 import AxiosSingleton from "../../../config/AxiosSingleton";
-import { TaskDTO, TaskFilters } from "task-craft-models";
+import { TaskCreate, TaskDTO, TaskFilters, TaskUpdate } from "task-craft-models";
 
 export default class TasksRepository {
   private api: ReturnType<typeof AxiosSingleton.getInstance>;
@@ -43,5 +43,13 @@ export default class TasksRepository {
     const data = response.data as TaskDTO;
 
     return data;
+  }
+
+  async addTask(taskCreate: TaskCreate): Promise<void> {
+    await this.api.post(`${this.ENDPOINT}`, taskCreate);
+  }
+
+  async updateTask(id: string, taskUpdate: TaskUpdate): Promise<void> {
+    await this.api.put(`${this.ENDPOINT}/${id}`, taskUpdate);
   }
 }

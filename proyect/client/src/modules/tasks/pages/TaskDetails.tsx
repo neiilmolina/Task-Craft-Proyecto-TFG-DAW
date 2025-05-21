@@ -11,7 +11,9 @@ import Button from "../../../core/components/Button";
 export default function TaskDetails() {
   const { id } = useParams<{ id: string }>();
   const user = useSelector((state: RootState) => state.auth.user);
-  const { getTaskById } = useTasksActions();
+  const { getTaskById, updateTask } = useTasksActions();
+
+  console.log(id);
 
   const [task, setTask] = useState<TaskDTO | null>(null);
   const [loading, setLoading] = useState(true);
@@ -35,8 +37,11 @@ export default function TaskDetails() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, id]);
 
-  const onSubmit = () => {
-    console.log("hola");
+  const onSubmit = async (data: TaskCreate | TaskUpdate) => {
+    const dataParse = data as TaskUpdate;
+    if (id) {
+      updateTask(id, dataParse);
+    }
   };
 
   if (loading) return <Spinner />;

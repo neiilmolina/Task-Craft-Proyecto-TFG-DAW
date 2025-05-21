@@ -87,9 +87,9 @@ function Menu() {
                   onClick={() => setIsMenuOpen(false)}
                   className="
                     w-64 max-xl:hover:pr-8
-                    text-[18px]
+                    max-lg:hover:pr-4
                     py-2 px-3
-                    text-black font-bold
+                    text-[18px] text-black font-bold
                     transition-all
                     backdrop-opacity-10 duration-200 hover:bg-secondary/15 hover:rounded-lg hover:pr-20 hover:translate-x-2 hover:no-underline
                   "

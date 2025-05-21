@@ -1,13 +1,19 @@
 import { TaskDTO } from "task-craft-models";
 import { ReduxError } from "../../../../core/interfaces/interfaceErrors";
 import { createSlice } from "@reduxjs/toolkit";
-import { getTaskByIdThunk, getTasksThunk } from "./tasksThunks";
+import {
+  updateTaskThunk,
+  createTaskThunk,
+  getTaskByIdThunk,
+  getTasksThunk,
+} from "./tasksThunks";
 
 interface TasksState {
   tasks: TaskDTO[];
   loading: boolean;
   selectedTask: TaskDTO | null;
   error: ReduxError;
+  crudAction: boolean;
 }
 
 const initialState: TasksState = {
@@ -15,6 +21,7 @@ const initialState: TasksState = {
   loading: false,
   selectedTask: null,
   error: null,
+  crudAction: false,
 };
 
 const tasksSlice = createSlice({
@@ -27,6 +34,7 @@ const tasksSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // getTasks
       .addCase(getTasksThunk.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -39,6 +47,7 @@ const tasksSlice = createSlice({
         state.loading = false;
         state.error = action.payload as ReduxError;
       })
+      // getTaskById
       .addCase(getTaskByIdThunk.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -50,6 +59,38 @@ const tasksSlice = createSlice({
       .addCase(getTaskByIdThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as ReduxError;
+      })
+      // THIS WILL BE IMPLEMENTED WITH MIDDLEWARE INSTEAD OF THUNKS
+      // THE BACK END WILL CHANGE
+      // createTask
+      .addCase(createTaskThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.crudAction = false;
+      })
+      .addCase(createTaskThunk.fulfilled, (state) => {
+        state.loading = false;
+        state.crudAction = true;
+      })
+      .addCase(createTaskThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as ReduxError;
+        state.crudAction = false;
+      })
+       // updateTask
+      .addCase(updateTaskThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.crudAction = false;
+      })
+      .addCase(updateTaskThunk.fulfilled, (state) => {
+        state.loading = false;
+        state.crudAction = true;
+      })
+      .addCase(updateTaskThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as ReduxError;
+        state.crudAction = false;
       });
   },
 });

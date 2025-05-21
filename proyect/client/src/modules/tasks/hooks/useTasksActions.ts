@@ -1,7 +1,12 @@
 import { useCallback } from "react";
 import { useAppDispatch } from "../../../store/hooks/store";
-import { getTasksThunk, getTaskByIdThunk } from "../store/redux/tasksThunks";
-import { TaskFilters } from "task-craft-models";
+import {
+  getTasksThunk,
+  getTaskByIdThunk,
+  createTaskThunk,
+  updateTaskThunk,
+} from "../store/redux/tasksThunks";
+import { TaskCreate, TaskFilters, TaskUpdate } from "task-craft-models";
 
 const useAuthActions = () => {
   const dispatch = useAppDispatch();
@@ -17,9 +22,19 @@ const useAuthActions = () => {
     return await dispatch(getTaskByIdThunk(id)).unwrap();
   };
 
+  const createTask = async (taskCreate: TaskCreate) => {
+    await dispatch(createTaskThunk(taskCreate)).unwrap();
+  };
+
+  const updateTask = async (id: string, taskUpdate: TaskUpdate) => {
+    await dispatch(updateTaskThunk({ id, taskUpdate })).unwrap();
+  };
+
   return {
     getTasks,
     getTaskById,
+    createTask,
+    updateTask,
   };
 };
 

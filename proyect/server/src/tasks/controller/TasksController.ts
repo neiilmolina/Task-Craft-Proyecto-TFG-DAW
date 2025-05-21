@@ -43,6 +43,7 @@ export default class TasksController {
       res.status(200).json(tasks);
     } catch (error) {
       res.status(500).json({ error: "Error interno del servidor" });
+      console.log(error)
       return;
     }
   };
@@ -109,6 +110,7 @@ export default class TasksController {
   updateTask: RequestHandler = async (req, res) => {
     try {
       const idTask = req.params.idTask;
+      console.log(idTask);
 
       // Verificación de UUID
       if (!UUID_REGEX.test(idTask)) {
@@ -117,6 +119,7 @@ export default class TasksController {
       }
 
       const taskData: TaskUpdate = req.body;
+      console.log(taskData);
 
       // Validación de datos de la tarea
       const result = validateTaskUpdate(taskData);
@@ -145,6 +148,7 @@ export default class TasksController {
       res.status(200).json(taskUpdate);
     } catch (error) {
       res.status(500).json({ error: "Error interno del servidor" });
+      console.log(error);
     }
   };
 

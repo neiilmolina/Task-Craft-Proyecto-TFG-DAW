@@ -19,16 +19,16 @@ import { useDateTime } from "../../../core/hooks/useDateTime";
 import { filterErrors } from "../../../core/hooks/validations";
 import ErrorLabel from "../../../core/components/ErrorLabel";
 import {
-  fieldsWithEmptyStrings,
   fieldsUndefined,
-  fieldsEqualZero,
+  isAllEmptyOrZero,
 } from "../../../core/hooks/checkEmptyFields";
+import buildChangedFields from "../../../core/hooks/buildChangeFields";
 
 const INPUT_WIDTH = "w-full";
 
 type TaskFormTemplateProps = {
   initialData?: TaskDTO;
-  onSubmit: () => void;
+  onSubmit: (data: TaskCreate | TaskUpdate) => Promise<void>;
   formData: TaskCreate | TaskUpdate;
   setFormData: React.Dispatch<React.SetStateAction<TaskCreate | TaskUpdate>>;
   action: "create" | "update" | "delete";
@@ -123,37 +123,37 @@ export default function TaskFormLayout({
       idState: state?.idState ?? 0,
       idType: type?.idType ?? 0,
     };
+    let dataToSend = {};
+
+    console.log("Layout: ", newFormData);
 
     setFormData(newFormData);
 
     let validate = null;
     if (action === "create") {
-      if (
-        fieldsWithEmptyStrings(newFormData, ["idUser"]) &&
-        fieldsEqualZero(newFormData, ["idUser"])
-      ) {
+      if (isAllEmptyOrZero(newFormData, ["idUser"])) {
         alert("Para añadir la tarea tienes que rellenar algún campo");
         return;
       }
+
       validate = validateTaskCreate(newFormData);
     } else if (action === "update") {
-      const dataToSend = {
-        ...newFormData,
-        title:
-          formData.title !== initialData?.title ? formData.title : undefined,
-        description:
-          formData.description !== initialData?.description
-            ? formData.description
-            : undefined,
-        activityDate:
-          datetime !== initialData?.activityDate ? datetime : undefined,
-        idState:
-          state?.idState !== initialData?.state.idState
-            ? state?.idState
-            : undefined,
-        idType:
-          type?.idType !== initialData?.type.idType ? type?.idType : undefined,
+      const changedFields = buildChangedFields(
+        initialData,
+        {
+          ...formData,
+          activityDate: datetime,
+          idState: state?.idState,
+          idType: type?.idType,
+        },
+        ["title", "description", "activityDate", "idState", "idType"]
+      );
+
+      dataToSend = {
+        ...changedFields,
+        idUser: formData.idUser,
       };
+      
       console.log("newFormData", newFormData);
       console.log("dataToSend", dataToSend);
 
@@ -176,22 +176,37 @@ export default function TaskFormLayout({
       return;
     }
 
-    onSubmit();
+    if (action === "update") {
+      onSubmit(dataToSend);
+      return;
+    }
+
+    onSubmit(newFormData);
   };
 
   return (
     <form
-      className="flex flex-col gap-5 p-20 bg-grey items-center justify-center h-full"
       onSubmit={handleFormSubmit}
+      className="
+        flex flex-col
+        h-full min-h-full
+        p-20
+        bg-grey
+        gap-5 items-center justify-center
+      "
     >
-      <div className="section-input-text">
+      <div
+        className="
+          section-input-text
+        "
+      >
         <label>Título</label>
         <Input
-          className={INPUT_WIDTH}
           id="title"
           name="title"
           value={formData.title}
           onChange={handleChange}
+          className={INPUT_WIDTH}
         />
       </div>
       {titleErrors.length > 0 &&
@@ -199,12 +214,25 @@ export default function TaskFormLayout({
           <ErrorLabel key={index} text={message} />
         ))}
 
-      <div className="flex flex-row gap-2">
-        <div className="section-input-datetime">
+      <div
+        className="
+          flex flex-row
+          gap-2
+        "
+      >
+        <div
+          className="
+            section-input-datetime
+          "
+        >
           <label>Fecha</label>
           <DatePicker value={date} onChange={handleDateChange} />
         </div>
-        <div className="section-input-datetime">
+        <div
+          className="
+            section-input-datetime
+          "
+        >
           <label>Hora</label>
           <TimePickerTemporal value={time} onChange={handleTimeChange} />
         </div>
@@ -214,7 +242,11 @@ export default function TaskFormLayout({
           <ErrorLabel key={index} text={message} />
         ))}
 
-      <div className="section-input-text">
+      <div
+        className="
+          section-input-text
+        "
+      >
         <label>Descripción</label>
         <TextArea
           name="description"
@@ -230,7 +262,11 @@ export default function TaskFormLayout({
           <ErrorLabel key={index} text={message} />
         ))}
 
-      <div className="section-input-select">
+      <div
+        className="
+          section-input-select
+        "
+      >
         <label>Categoría</label>
         <SelectTypes type={type} setType={setType} />
       </div>
@@ -239,7 +275,11 @@ export default function TaskFormLayout({
           <ErrorLabel key={index} text={message} />
         ))}
 
-      <div className="section-input-select">
+      <div
+        className="
+          section-input-select
+        "
+      >
         <label>Estado</label>
         <SelectStates state={state} setState={setState} />
       </div>

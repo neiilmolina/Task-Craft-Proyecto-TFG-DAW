@@ -4,9 +4,13 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store";
 import Button from "../../../core/components/Button";
+import useTasksActions from "../hooks/useTasksActions";
+import { useNavigate } from "react-router-dom";
 
 export default function TaskAdd() {
   const user = useSelector((state: RootState) => state.auth.user);
+  const { createTask } = useTasksActions();
+  const navigator = useNavigate();
 
   const [formData, setFormData] = useState<TaskCreate | TaskUpdate>({
     activityDate: "",
@@ -17,8 +21,11 @@ export default function TaskAdd() {
     idUser: user?.idUser ?? "",
   });
 
-  const onSubmit = async () => {
-    console.log("Tarea creada:", formData);
+  const onSubmit = async (data: TaskCreate | TaskUpdate) => {
+    console.log("Tarea creada:", data);
+    const parseData = data as TaskCreate;
+    await createTask(parseData);
+    navigator("/dashboard/tasks");
   };
 
   return (

@@ -1,7 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import TasksRepository from "../TasksRepository";
 import { handleThunkError } from "../../../../core/hooks/captureErrors";
-import { TaskFilters } from "task-craft-models";
+import { TaskCreate, TaskFilters, TaskUpdate } from "task-craft-models";
 
 const tasksRepository = new TasksRepository();
 
@@ -32,6 +32,39 @@ export const getTaskByIdThunk = createAsyncThunk(
         error,
         rejectWithValue,
         "Error al obtener la tarea"
+      );
+    }
+  }
+);
+
+export const createTaskThunk = createAsyncThunk(
+  "tasks/create",
+  async (taskCreate: TaskCreate, { rejectWithValue }) => {
+    try {
+      await tasksRepository.addTask(taskCreate);
+    } catch (error) {
+      return handleThunkError(
+        error,
+        rejectWithValue,
+        "Error al crear la tarea"
+      );
+    }
+  }
+);
+
+export const updateTaskThunk = createAsyncThunk(
+  "tasks/update",
+  async (
+    { id, taskUpdate }: { id: string; taskUpdate: TaskUpdate },
+    { rejectWithValue }
+  ) => {
+    try {
+      await tasksRepository.updateTask(id, taskUpdate);
+    } catch (error) {
+      return handleThunkError(
+        error,
+        rejectWithValue,
+        "Error al actualizar la tarea"
       );
     }
   }
