@@ -15,7 +15,23 @@ export const getTasksThunk = createAsyncThunk(
       return handleThunkError(
         error,
         rejectWithValue,
-        "Error al obtener los categorias de la base de datos."
+        "Error al obtener las tareas de la base de datos."
+      );
+    }
+  }
+);
+
+export const getTaskByIdThunk = createAsyncThunk(
+  "/tasks/getTaskById",
+  async (id: string, { rejectWithValue }) => {
+    try {
+      const response = await tasksRepository.getTaskById(id);
+      return response;
+    } catch (error) {
+      return handleThunkError(
+        error,
+        rejectWithValue,
+        "Error al obtener la tarea"
       );
     }
   }

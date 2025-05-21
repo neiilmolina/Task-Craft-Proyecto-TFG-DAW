@@ -1,5 +1,26 @@
-function todosCamposVacios(obj: Record<string, any>): boolean {
-  return Object.values(obj).every(
-    (valor) => typeof valor === "string" && valor.trim() === ""
-  );
+export function fieldsWithEmptyStrings(
+  data: object,
+  excludeKeys: string[] = []
+): boolean {
+  return Object.entries(data)
+    .filter(([key]) => !excludeKeys.includes(key))
+    .every(([, valor]) => typeof valor === "string" && valor.trim() === "");
+}
+
+export function fieldsEqualZero(
+  data: object,
+  excludeKeys: string[] = []
+): boolean {
+  return Object.entries(data)
+    .filter(([key]) => !excludeKeys.includes(key))
+    .every(([, valor]) => typeof valor === "number" && valor === 0);
+}
+
+export function fieldsUndefined(
+  data: object,
+  excludeKeys: string[] = []
+): boolean {
+  return Object.entries(data)
+    .filter(([key]) => !excludeKeys.includes(key))
+    .every(([, value]) => value === undefined);
 }

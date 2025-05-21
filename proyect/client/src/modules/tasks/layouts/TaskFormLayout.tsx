@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import Input from "../../../core/components/Input";
 import { TextArea } from "../../../core/components/Textarea";
 import DatePicker from "../../../core/components/DatePicker";
@@ -18,6 +18,11 @@ import {
 import { useDateTime } from "../../../core/hooks/useDateTime";
 import { filterErrors } from "../../../core/hooks/validations";
 import ErrorLabel from "../../../core/components/ErrorLabel";
+import {
+  fieldsWithEmptyStrings,
+  fieldsUndefined,
+  fieldsEqualZero,
+} from "../../../core/hooks/checkEmptyFields";
 
 const INPUT_WIDTH = "w-full";
 
@@ -75,11 +80,28 @@ export default function TaskFormLayout({
     handleTimeChange,
   } = useDateTime();
 
-  if (initialData?.activityDate) {
-    const [initialDate, initialTime] = initialData.activityDate.split("T");
-    setDate(initialDate);
-    setTime(initialTime?.slice(0, 5) ?? "");
-  }
+  useEffect(() => {
+    if (initialData?.activityDate) {
+      const [initialDate, initialTime] = initialData.activityDate.split("T");
+      setDate(initialDate);
+      setTime(initialTime?.slice(0, 5) ?? "");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialData]);
+
+  useEffect(() => {
+    if (initialData && action === "update") {
+      setFormData((prev) => ({
+        ...prev,
+        title: initialData.title,
+        description: initialData.description,
+        idState: initialData.state.idState,
+        idType: initialData.type.idType,
+        activityDate: initialData.activityDate,
+        idUser: initialData.idUser,
+      }));
+    }
+  }, [initialData, action, setFormData]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -104,13 +126,42 @@ export default function TaskFormLayout({
 
     setFormData(newFormData);
 
-    console.log(newFormData);
-
     let validate = null;
     if (action === "create") {
+      if (
+        fieldsWithEmptyStrings(newFormData, ["idUser"]) &&
+        fieldsEqualZero(newFormData, ["idUser"])
+      ) {
+        alert("Para añadir la tarea tienes que rellenar algún campo");
+        return;
+      }
       validate = validateTaskCreate(newFormData);
     } else if (action === "update") {
-      validate = validateTaskUpdate(newFormData);
+      const dataToSend = {
+        ...newFormData,
+        title:
+          formData.title !== initialData?.title ? formData.title : undefined,
+        description:
+          formData.description !== initialData?.description
+            ? formData.description
+            : undefined,
+        activityDate:
+          datetime !== initialData?.activityDate ? datetime : undefined,
+        idState:
+          state?.idState !== initialData?.state.idState
+            ? state?.idState
+            : undefined,
+        idType:
+          type?.idType !== initialData?.type.idType ? type?.idType : undefined,
+      };
+      console.log("newFormData", newFormData);
+      console.log("dataToSend", dataToSend);
+
+      if (fieldsUndefined(dataToSend, ["idUser"])) {
+        alert("Para actualizar la tarea tienes que cambiar algún campo");
+        return;
+      }
+      validate = validateTaskUpdate(dataToSend);
     }
 
     if (validate !== null && !validate.success) {

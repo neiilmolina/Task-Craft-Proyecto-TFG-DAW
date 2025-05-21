@@ -1,6 +1,7 @@
 import { TaskDTO } from "task-craft-models";
 import Container from "../../../core/components/Container";
 import { Temporal } from "@js-temporal/polyfill";
+import { useNavigate } from "react-router-dom";
 
 interface TaskCardProps {
   task: TaskDTO;
@@ -8,44 +9,83 @@ interface TaskCardProps {
 
 function TaskCard({ task }: TaskCardProps) {
   const { activityDate } = task;
-
+  const navigate = useNavigate();
   const temporalDate = Temporal.PlainDateTime.from(activityDate);
-  console.log("temporalDate", temporalDate);
 
-  const dateTimeString = `${temporalDate.day}/${temporalDate.month}/${temporalDate.year}`;
-  const hourString = `${temporalDate.hour}:${temporalDate.minute}${temporalDate.second}`  ;
+  const dateTimeString =
+    `${temporalDate.day.toString().padStart(2, "0")}/` +
+    `${temporalDate.month.toString().padStart(2, "0")}/` +
+    `${temporalDate.year}`;
 
+  const hourString =
+    `${temporalDate.hour.toString().padStart(2, "0")}:` +
+    `${temporalDate.minute.toString().padStart(2, "0")}`;
+
+  const now = Temporal.Now.plainDateTimeISO();
+  const dateComparison = Temporal.PlainDateTime.compare(now, temporalDate);
+  const lineThrough = dateComparison < 0 ? "line-through" : "";
+
+  const onClick = () => navigate(`/tasks/detailsTask/${task.idTask}`);
   return (
-    <form>
-      <button
-        type="button"
-        className="w-full text-left focus:outline-none rounded-lg"
+    <Container
+      role="button"
+      tabIndex={0}
+      className="
+        w-40 h-32
+        p-2
+        rounded-lg
+        cursor-pointer transition-colors
+        duration-200 hover:bg-muted
+      "
+      onClick={onClick}
+    >
+      <h3
+        className={`
+          text-sm
+          text-primary
+          font-bold
+          ${lineThrough}
+          hover:underline
+        `}
       >
-        <Container className="w-40 h-32 p-2 cursor-pointer transition-colors duration-200">
-          <h3 className="text-sm text-primary hover:underline font-bold">
-            {task.title}
-          </h3>
+        {task.title}
+      </h3>
 
-          <div className="flex items-center gap-1.5 mb-2">
-            <span
-              className="h-2 w-2 rounded-full flex-shrink-0"
-              style={{ backgroundColor: task.type.color }}
-            />
-            <span
-              className="text-xs font-medium"
-              style={{ color: task.type.color }}
-            >
-              {task.type.type}
-            </span>
-          </div>
+      <div
+        className="
+          flex
+          mb-2
+          items-center gap-1.5
+        "
+      >
+        <span
+          style={{ backgroundColor: task.type.color }}
+          className="
+            flex-shrink-0
+            h-2 w-2
+            rounded-full
+          "
+        />
+        <span
+          style={{ color: task.type.color }}
+          className="
+            text-xs font-medium
+          "
+        >
+          {task.type.type}
+        </span>
+      </div>
 
-          <div className="text-xs space-y-0.5">
-            <p>{dateTimeString}</p>
-            <p>{hourString}</p>
-          </div>
-        </Container>
-      </button>
-    </form>
+      <div
+        className="
+          space-y-0.5
+          text-xs
+        "
+      >
+        <p>{dateTimeString}</p>
+        <p>{hourString}</p>
+      </div>
+    </Container>
   );
 }
 

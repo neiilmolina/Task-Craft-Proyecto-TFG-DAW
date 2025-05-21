@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useAppDispatch } from "../../../store/hooks/store";
-import { getTasksThunk } from "../store/redux/tasksThunks";
+import { getTasksThunk, getTaskByIdThunk } from "../store/redux/tasksThunks";
 import { TaskFilters } from "task-craft-models";
 
 const useAuthActions = () => {
@@ -8,13 +8,18 @@ const useAuthActions = () => {
 
   const getTasks = useCallback(
     async (tasksFilters: TaskFilters) => {
-      await dispatch(getTasksThunk(tasksFilters)).unwrap();
+      return await dispatch(getTasksThunk(tasksFilters)).unwrap();
     },
     [dispatch]
   );
 
+  const getTaskById = async (id: string) => {
+    return await dispatch(getTaskByIdThunk(id)).unwrap();
+  };
+
   return {
     getTasks,
+    getTaskById,
   };
 };
 
