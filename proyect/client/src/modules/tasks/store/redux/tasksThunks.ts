@@ -69,3 +69,18 @@ export const updateTaskThunk = createAsyncThunk(
     }
   }
 );
+
+export const deleteTaskThunk = createAsyncThunk(
+  "/tasks/deleteTask",
+  async (id: string, { rejectWithValue }) => {
+    try {
+      await tasksRepository.deleteTask(id);
+    } catch (error) {
+      return handleThunkError(
+        error,
+        rejectWithValue,
+        "Error al eliminar la tarea"
+      );
+    }
+  }
+);

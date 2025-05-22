@@ -2,6 +2,7 @@ import { TaskDTO } from "task-craft-models";
 import { ReduxError } from "../../../../core/interfaces/interfaceErrors";
 import { createSlice } from "@reduxjs/toolkit";
 import {
+  deleteTaskThunk,
   updateTaskThunk,
   createTaskThunk,
   getTaskByIdThunk,
@@ -77,7 +78,7 @@ const tasksSlice = createSlice({
         state.error = action.payload as ReduxError;
         state.crudAction = false;
       })
-       // updateTask
+      // updateTask
       .addCase(updateTaskThunk.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -88,6 +89,21 @@ const tasksSlice = createSlice({
         state.crudAction = true;
       })
       .addCase(updateTaskThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as ReduxError;
+        state.crudAction = false;
+      })
+      // deleteTask
+      .addCase(deleteTaskThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.crudAction = false;
+      })
+      .addCase(deleteTaskThunk.fulfilled, (state) => {
+        state.loading = false;
+        state.crudAction = true;
+      })
+      .addCase(deleteTaskThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as ReduxError;
         state.crudAction = false;

@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { RootState } from "../../../store";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
@@ -10,13 +10,15 @@ import Button from "../../../core/components/Button";
 
 export default function TaskDetails() {
   const { id } = useParams<{ id: string }>();
-  const user = useSelector((state: RootState) => state.auth.user);
-  const { getTaskById, updateTask } = useTasksActions();
+  const [searchParams] = useSearchParams();
+  const redirectTo = searchParams.get("redirectTo") ?? -1;
 
-  console.log(id);
+  const user = useSelector((state: RootState) => state.auth.user);
+  const { getTaskById, updateTask, deleteTask } = useTasksActions();
 
   const [task, setTask] = useState<TaskDTO | null>(null);
   const [loading, setLoading] = useState(true);
+  const navigator = useNavigate();
 
   const [formData, setFormData] = useState<TaskCreate | TaskUpdate>({
     activityDate: "",
@@ -39,8 +41,30 @@ export default function TaskDetails() {
 
   const onSubmit = async (data: TaskCreate | TaskUpdate) => {
     const dataParse = data as TaskUpdate;
-    if (id) {
-      updateTask(id, dataParse);
+    if (!id) return;
+    const confirmed = window.confirm(
+      "¿Estás seguro de que deseas actualizar los campos de esta tarea?"
+    );
+    if (!confirmed) return;
+    updateTask(id, dataParse);
+    if (typeof redirectTo === "string") {
+      navigator(redirectTo);
+    } else {
+      navigator(redirectTo);
+    }
+  };
+
+  const onClickDelete = () => {
+    if (!id) return;
+    const confirmed = window.confirm(
+      "¿Estás seguro de que deseas eliminar esta tarea?"
+    );
+    if (!confirmed) return;
+    deleteTask(id);
+    if (typeof redirectTo === "string") {
+      navigator(redirectTo);
+    } else {
+      navigator(redirectTo);
     }
   };
 
@@ -55,10 +79,10 @@ export default function TaskDetails() {
       initialData={task}
       onSubmit={onSubmit}
     >
-      <div className="flex flex-row justify-between gap-10">
-        <Button color="error">Eliminar</Button>
-        <Button color="primary">Editar</Button>
-      </div>
+      <Button type="button" onClick={onClickDelete} color="error">
+        Eliminar
+      </Button>
+      <Button color="primary">Editar</Button>
     </TaskFormLayout>
 
     // <div>Detalles de la tarea: {task.title}</div>

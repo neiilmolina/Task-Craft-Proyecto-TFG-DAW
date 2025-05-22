@@ -5,7 +5,7 @@
   "scripts": {
     "build": "npx tsc",
     "start": "ts-node -r tsconfig-paths/register ./server-mysql.ts",
-    "dev": "nodemon --exec tsx ./server-mysql.ts --watch 'src/**/*' --watch './server-mysql.ts' --ext ts,tsx",
+    "dev": "nodemon",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage"

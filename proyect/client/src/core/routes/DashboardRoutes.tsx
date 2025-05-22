@@ -27,6 +27,8 @@ export default function DashboardRoutes() {
           py-4
           pl-10
           pr-4
+          flex-1
+          position: relative
         "
       >
         <Routes>

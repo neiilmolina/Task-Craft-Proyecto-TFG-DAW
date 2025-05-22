@@ -218,14 +218,18 @@ export default class TaskMysqlDAO implements ITaskDAO {
           task.activityDate.replace("T", "T")
         );
 
-        resolve({
+        const newTask = {
           idTask: idTask,
           title: task.title,
           description: task.description,
-          activityDate: activityDate, // Usar Temporal.PlainDateTime para el campo de fecha
+          activityDate: formattedDate, // Usar Temporal.PlainDateTime para el campo de fecha
           idState: task.idState,
           idType: task.idType,
           idUser: task.idUser,
+        };
+        resolve({
+          ...newTask,
+          activityDate: activityDate,
         });
       });
     });

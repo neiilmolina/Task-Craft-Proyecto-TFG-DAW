@@ -22,10 +22,9 @@ export default function TaskAdd() {
   });
 
   const onSubmit = async (data: TaskCreate | TaskUpdate) => {
-    console.log("Tarea creada:", data);
     const parseData = data as TaskCreate;
     await createTask(parseData);
-    navigator("/dashboard/tasks");
+    navigator(-1);
   };
 
   return (

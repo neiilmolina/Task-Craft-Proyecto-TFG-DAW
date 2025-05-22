@@ -5,6 +5,7 @@ import {
   getTaskByIdThunk,
   createTaskThunk,
   updateTaskThunk,
+  deleteTaskThunk,
 } from "../store/redux/tasksThunks";
 import { TaskCreate, TaskFilters, TaskUpdate } from "task-craft-models";
 
@@ -30,11 +31,16 @@ const useAuthActions = () => {
     await dispatch(updateTaskThunk({ id, taskUpdate })).unwrap();
   };
 
+  const deleteTask = async (id: string) => {
+    await dispatch(deleteTaskThunk(id)).unwrap();
+  };
+
   return {
     getTasks,
     getTaskById,
     createTask,
     updateTask,
+    deleteTask,
   };
 };
 

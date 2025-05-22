@@ -18,11 +18,9 @@ import {
 import { useDateTime } from "../../../core/hooks/useDateTime";
 import { filterErrors } from "../../../core/hooks/validations";
 import ErrorLabel from "../../../core/components/ErrorLabel";
-import {
-  fieldsUndefined,
-  isAllEmptyOrZero,
-} from "../../../core/hooks/checkEmptyFields";
-import buildChangedFields from "../../../core/hooks/buildChangeFields";
+import { isAllEmptyOrZero } from "../../../core/hooks/checkEmptyFields";
+import Button from "../../../core/components/Button";
+import { useNavigate } from "react-router-dom";
 
 const INPUT_WIDTH = "w-full";
 
@@ -31,7 +29,7 @@ type TaskFormTemplateProps = {
   onSubmit: (data: TaskCreate | TaskUpdate) => Promise<void>;
   formData: TaskCreate | TaskUpdate;
   setFormData: React.Dispatch<React.SetStateAction<TaskCreate | TaskUpdate>>;
-  action: "create" | "update" | "delete";
+  action: "create" | "update";
   children: ReactNode;
 };
 
@@ -43,6 +41,7 @@ export default function TaskFormLayout({
   action,
   children,
 }: TaskFormTemplateProps) {
+  const navigator = useNavigate();
   const [titleErrors, setTitleErrors] = useState([] as FormattedError[]);
   const [descriptionErrors, setDescriptionErrors] = useState(
     [] as FormattedError[]
@@ -123,45 +122,39 @@ export default function TaskFormLayout({
       idState: state?.idState ?? 0,
       idType: type?.idType ?? 0,
     };
-    let dataToSend = {};
-
-    console.log("Layout: ", newFormData);
 
     setFormData(newFormData);
 
     let validate = null;
+
     if (action === "create") {
       if (isAllEmptyOrZero(newFormData, ["idUser"])) {
         alert("Para añadir la tarea tienes que rellenar algún campo");
         return;
       }
-
       validate = validateTaskCreate(newFormData);
     } else if (action === "update") {
-      const changedFields = buildChangedFields(
-        initialData,
-        {
-          ...formData,
-          activityDate: datetime,
-          idState: state?.idState,
-          idType: type?.idType,
-        },
-        ["title", "description", "activityDate", "idState", "idType"]
-      );
+      if (!initialData) return;
 
-      dataToSend = {
-        ...changedFields,
-        idUser: formData.idUser,
-      };
-      
-      console.log("newFormData", newFormData);
-      console.log("dataToSend", dataToSend);
+      const hasChanges =
+        initialData.title !== newFormData.title
+          ? true
+          : initialData.description !== newFormData.description
+          ? true
+          : initialData.activityDate !== newFormData.activityDate
+          ? true
+          : initialData.state.idState !== newFormData.idState
+          ? true
+          : initialData.type.idType !== newFormData.idType
+          ? true
+          : false;
 
-      if (fieldsUndefined(dataToSend, ["idUser"])) {
+      if (!hasChanges) {
         alert("Para actualizar la tarea tienes que cambiar algún campo");
         return;
       }
-      validate = validateTaskUpdate(dataToSend);
+
+      validate = validateTaskUpdate(newFormData);
     }
 
     if (validate !== null && !validate.success) {
@@ -176,11 +169,6 @@ export default function TaskFormLayout({
       return;
     }
 
-    if (action === "update") {
-      onSubmit(dataToSend);
-      return;
-    }
-
     onSubmit(newFormData);
   };
 
@@ -189,7 +177,7 @@ export default function TaskFormLayout({
       onSubmit={handleFormSubmit}
       className="
         flex flex-col
-        h-full min-h-full
+        min-h-screen
         p-20
         bg-grey
         gap-5 items-center justify-center
@@ -254,7 +242,7 @@ export default function TaskFormLayout({
           placeholder="Escribe una descripción..."
           value={formData.description}
           onChange={handleChange}
-          className={INPUT_WIDTH}
+          className={INPUT_WIDTH + " h-36"}
         />
       </div>
       {descriptionErrors.length > 0 &&
@@ -292,8 +280,18 @@ export default function TaskFormLayout({
         idUserErrors.map(({ message }, index) => (
           <ErrorLabel key={index} text={message} />
         ))}
-
-      {children}
+      <div className="flex flex-row justify-between gap-10">
+        <Button
+          type="button"
+          color="neutral"
+          onClick={() => {
+            navigator(-1);
+          }}
+        >
+          Cancelar
+        </Button>
+        {children}
+      </div>
     </form>
   );
 }

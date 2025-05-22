@@ -10,7 +10,6 @@ import { UUID_REGEX } from "@/src/core/constants";
 import { randomUUID } from "crypto";
 import TasksRepository from "@/src/tasks/model/TasksRepository";
 import { validateTaskCreate, validateTaskUpdate } from "task-craft-models";
-import { Temporal } from "@js-temporal/polyfill";
 
 export default class TasksController {
   private tasksRepository: TasksRepository;
@@ -43,7 +42,6 @@ export default class TasksController {
       res.status(200).json(tasks);
     } catch (error) {
       res.status(500).json({ error: "Error interno del servidor" });
-      console.log(error)
       return;
     }
   };

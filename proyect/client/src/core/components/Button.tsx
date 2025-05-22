@@ -9,6 +9,10 @@ const BUTTON_COLORS = {
     base: "bg-secondary",
     hover: "hover:bg-primary",
   },
+  neutral: {
+    base: "bg-greyDark",
+    hover: "hover:bg-greyDark/80",
+  },
 } as const;
 
 type ButtonColor = keyof typeof BUTTON_COLORS;

@@ -9,7 +9,6 @@ export default class TypesRepository {
   }
   public async getTypes(): Promise<Type[]> {
     const response = await this.api.get("/types");
-    console.log(response.data);
     return response.data;
   }
 }

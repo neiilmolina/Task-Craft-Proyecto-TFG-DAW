@@ -26,6 +26,7 @@ export function buildTaskFromFields({
   color: string;
   idUser: string;
 }): Task {
+  console.log(activityDate);
   return {
     idTask,
     title,

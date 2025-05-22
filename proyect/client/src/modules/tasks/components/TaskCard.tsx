@@ -22,10 +22,9 @@ function TaskCard({ task }: TaskCardProps) {
     `${temporalDate.minute.toString().padStart(2, "0")}`;
 
   const now = Temporal.Now.plainDateTimeISO();
-  const dateComparison = Temporal.PlainDateTime.compare(now, temporalDate);
-  const lineThrough = dateComparison < 0 ? "line-through" : "";
+  const isFuture = Temporal.PlainDateTime.compare(now, temporalDate) < 0 ;
 
-  const onClick = () => navigate(`/tasks/detailsTask/${task.idTask}`);
+  const onClick = () => navigate(`/tasks/detailsTask/${task.idTask}?redirectTo=/dashboard/tasks`);
   return (
     <Container
       role="button"
@@ -40,11 +39,13 @@ function TaskCard({ task }: TaskCardProps) {
       onClick={onClick}
     >
       <h3
+        style={{
+          textDecoration: isFuture ? "none" : "line-through",
+        }}
         className={`
           text-sm
           text-primary
           font-bold
-          ${lineThrough}
           hover:underline
         `}
       >
