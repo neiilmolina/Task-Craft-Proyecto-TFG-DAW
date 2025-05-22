@@ -6,7 +6,7 @@ import Button from "../../../core/components/Button";
 import TaskSections from "../components/TaskSection";
 import { TaskDTO } from "task-craft-models";
 import { useNavigate } from "react-router-dom";
-import Spinner from "../../../core/components/Spinner";
+import DashboardPageLayout from "../../../core/layout/DashboardPageLayout";
 
 // Export this later from my package
 type TypeTask = {
@@ -43,11 +43,9 @@ export default function TasksPage() {
   if (!user) return <div>Necesitas iniciar sesión</div>;
 
   const onclick = () => navigate("/tasks/addTask");
-  if (loading) return <Spinner />;
 
   return (
-    <main className="flex flex-col gap-6">
-      <h1>Tareas</h1>
+    <DashboardPageLayout title="Tareas" loading={loading}>
       <Button onClick={onclick} color="primary">
         Añadir tarea
       </Button>
@@ -67,6 +65,6 @@ export default function TasksPage() {
           );
         })
       )}
-    </main>
+    </DashboardPageLayout>
   );
 }

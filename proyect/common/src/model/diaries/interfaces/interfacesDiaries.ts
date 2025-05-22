@@ -16,6 +16,14 @@ export interface Diary {
   idUser: string;
 }
 
+export interface DiaryDTO {
+  idDiary: string;
+  title: string;
+  description: string;
+  activityDate: string;
+  idUser: string;
+}
+
 export interface DiaryCreate {
   title: string;
   description: string;

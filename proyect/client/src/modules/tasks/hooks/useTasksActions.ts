@@ -9,7 +9,7 @@ import {
 } from "../store/redux/tasksThunks";
 import { TaskCreate, TaskFilters, TaskUpdate } from "task-craft-models";
 
-const useAuthActions = () => {
+const useTasksActions = () => {
   const dispatch = useAppDispatch();
 
   const getTasks = useCallback(
@@ -44,4 +44,4 @@ const useAuthActions = () => {
   };
 };
 
-export default useAuthActions;
+export default useTasksActions;

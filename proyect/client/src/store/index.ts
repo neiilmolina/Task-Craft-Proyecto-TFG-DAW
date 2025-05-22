@@ -3,6 +3,7 @@ import authReducer from "../modules/auth/store/redux/authSlice";
 import typesReducer from "../modules/types/store/redux/typesSlice";
 import statesReducer from "../modules/states/store/redux/statesSlice";
 import tasksReducer from "../modules/tasks/store/redux/tasksSlice";
+import diariesReducer from "../modules/diaries/store/redux/diariesSlice";
 
 export const store = configureStore({
   // Reducers that defines the structure of the global state
@@ -11,6 +12,7 @@ export const store = configureStore({
     types: typesReducer,
     states: statesReducer,
     tasks: tasksReducer,
+    diaries: diariesReducer,
   },
   // Middleware for the synchronization with the database
   middleware: (getDefaultMiddleware) =>
