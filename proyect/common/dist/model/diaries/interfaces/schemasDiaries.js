@@ -8,7 +8,7 @@ const formatMessages_1 = require("../../../validations/formatMessages");
 // Constantes para los tipos de validación
 const title = (0, stringValidations_1.validateString)("title", 1);
 const description = (0, stringValidations_1.validateString)("descripcion", 1, 300);
-const activityDate = (0, dateValidations_1.validateFutureDate)("fecha");
+const activityDate = (0, dateValidations_1.validateDateFormat)("fecha");
 const idUser = zod_1.z.string().uuid();
 // Esquema para DiaryCreate
 exports.DiaryCreateSchema = zod_1.z.object({
@@ -21,7 +21,6 @@ exports.DiaryCreateSchema = zod_1.z.object({
 exports.DiaryUpdateSchema = zod_1.z.object({
     title: title.optional(),
     description: description.optional(),
-    activityDate: (0, dateValidations_1.validateFutureDate)("fecha").optional(),
     idUser: idUser.optional(),
 });
 exports.DiaryFiltersSchema = zod_1.z.object({

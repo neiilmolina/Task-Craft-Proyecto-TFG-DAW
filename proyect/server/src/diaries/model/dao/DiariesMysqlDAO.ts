@@ -61,7 +61,7 @@ export default class DiariesMysqlDAO implements IDiariesDAO {
           params.push(futureDate.replace("T", " "));
         }
       }
-
+      query += ` ORDER BY d.${FIELDS.activityDate} DESC`;
       connection.query(query, params, (err: any, results: RowDataPacket[]) => {
         if (err) {
           return reject(err);
@@ -196,7 +196,6 @@ export default class DiariesMysqlDAO implements IDiariesDAO {
       const query = `UPDATE ${TABLE_NAME} SET
                         ${FIELDS.title} = ?, 
                         ${FIELDS.description} = ?, 
-                        ${FIELDS.activityDate} = ?, 
                         ${FIELDS.idUser} = ? 
                         WHERE ${FIELDS.idDiary} = ?`;
 
@@ -205,7 +204,6 @@ export default class DiariesMysqlDAO implements IDiariesDAO {
         [
           diary.title,
           diary.description,
-          diary.activityDate ? diary.activityDate.replace("T", " ") : undefined,
           diary.idUser,
           idDiary,
         ],
@@ -225,9 +223,6 @@ export default class DiariesMysqlDAO implements IDiariesDAO {
             idDiary: idDiary,
             title: diary.title,
             description: diary.description,
-            activityDate: diary.activityDate
-              ? Temporal.PlainDateTime.from(diary.activityDate)
-              : undefined,
             idUser: diary.idUser,
           } as DiaryReturn);
         }

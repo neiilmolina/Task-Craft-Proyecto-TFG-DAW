@@ -34,7 +34,6 @@ export interface DiaryCreate {
 export interface DiaryUpdate {
   title?: string;
   description?: string;
-  activityDate?: string;
   idUser?: string;
 }
 

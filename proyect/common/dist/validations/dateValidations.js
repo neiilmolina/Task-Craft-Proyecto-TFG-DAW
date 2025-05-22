@@ -13,13 +13,13 @@ const validateFutureDate = (attributeName) => zod_1.z
             // Formato completo (fecha y hora)
             const temporalDate = polyfill_1.Temporal.PlainDateTime.from(value);
             const now = polyfill_1.Temporal.Now.plainDateTimeISO();
-            return polyfill_1.Temporal.PlainDateTime.compare(temporalDate, now) > 0;
+            return polyfill_1.Temporal.PlainDateTime.compare(temporalDate, now) >= 0;
         }
         else {
             // Solo fecha (sin hora)
             const temporalDate = polyfill_1.Temporal.PlainDate.from(value);
             const today = polyfill_1.Temporal.Now.plainDateISO();
-            return polyfill_1.Temporal.PlainDate.compare(temporalDate, today) > 0;
+            return polyfill_1.Temporal.PlainDate.compare(temporalDate, today) >= 0;
         }
     }
     catch (error) {

@@ -19,17 +19,14 @@ export declare const DiaryCreateSchema: z.ZodObject<{
 export declare const DiaryUpdateSchema: z.ZodObject<{
     title: z.ZodOptional<z.ZodString>;
     description: z.ZodOptional<z.ZodString>;
-    activityDate: z.ZodOptional<z.ZodEffects<z.ZodString, string, string>>;
     idUser: z.ZodOptional<z.ZodString>;
 }, "strip", z.ZodTypeAny, {
     title?: string | undefined;
     description?: string | undefined;
-    activityDate?: string | undefined;
     idUser?: string | undefined;
 }, {
     title?: string | undefined;
     description?: string | undefined;
-    activityDate?: string | undefined;
     idUser?: string | undefined;
 }>;
 export declare const DiaryFiltersSchema: z.ZodObject<{

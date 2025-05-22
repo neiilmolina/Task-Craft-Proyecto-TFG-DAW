@@ -6,6 +6,7 @@ import {
   DiaryUpdate,
 } from "./interfacesDiaries";
 import {
+  validateDateFormat,
   validateFutureDate,
   validatePastDate,
 } from "../../../validations/dateValidations";
@@ -15,7 +16,7 @@ import { formatZodMessages } from "../../../validations/formatMessages";
 // Constantes para los tipos de validación
 const title = validateString("title", 1);
 const description = validateString("descripcion", 1, 300);
-const activityDate = validateFutureDate("fecha");
+const activityDate = validateDateFormat("fecha");
 
 const idUser = z.string().uuid();
 
@@ -31,7 +32,6 @@ export const DiaryCreateSchema = z.object({
 export const DiaryUpdateSchema = z.object({
   title: title.optional(),
   description: description.optional(),
-  activityDate: validateFutureDate("fecha").optional(),
   idUser: idUser.optional(),
 });
 

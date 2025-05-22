@@ -5,7 +5,7 @@ import TaskDetails from "../pages/TaskDetails";
 const routesTasks: AppRoutes[] = [
   {
     path: "addTask",
-    name: "Pepe",
+    name: "Añadir Tarea",
     Component: TaskAdd,
   },
   {

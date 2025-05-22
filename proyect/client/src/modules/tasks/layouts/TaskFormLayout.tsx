@@ -21,6 +21,7 @@ import ErrorLabel from "../../../core/components/ErrorLabel";
 import { isAllEmptyOrZero } from "../../../core/hooks/checkEmptyFields";
 import Button from "../../../core/components/Button";
 import { useNavigate } from "react-router-dom";
+import { CharacterCounter } from "../../../core/components/CharacterCounter";
 
 const INPUT_WIDTH = "w-full";
 
@@ -188,13 +189,17 @@ export default function TaskFormLayout({
           section-input-text
         "
       >
-        <label>Título</label>
+        <label>
+          Título {" "}
+          <CharacterCounter text={formData.title} maxLength={20} />
+        </label>
         <Input
           id="title"
           name="title"
           value={formData.title}
           onChange={handleChange}
           className={INPUT_WIDTH}
+          maxLength={20}
         />
       </div>
       {titleErrors.length > 0 &&
@@ -235,12 +240,17 @@ export default function TaskFormLayout({
           section-input-text
         "
       >
-        <label>Descripción</label>
+        <label>
+          Descripción {" "}
+          <CharacterCounter text={formData.description} maxLength={50} 
+          />
+        </label>
         <TextArea
           name="description"
           id="description"
           placeholder="Escribe una descripción..."
           value={formData.description}
+          maxLength={50}
           onChange={handleChange}
           className={INPUT_WIDTH + " h-36"}
         />

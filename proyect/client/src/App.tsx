@@ -10,6 +10,7 @@ import { RootState } from "./store";
 import NotFound from "./core/pages/NotFound";
 import TasksRoutes from "./modules/tasks/routes/TasksRoutes";
 import Spinner from "./core/components/Spinner";
+import DiariesRoutes from "./modules/diaries/routes/DiariesRoutes";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -45,6 +46,15 @@ function App() {
           element={
             <PrivateRoute user={user}>
               <TasksRoutes />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/diaries/*"
+          element={
+            <PrivateRoute user={user}>
+              <DiariesRoutes />
             </PrivateRoute>
           }
         />

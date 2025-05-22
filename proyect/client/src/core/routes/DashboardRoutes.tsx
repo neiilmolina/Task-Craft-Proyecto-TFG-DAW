@@ -25,10 +25,10 @@ export default function DashboardRoutes() {
       <div
         className="
           py-4
-          pl-10
-          pr-4
+          px-10
           flex-1
           position: relative
+          max-md:px-10
         "
       >
         <Routes>
