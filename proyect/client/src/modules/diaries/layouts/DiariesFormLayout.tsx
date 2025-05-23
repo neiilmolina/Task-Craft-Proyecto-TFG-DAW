@@ -70,7 +70,9 @@ export default function DiariesFormLayout({
 
     const newFormData = {
       ...formData,
-      activityDate: initialData?.activityDate ? initialData.activityDate : nowDate.toString() ,
+      activityDate: initialData?.activityDate
+        ? initialData.activityDate
+        : nowDate.toString(),
     };
 
     setFormData(newFormData);
@@ -160,6 +162,11 @@ export default function DiariesFormLayout({
         })}
       </h2>
 
+      {descriptionErrors.length > 0 &&
+        descriptionErrors.map(({ message }, index) => (
+          <ErrorLabel key={index} text={message} />
+        ))}
+        
       <textarea
         placeholder="Añadir descripción..."
         id="description"
@@ -169,11 +176,6 @@ export default function DiariesFormLayout({
         className={`${INPUT_WIDTH} h-72 text-[16px] text-black focus:outline-none focus:ring-0`}
         maxLength={300}
       />
-
-      {descriptionErrors.length > 0 &&
-        descriptionErrors.map(({ message }, index) => (
-          <ErrorLabel key={index} text={message} />
-        ))}
 
       {idUserErrors.length > 0 &&
         idUserErrors.map(({ message }, index) => (

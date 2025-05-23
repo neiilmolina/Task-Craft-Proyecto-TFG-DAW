@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { RootState } from "../../store";
 import { useSelector } from "react-redux";
 
+const APP_NAME = "Task Craft";
+
 function Menu() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const user = useSelector((state: RootState) => state.auth.user);
@@ -34,7 +36,7 @@ function Menu() {
             rounded-full
             transition-transform
             fixed top-4 left-4 hover:scale-110
-            md:hidden
+            lg:hidden
           "
         >
           ☰
@@ -50,7 +52,7 @@ function Menu() {
             bg-black/50
             transition-opacity opacity-0 animate-fade-in
             fixed inset-0 duration-300
-            md:hidden
+            lg:hidden
           "
         />
       )}
@@ -67,7 +69,7 @@ function Menu() {
           ${
             isMenuOpen
               ? "fixed inset-0 z-40 w-64 animate-slide-in-left"
-              : "hidden md:block md:w-full"
+              : "hidden lg:block lg:w-full"
           }
         `}
       >
@@ -77,12 +79,12 @@ function Menu() {
             onClick={toggleMenu}
             aria-label="Close menu"
             className="
-              absolute top-4 right-4
+              absolute top-3 right-4
               z-50 p-2.5
               text-sm font-bold
               bg-primary rounded-full
               transition-transform hover:scale-110
-              md:hidden
+              lg:hidden
             "
           >
             ✕
@@ -91,20 +93,21 @@ function Menu() {
 
         <header
           className="
-            w-64 max-xl:hover:pr-8 max-lg:hover:pr-4
+            w-full
             py-2 px-3
             text-[18px] text-black font-bold
           "
         >
-          logo
+          {APP_NAME}
         </header>
 
         <ul
           className="
+            w-full
             flex flex-col flex-1
             py-20
             gap-3
-            md:py-10
+            lg:py-10
           "
         >
           {routes.map((route) => (
@@ -126,20 +129,20 @@ function Menu() {
           ))}
         </ul>
 
-        <footer className="flex flex-col gap-2.5 p-3 border-t border-black/10">
+        <footer className="w-full flex flex-col gap-2.5 border-t border-black/10">
           <Link
             to={"#"}
             className="
-                  w-64 max-xl:hover:pr-8 max-lg:hover:pr-4
+                  w-4/5
+                  max-xl:hover:pr-8 max-lg:hover:pr-4
                   py-2 px-3
                   text-[18px] text-black font-bold
                   transition-all
-                  duration-200 hover:bg-secondary/15 hover:rounded-lg hover:pr-20 hover:translate-x-2 hover:no-underline
+                  duration-200 hover:bg-secondary/15 hover:rounded-lg hover:pr-20 hover:no-underline
                 "
           >
             {user?.userName}
           </Link>
-          <p className=" text-black">© 2025 Mi App</p>
         </footer>
       </nav>
     </>

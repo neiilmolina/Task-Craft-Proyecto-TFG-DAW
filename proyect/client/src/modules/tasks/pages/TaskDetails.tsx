@@ -1,4 +1,4 @@
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { RootState } from "../../../store";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
@@ -10,8 +10,6 @@ import Button from "../../../core/components/Button";
 
 export default function TaskDetails() {
   const { id } = useParams<{ id: string }>();
-  const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") ?? -1;
 
   const user = useSelector((state: RootState) => state.auth.user);
   const { getTaskById, updateTask, deleteTask } = useTasksActions();
@@ -46,26 +44,18 @@ export default function TaskDetails() {
       "¿Estás seguro de que deseas actualizar los campos de esta tarea?"
     );
     if (!confirmed) return;
-    updateTask(id, dataParse);
-    if (typeof redirectTo === "string") {
-      navigator(redirectTo);
-    } else {
-      navigator(redirectTo);
-    }
+    await updateTask(id, dataParse);
+    navigator(-1);
   };
 
-  const onClickDelete = () => {
+  const onClickDelete = async () => {
     if (!id) return;
     const confirmed = window.confirm(
       "¿Estás seguro de que deseas eliminar esta tarea?"
     );
     if (!confirmed) return;
-    deleteTask(id);
-    if (typeof redirectTo === "string") {
-      navigator(redirectTo);
-    } else {
-      navigator(redirectTo);
-    }
+    await deleteTask(id);
+    navigator(-1);
   };
 
   if (loading) return <Spinner />;
@@ -84,7 +74,5 @@ export default function TaskDetails() {
       </Button>
       <Button color="primary">Editar</Button>
     </TaskFormLayout>
-
-    // <div>Detalles de la tarea: {task.title}</div>
   );
 }

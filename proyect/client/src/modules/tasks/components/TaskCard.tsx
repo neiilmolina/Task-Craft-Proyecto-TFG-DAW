@@ -24,7 +24,7 @@ function TaskCard({ task }: TaskCardProps) {
   const now = Temporal.Now.plainDateTimeISO();
   const isFuture = Temporal.PlainDateTime.compare(now, temporalDate) < 0 ;
 
-  const onClick = () => navigate(`/tasks/detailsTask/${task.idTask}?redirectTo=/dashboard/tasks`);
+  const onClick = () => navigate(`/tasks/detailsTask/${task.idTask}`);
   return (
     <Container
       role="button"
