@@ -131,7 +131,7 @@ function Menu() {
 
         <footer className="w-full flex flex-col gap-2.5 border-t border-black/10">
           <Link
-            to={"#"}
+            to={"/dashboard/userSettings"}
             className="
                   w-4/5
                   max-xl:hover:pr-8 max-lg:hover:pr-4

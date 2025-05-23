@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import Menu from "../components/Menu";
 import routes from "./routes";
 import NotFound from "../pages/NotFound";
+import UserSettingsPage from "../../modules/auth/pages/UserSettingsPage";
 
 export default function DashboardRoutes() {
   return (
@@ -40,6 +41,7 @@ export default function DashboardRoutes() {
               element={<route.Component />}
             />
           ))}
+          <Route path="userSettings" element={<UserSettingsPage />} />
           <Route path="" element={<NotFound />} />
         </Routes>
       </div>

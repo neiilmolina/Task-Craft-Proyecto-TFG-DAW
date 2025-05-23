@@ -39,7 +39,7 @@ function Button({
     <button
       className={`
         py-2 px-4 
-        max-w-30
+        w-fit
         rounded-2xl
         transition-colors duration-200
         cursor-pointer
