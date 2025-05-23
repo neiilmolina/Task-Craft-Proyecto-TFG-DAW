@@ -8,7 +8,7 @@ type DiaryCardProps = {
 };
 
 export default function DiaryCard({ diary }: DiaryCardProps) {
-  const temporalDate = Temporal.PlainDate.from(diary.activityDate);
+  const temporalDate = Temporal.PlainDateTime.from(diary.activityDate);
   const stringDate = getDatePhraseFromTemporal({ date: temporalDate });
 
   const truncateDescription = (text: string, maxLength: number = 50) => {

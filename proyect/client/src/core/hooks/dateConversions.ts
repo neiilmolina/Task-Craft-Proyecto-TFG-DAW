@@ -2,7 +2,7 @@ import { Temporal } from "@js-temporal/polyfill";
 
 type getDatePhraseFromTemporalProps = {
   format?: Intl.LocalesArgument;
-  date: Temporal.PlainDate;
+  date: Temporal.PlainDateTime;
 };
 
 export function getDatePhraseFromTemporal({
@@ -11,10 +11,7 @@ export function getDatePhraseFromTemporal({
 }: getDatePhraseFromTemporalProps): string {
   const { day, year } = date;
 
-  const zonedDate = date.toZonedDateTime({
-    timeZone: "UTC",
-    plainTime: Temporal.PlainTime.from("00:00"),
-  });
+  const zonedDate = date.toZonedDateTime("UTC"); // Solo esto
 
   const nativeDate = new Date(zonedDate.epochMilliseconds);
 

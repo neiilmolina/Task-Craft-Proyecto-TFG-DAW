@@ -70,7 +70,7 @@ export default function DiariesFormLayout({
 
     const newFormData = {
       ...formData,
-      activityDate: nowDate.toString(),
+      activityDate: initialData?.activityDate ? initialData.activityDate : nowDate.toString() ,
     };
 
     setFormData(newFormData);
@@ -122,7 +122,8 @@ export default function DiariesFormLayout({
         min-h-screen
         p-20
         bg-grey
-        gap-5 items-center justify-start
+        gap-9 items-center justify-start
+        relative
       "
     >
       <input
@@ -140,7 +141,7 @@ export default function DiariesFormLayout({
           <ErrorLabel key={index} text={message} />
         ))}
 
-      <div className="flex flex-row items-center justify-start gap-10">
+      <div className="flex flex-row items-center justify-start gap-4 w-full">
         <Button
           type="button"
           color="neutral"
@@ -153,7 +154,7 @@ export default function DiariesFormLayout({
         {children}
       </div>
 
-      <h2 className="text-greyDark">
+      <h2 className="text-greyDark items-center justify-start w-full">
         {getDatePhraseFromTemporal({
           date: Temporal.PlainDateTime.from(nowDate),
         })}
@@ -165,11 +166,17 @@ export default function DiariesFormLayout({
         name="description"
         value={formData.description}
         onChange={handleChange}
-        className={`${INPUT_WIDTH} text-[22px] text-black focus:outline-none focus:ring-0`}
-        maxLength={20}
+        className={`${INPUT_WIDTH} h-72 text-[16px] text-black focus:outline-none focus:ring-0`}
+        maxLength={300}
       />
+
       {descriptionErrors.length > 0 &&
         descriptionErrors.map(({ message }, index) => (
+          <ErrorLabel key={index} text={message} />
+        ))}
+
+      {idUserErrors.length > 0 &&
+        idUserErrors.map(({ message }, index) => (
           <ErrorLabel key={index} text={message} />
         ))}
     </form>

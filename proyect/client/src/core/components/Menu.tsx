@@ -1,21 +1,19 @@
 import { Link } from "react-router-dom";
 import routes from "../routes/routes";
 import { useState, useEffect } from "react";
+import { RootState } from "../../store";
+import { useSelector } from "react-redux";
 
 function Menu() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const user = useSelector((state: RootState) => state.auth.user);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
-
+    document.body.style.overflow = isMenuOpen ? "hidden" : "auto";
     return () => {
       document.body.style.overflow = "auto";
     };
@@ -23,6 +21,27 @@ function Menu() {
 
   return (
     <>
+      {/* Botón de apertura */}
+      {!isMenuOpen && (
+        <button
+          onClick={toggleMenu}
+          aria-label="Toggle menu"
+          className="
+            z-50
+            p-2.5
+            text-sm font-bold
+            bg-primary
+            rounded-full
+            transition-transform
+            fixed top-4 left-4 hover:scale-110
+            md:hidden
+          "
+        >
+          ☰
+        </button>
+      )}
+
+      {/* Fondo oscuro */}
       {isMenuOpen && (
         <div
           onClick={toggleMenu}
@@ -36,70 +55,92 @@ function Menu() {
         />
       )}
 
+      {/* Menú lateral */}
       <nav
-        className="
+        className={`
+          flex flex-col
           h-full
-        "
+          p-2.5
+          bg-primary
+          transition-all
+          justify-between gap-11 duration-300 ease-in-out
+          ${
+            isMenuOpen
+              ? "fixed inset-0 z-40 w-64 animate-slide-in-left"
+              : "hidden md:block md:w-full"
+          }
+        `}
       >
-        <button
-          onClick={toggleMenu}
-          aria-label="Toggle menu"
-          className={`
-            z-50
-            p-2.5
-            text-sm font-bold
-            bg-primary
-            rounded-[100px]
-            transition-transform
-            fixed top-4 left-4 hover:scale-110
-            md:hidden
-          `}
-        >
-          ☰
-        </button>
-
-        <div
-          className={`
-            flex flex-col
-            h-full
-            space-y-2 p-2.5 pt-20
-            bg-primary
-            transition-all
-            duration-300 ease-in-out
-            md:pt-10
-            ${
-              isMenuOpen
-                ? "fixed inset-0 z-40 w-64 animate-slide-in-left"
-                : "hidden md:block md:w-full"
-            }
-          `}
-        >
-          <ul
-            className={`
-              flex flex-col
-              justify-center gap-4
-            `}
+        {/* Botón de cierre (dentro del menú) */}
+        {isMenuOpen && (
+          <button
+            onClick={toggleMenu}
+            aria-label="Close menu"
+            className="
+              absolute top-4 right-4
+              z-50 p-2.5
+              text-sm font-bold
+              bg-primary rounded-full
+              transition-transform hover:scale-110
+              md:hidden
+            "
           >
-            {routes.map((route) => (
-              <li key={route.path}>
-                <Link
-                  to={`/dashboard/${route.path}`}
-                  onClick={() => setIsMenuOpen(false)}
-                  className="
-                    w-64 max-xl:hover:pr-8
-                    max-lg:hover:pr-4
-                    py-2 px-3
-                    text-[18px] text-black font-bold
-                    transition-all
-                    backdrop-opacity-10 duration-200 hover:bg-secondary/15 hover:rounded-lg hover:pr-20 hover:translate-x-2 hover:no-underline
-                  "
-                >
-                  {route.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+            ✕
+          </button>
+        )}
+
+        <header
+          className="
+            w-64 max-xl:hover:pr-8 max-lg:hover:pr-4
+            py-2 px-3
+            text-[18px] text-black font-bold
+          "
+        >
+          logo
+        </header>
+
+        <ul
+          className="
+            flex flex-col flex-1
+            py-20
+            gap-3
+            md:py-10
+          "
+        >
+          {routes.map((route) => (
+            <li key={route.path}>
+              <Link
+                to={`/dashboard/${route.path}`}
+                onClick={() => setIsMenuOpen(false)}
+                className="
+                  w-64 max-xl:hover:pr-8 max-lg:hover:pr-4
+                  py-2 px-3
+                  text-[18px] text-black font-bold
+                  transition-all
+                  duration-200 hover:bg-secondary/15 hover:rounded-lg hover:pr-20 hover:translate-x-2 hover:no-underline
+                "
+              >
+                {route.name}
+              </Link>
+            </li>
+          ))}
+        </ul>
+
+        <footer className="flex flex-col gap-2.5 p-3 border-t border-black/10">
+          <Link
+            to={"#"}
+            className="
+                  w-64 max-xl:hover:pr-8 max-lg:hover:pr-4
+                  py-2 px-3
+                  text-[18px] text-black font-bold
+                  transition-all
+                  duration-200 hover:bg-secondary/15 hover:rounded-lg hover:pr-20 hover:translate-x-2 hover:no-underline
+                "
+          >
+            {user?.userName}
+          </Link>
+          <p className=" text-black">© 2025 Mi App</p>
+        </footer>
       </nav>
     </>
   );

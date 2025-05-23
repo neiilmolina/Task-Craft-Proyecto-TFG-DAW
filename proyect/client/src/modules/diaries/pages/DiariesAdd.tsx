@@ -4,6 +4,7 @@ import { RootState } from "../../../store";
 import { DiaryCreate, DiaryUpdate } from "task-craft-models";
 import { useState } from "react";
 import DiariesFormLayout from "../layouts/DiariesFormLayout";
+import Button from "../../../core/components/Button";
 
 export default function DiariesAdd() {
   const user = useSelector((state: RootState) => state.auth.user);
@@ -34,7 +35,7 @@ export default function DiariesAdd() {
       setFormData={setFormData}
       onSubmit={onSubmit}
     >
-      Hola
+      <Button>Añadir diario</Button>
     </DiariesFormLayout>
   );
 }

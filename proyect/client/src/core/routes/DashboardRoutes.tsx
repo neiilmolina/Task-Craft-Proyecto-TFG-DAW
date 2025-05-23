@@ -28,7 +28,6 @@ export default function DashboardRoutes() {
           px-10
           flex-1
           position: relative
-          max-md:px-10
         "
       >
         <Routes>
