@@ -2,6 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import AuthRepository from "../AuthRepository";
 import { UserCreate, UserLogin } from "task-craft-models";
 import { handleThunkError } from "../../../../core/hooks/captureErrors";
+import { ReduxError } from "../../../../core/interfaces/interfaceErrors";
 
 const authRepository = new AuthRepository();
 
@@ -43,20 +44,22 @@ export const getAuthenticatedUserThunk = createAsyncThunk(
   }
 );
 
-export const protectedThunk = createAsyncThunk(
-  "auth/protected",
-  async (_, { rejectWithValue }) => {
-    try {
-      await authRepository.protected();
-    } catch (error) {
-      return handleThunkError(
-        error,
-        rejectWithValue,
-        "Usuario no tiene permisos"
-      );
-    }
+export const protectedThunk = createAsyncThunk<
+  boolean,
+  void,
+  { rejectValue: ReduxError }
+>("auth/protected", async (_, { rejectWithValue }) => {
+  try {
+    const isProtected = await authRepository.protected();
+    return isProtected;
+  } catch (error) {
+    return handleThunkError(
+      error,
+      rejectWithValue,
+      "Usuario no tiene permisos"
+    );
   }
-);
+});
 
 export const logoutThunk = createAsyncThunk("auth/logout", async () => {
   await authRepository.logout();

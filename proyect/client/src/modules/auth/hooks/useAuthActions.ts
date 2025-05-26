@@ -24,7 +24,7 @@ const useAuthActions = () => {
   const getAuthenticatedUser = async () =>
     await dispatch(getAuthenticatedUserThunk());
 
-  const protectedAuth = async () => await dispatch(protectedThunk());
+  const protectedAuth = async () => await dispatch(protectedThunk()).unwrap();
 
   return {
     login,

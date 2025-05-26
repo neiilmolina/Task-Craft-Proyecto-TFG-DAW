@@ -1,5 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import DashboardRoutes from "./core/routes/DashboardRoutes";
+import DashboardRoute from "./core/routes/DashboardRoutes";
 import PrivateRoute from "./core/routes/PrivateRoute";
 import Login from "./modules/auth/pages/Login";
 import Register from "./modules/auth/pages/Register";
@@ -38,7 +38,7 @@ function App() {
           path="/dashboard/*"
           element={
             <PrivateRoute user={user}>
-              <DashboardRoutes />
+              <DashboardRoute />
             </PrivateRoute>
           }
         />

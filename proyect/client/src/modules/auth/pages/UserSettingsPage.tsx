@@ -4,13 +4,20 @@ import { RootState } from "../../../store";
 import SettingsUserCard from "../components/settings/cards/SettingsUserCard";
 import UserDetailsSection from "../components/settings/sections/UserDetailsSection";
 import { useNavigate } from "react-router-dom";
+import useAuthActions from "../hooks/useAuthActions";
 
 export default function UserSettingsPage() {
   const user = useSelector((state: RootState) => state.auth.user);
   const navigate = useNavigate();
+  const { logout } = useAuthActions();
 
   const onClick = async () => {
     alert("Función no implementada");
+  };
+
+  const onClickLogout = async () => {
+    await logout();
+    navigate("/login");
   };
 
   const onClickNavigateAdmin = async () => {
@@ -20,7 +27,10 @@ export default function UserSettingsPage() {
   return (
     <DashboardPageLayout title="Ajustes de Usuario">
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-5 lg:grid-rows-7">
-        <UserDetailsSection className="lg:col-span-3 lg:row-span-2 flex flex-col max-md:gap-5" />
+        <UserDetailsSection
+          key={"user-details"}
+          className="lg:col-span-3 lg:row-span-2 flex flex-col gap-5"
+        />
 
         <SettingsUserCard
           key="logout"
@@ -29,7 +39,7 @@ export default function UserSettingsPage() {
           buttonName="Cerrar sesión"
           buttonColor="error"
           className="lg:col-span-3 lg:row-span-2 lg:col-start-1 lg:row-start-3"
-          onClick={onClick}
+          onClick={onClickLogout}
         />
 
         <SettingsUserCard

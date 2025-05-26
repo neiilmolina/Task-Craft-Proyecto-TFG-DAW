@@ -1,7 +1,9 @@
 import { Navigate, useLocation } from "react-router-dom";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect } from "react";
 import Spinner from "../components/Spinner";
 import useAuthActions from "../../modules/auth/hooks/useAuthActions";
+import { AppDispatch, RootState } from "../../store";
+import { useDispatch, useSelector } from "react-redux";
 
 type ProtectedRouteProps = {
   children: ReactNode;
@@ -9,27 +11,24 @@ type ProtectedRouteProps = {
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const location = useLocation();
-  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const { protectedAuth } = useAuthActions();
+  const dispatch = useDispatch<AppDispatch>();
+
+  const isProtected = useSelector((state: RootState) => state.auth.isProtected);
+  const loading = useSelector((state: RootState) => state.auth.loading);
 
   useEffect(() => {
-    const verifyAccess = async () => {
-      try {
-        await protectedAuth(); // ← Aquí validas rol, permisos, etc.
-        setIsAuthorized(true);
-      } catch {
-        setIsAuthorized(false);
-      }
-    };
+    console.log("Llamando protectedThunk");
+    protectedAuth();
+  }, [dispatch]);
 
-    verifyAccess();
-  }, [protectedAuth]);
+  console.log("Redux: isProtected =", isProtected, "| loading =", loading);
 
-  console.log("isAuthorized", isAuthorized);
-  
-  if (isAuthorized === null) return <Spinner />;
+  if (loading || isProtected === null) {
+    return <Spinner />;
+  }
 
-  if (!isAuthorized) {
+  if (!isProtected) {
     return <Navigate to="/unauthorized" state={{ from: location }} replace />;
   }
 

@@ -28,12 +28,11 @@ export default class AuthRepository {
     return result;
   }
 
-  async logout(): Promise<unknown> {
+  async logout(): Promise<void> {
     try {
-      const response = await this.api.post("/auth/logout", {
+      await this.api.post("/auth/logout", {
         withCredentials: true,
       });
-      return response.data;
     } catch (error) {
       console.error("Error at logout:", error);
       throw error;
@@ -45,6 +44,7 @@ export default class AuthRepository {
       const response = await this.api.get("/auth/protected", {
         withCredentials: true,
       });
+      console.log("Protected response:", response.status);
       return response.status === 200;
     } catch (error) {
       console.error("Error at protected:", error);

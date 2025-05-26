@@ -41,6 +41,7 @@ export default function UserDetailsSection({
         {userDetailsSectionInfo.map((info) => {
           return (
             <UserDetailsSectionInfo
+              key={info.title}
               info={info.info}
               onClick={info.onClick}
               title={info.title}

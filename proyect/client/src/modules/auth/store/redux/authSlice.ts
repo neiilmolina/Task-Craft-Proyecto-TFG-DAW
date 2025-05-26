@@ -70,18 +70,28 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(protectedThunk.fulfilled, (state) => {
+      .addCase(protectedThunk.fulfilled, (state, action) => {
         state.loading = false;
-        state.isProtected = true; // Acceso permitido
+        state.isProtected = action.payload;
       })
       .addCase(protectedThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as ReduxError;
-        state.isProtected = false; // Acceso denegado
+        state.isProtected = false;
       })
       // logout
+      .addCase(logoutThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(logoutThunk.fulfilled, (state) => {
+        state.loading = false;
         state.user = null;
+        state.isProtected = null; 
+      })
+      .addCase(logoutThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as ReduxError;
       });
   },
 });

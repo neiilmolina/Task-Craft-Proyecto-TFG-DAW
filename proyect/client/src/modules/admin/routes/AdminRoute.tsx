@@ -16,6 +16,7 @@ export default function AdminRoute({ children }: AdminRouteProps) {
     const verifyAccess = async () => {
       try {
         await protectedAuth();
+        
         setIsAuthorized(true);
       } catch {
         setIsAuthorized(false);
