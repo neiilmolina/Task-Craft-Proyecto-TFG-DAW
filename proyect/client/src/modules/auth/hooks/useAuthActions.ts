@@ -4,6 +4,7 @@ import {
   registerThunk,
   logoutThunk,
   getAuthenticatedUserThunk,
+  protectedThunk,
 } from "../store/redux/authThunks";
 import { UserCreate, UserLogin } from "task-craft-models";
 
@@ -20,13 +21,17 @@ const useAuthActions = () => {
 
   const logout = () => dispatch(logoutThunk());
 
-  const getAuthenticatedUser = () => dispatch(getAuthenticatedUserThunk());
+  const getAuthenticatedUser = async () =>
+    await dispatch(getAuthenticatedUserThunk());
+
+  const protectedAuth = async () => await dispatch(protectedThunk());
 
   return {
     login,
     register,
     logout,
     getAuthenticatedUser,
+    protectedAuth,
   };
 };
 

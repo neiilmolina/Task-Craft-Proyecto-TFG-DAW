@@ -1,5 +1,5 @@
-import Button from "../../../../core/components/Button";
-import { UserDetailsSectionInfoProps } from "../../interfaces/AuthSettings";
+import Button from "../../../../../core/components/Button";
+import { UserDetailsSectionInfoProps } from "../../../interfaces/AuthSettings";
 
 export default function UserDetailsSectionInfo({
   title,

@@ -1,21 +1,5 @@
 import { ButtonHTMLAttributes, ReactNode } from "react";
-
-const BUTTON_COLORS = {
-  error: {
-    base: "bg-error",
-    hover: "hover:bg-error/80",
-  },
-  primary: {
-    base: "bg-secondary",
-    hover: "hover:bg-primary",
-  },
-  neutral: {
-    base: "bg-greyDark",
-    hover: "hover:bg-greyDark/80",
-  },
-} as const;
-
-type ButtonColor = keyof typeof BUTTON_COLORS;
+import { BUTTON_COLORS, ButtonColor } from "../interfaces/interfaceComponents";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
@@ -38,9 +22,11 @@ function Button({
   return (
     <button
       className={`
-        py-2 px-4 
         w-fit
-        rounded-2xl
+        px-2
+        py-1
+        h-8
+        rounded-xl
         transition-colors duration-200
         cursor-pointer
         ${colorClasses.base}

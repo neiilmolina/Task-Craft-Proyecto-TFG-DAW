@@ -1,11 +1,18 @@
 import { useSelector } from "react-redux";
-import Button from "../../../../core/components/Button";
-import Container from "../../../../core/components/Container";
-import { RootState } from "../../../../store";
-import UserDetailsSectionInfo from "./UserDetailsSectionInfo";
-import { UserDetailsSectionInfoProps } from "../../interfaces/AuthSettings";
+import Button from "../../../../../core/components/Button";
+import Container from "../../../../../core/components/Container";
+import { RootState } from "../../../../../store";
+import UserDetailsSectionInfo from "../cards/UserDetailsSectionInfo";
+import { UserDetailsSectionInfoProps } from "../../../interfaces/AuthSettings";
 
-export default function UserDetailsSection() {
+interface UserDetailsSection extends React.HTMLAttributes<HTMLDivElement> {
+  className?: string;
+}
+
+export default function UserDetailsSection({
+  className,
+  ...rest
+}: UserDetailsSection) {
   const user = useSelector((state: RootState) => state.auth.user);
   const onClick = async () => {
     alert("Opción no disponible");
@@ -23,7 +30,7 @@ export default function UserDetailsSection() {
     },
   ];
   return (
-    <Container className="col-span-3 row-span-2 flex flex-col gap-3">
+    <Container className={className} {...rest}>
       <header className="flex flex-col gap-3">
         <h3>Detalles del perfil</h3>
         <div>

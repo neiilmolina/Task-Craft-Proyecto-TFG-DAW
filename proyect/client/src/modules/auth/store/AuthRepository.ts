@@ -40,13 +40,15 @@ export default class AuthRepository {
     }
   }
 
-  async protected(): Promise<unknown> {
+  async protected(): Promise<boolean> {
     try {
-      const response = await this.api.get("/auth/protected");
-      return response.data;
+      const response = await this.api.get("/auth/protected", {
+        withCredentials: true,
+      });
+      return response.status === 200;
     } catch (error) {
       console.error("Error at protected:", error);
-      throw error;
+      return false;
     }
   }
 

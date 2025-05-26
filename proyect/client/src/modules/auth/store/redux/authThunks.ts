@@ -43,6 +43,21 @@ export const getAuthenticatedUserThunk = createAsyncThunk(
   }
 );
 
+export const protectedThunk = createAsyncThunk(
+  "auth/protected",
+  async (_, { rejectWithValue }) => {
+    try {
+      await authRepository.protected();
+    } catch (error) {
+      return handleThunkError(
+        error,
+        rejectWithValue,
+        "Usuario no tiene permisos"
+      );
+    }
+  }
+);
+
 export const logoutThunk = createAsyncThunk("auth/logout", async () => {
   await authRepository.logout();
 });

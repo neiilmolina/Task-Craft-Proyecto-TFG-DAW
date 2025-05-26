@@ -1,3 +1,6 @@
+import { UserToken } from "task-craft-models";
+import { ButtonColor } from "../../../core/interfaces/interfaceComponents";
+
 export type UserDetailsSectionInfoProps = {
   title: string;
   nameButton?: string;
@@ -8,10 +11,14 @@ export type UserDetailsSectionInfoProps = {
 export interface SettingsUserCardsProps
   extends React.HTMLAttributes<HTMLDivElement> {
   title: string;
-  gridPosition: string;
   className?: string;
   explication: string;
-  buttonColor?: string;
+  buttonColor?: ButtonColor;
   buttonName?: string;
   onClick: () => Promise<void>;
 }
+
+export type RouteManagementProps = {
+  children: JSX.Element;
+  user: UserToken | null;
+};
