@@ -4,7 +4,11 @@ import routes from "./routes";
 import NotFound from "../pages/NotFound";
 import UserSettingsPage from "../../modules/auth/pages/UserSettingsPage";
 
+import MainAdminPage from "../../modules/admin/page/MainAdminPage";
+import ProtectedRoute from "./ProtectedRoute";
+
 export default function DashboardRoutes() {
+
   return (
     <div
       className="
@@ -42,6 +46,15 @@ export default function DashboardRoutes() {
             />
           ))}
           <Route path="userSettings" element={<UserSettingsPage />} />
+          <Route
+            path="admin/*"
+            element={
+              <ProtectedRoute>
+                <MainAdminPage />
+              </ProtectedRoute>
+            }
+          />
+
           <Route path="" element={<NotFound />} />
         </Routes>
       </div>

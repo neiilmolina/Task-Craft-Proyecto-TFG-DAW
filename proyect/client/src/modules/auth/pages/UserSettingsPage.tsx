@@ -3,18 +3,24 @@ import DashboardPageLayout from "../../../core/layout/DashboardPageLayout";
 import { RootState } from "../../../store";
 import SettingsUserCard from "../components/settings/cards/SettingsUserCard";
 import UserDetailsSection from "../components/settings/sections/UserDetailsSection";
+import { useNavigate } from "react-router-dom";
 
 export default function UserSettingsPage() {
   const user = useSelector((state: RootState) => state.auth.user);
+  const navigate = useNavigate();
 
   const onClick = async () => {
     alert("Función no implementada");
   };
 
+  const onClickNavigateAdmin = async () => {
+    navigate("/dashboard/admin");
+  };
+
   return (
     <DashboardPageLayout title="Ajustes de Usuario">
-      <div className="grid grid-cols-5 grid-rows-7 gap-4">
-        <UserDetailsSection className="col-span-3 row-span-2 flex flex-col gap-3" />
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-5 lg:grid-rows-7">
+        <UserDetailsSection className="lg:col-span-3 lg:row-span-2 flex flex-col max-md:gap-5" />
 
         <SettingsUserCard
           key="logout"
@@ -22,7 +28,7 @@ export default function UserSettingsPage() {
           explication="Si deseas cerrar sesión, haz clic en el botón 'Cerrar sesión'. Esto te desconectará de forma segura y protegerá tu información, especialmente en dispositivos compartidos o públicos."
           buttonName="Cerrar sesión"
           buttonColor="error"
-          className="col-span-3 row-span-2 col-start-1 row-start-3"
+          className="lg:col-span-3 lg:row-span-2 lg:col-start-1 lg:row-start-3"
           onClick={onClick}
         />
 
@@ -31,7 +37,7 @@ export default function UserSettingsPage() {
           title="Cambiar contraseña"
           explication="Para cambiar tu contraseña, haz clic en el botón 'Cambiar contraseña'. Sigue las instrucciones que aparecerán para actualizarla de manera rápida y segura."
           buttonName="Cambiar contraseña"
-          className="col-span-2 row-span-2 col-start-4 row-start-1"
+          className="lg:col-span-2 lg:row-span-2 lg:col-start-4 lg:row-start-1"
           onClick={onClick}
         />
 
@@ -41,7 +47,7 @@ export default function UserSettingsPage() {
           explication="Si deseas eliminar tu cuenta, haz clic en el botón 'Eliminar cuenta'. Ten en cuenta que esta acción es permanente y no podrá deshacerse."
           buttonName="Eliminar Cuenta"
           buttonColor="error"
-          className="col-span-2 row-span-2 col-start-4 row-start-3"
+          className="lg:col-span-2 lg:row-span-2 lg:col-start-4 lg:row-start-3"
           onClick={onClick}
         />
 
@@ -51,8 +57,8 @@ export default function UserSettingsPage() {
             title="Parte de administración"
             explication="Como administrador, puedes gestionar las cuentas de los usuarios, modificar configuraciones globales y supervisar la actividad del sistema. Asegúrate de realizar estas acciones con precaución para mantener la seguridad e integridad de la plataforma."
             buttonName="Parte de administración"
-            className="col-span-5 row-span-2 row-start-5"
-            onClick={onClick}
+            className="lg:col-span-5 lg:row-span-2 lg:row-start-5"
+            onClick={onClickNavigateAdmin}
           />
         )}
       </div>

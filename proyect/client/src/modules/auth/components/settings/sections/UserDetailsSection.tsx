@@ -37,7 +37,7 @@ export default function UserDetailsSection({
           <Button className="">Subir foto de perfil</Button>
         </div>
       </header>
-      <footer className="flex flex-row gap-3 w-[80%] justify-between">
+      <footer className="flex flex-row gap-3 w-[80%] justify-between max-md:flex-col ">
         {userDetailsSectionInfo.map((info) => {
           return (
             <UserDetailsSectionInfo

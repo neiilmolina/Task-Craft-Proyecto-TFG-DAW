@@ -10,7 +10,7 @@ export default function UserDetailsSectionInfo({
   return (
     <article className="flex flex-col gap-3">
       <h4>{title}</h4>
-      <div className="flex flex-row gap-1 items-center">
+      <div className="flex flex-row gap-1 items-center max-md:flex-col max-md:items-start">
         <p>{info}</p>
         <Button onClick={onClick}>{nameButton}</Button>
       </div>

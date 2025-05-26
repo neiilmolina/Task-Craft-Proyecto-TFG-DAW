@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import Spinner from "../../../core/components/Spinner";
-import useAuthActions from "../hooks/useAuthActions";
+import { ReactNode, useEffect, useState } from "react";
+import Spinner from "../components/Spinner";
+import useAuthActions from "../../modules/auth/hooks/useAuthActions";
 
-type AdminRouteProps = {
-  children: JSX.Element;
+type ProtectedRouteProps = {
+  children: ReactNode;
 };
 
-export default function AdminRoute({ children }: AdminRouteProps) {
+export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const location = useLocation();
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
   const { protectedAuth } = useAuthActions();
@@ -15,22 +15,23 @@ export default function AdminRoute({ children }: AdminRouteProps) {
   useEffect(() => {
     const verifyAccess = async () => {
       try {
-        await protectedAuth();
+        await protectedAuth(); // ← Aquí validas rol, permisos, etc.
         setIsAuthorized(true);
       } catch {
         setIsAuthorized(false);
       }
     };
+
     verifyAccess();
   }, [protectedAuth]);
 
-  if (isAuthorized === null) {
-    return <Spinner />;
-  }
+  console.log("isAuthorized", isAuthorized);
+  
+  if (isAuthorized === null) return <Spinner />;
 
   if (!isAuthorized) {
     return <Navigate to="/unauthorized" state={{ from: location }} replace />;
   }
 
-  return { children };
+  return children;
 }

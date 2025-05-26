@@ -1,5 +1,5 @@
 import { Navigate, useLocation } from "react-router-dom";
-import { RouteManagementProps } from "../interfaces/AuthSettings";
+import { RouteManagementProps } from "../../modules/auth/interfaces/AuthSettings";
 
 export default function PrivateRoute({ children, user}: RouteManagementProps ) {
   const location = useLocation();

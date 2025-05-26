@@ -1,6 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import DashboardRoutes from "./core/routes/DashboardRoutes";
-import PrivateRoute from "./modules/auth/routes/PrivateRoute";
+import PrivateRoute from "./core/routes/PrivateRoute";
 import Login from "./modules/auth/pages/Login";
 import Register from "./modules/auth/pages/Register";
 import { useEffect, useState } from "react";
@@ -11,6 +11,7 @@ import NotFound from "./core/pages/NotFound";
 import TasksRoutes from "./modules/tasks/routes/TasksRoutes";
 import Spinner from "./core/components/Spinner";
 import DiariesRoutes from "./modules/diaries/routes/DiariesRoutes";
+import Unauthorized from "./core/pages/Unauthorized";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -67,6 +68,7 @@ function App() {
         />
 
         <Route path="*" element={<NotFound />} />
+        <Route path="/unauthorized" element={<Unauthorized />} />
       </Routes>
     </BrowserRouter>
   );
