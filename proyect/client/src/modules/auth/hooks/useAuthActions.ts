@@ -19,7 +19,9 @@ const useAuthActions = () => {
     await dispatch(registerThunk(user)).unwrap();
   };
 
-  const logout = () => dispatch(logoutThunk());
+  const logout = async () => {
+    await dispatch(logoutThunk()).unwrap();
+  };
 
   const getAuthenticatedUser = async () =>
     await dispatch(getAuthenticatedUserThunk());

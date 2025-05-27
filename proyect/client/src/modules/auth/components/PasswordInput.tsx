@@ -1,7 +1,5 @@
 import { InputHTMLAttributes, useState } from "react";
 import Input from "../../../core/components/Input";
-import show from "../../../assets/show.svg";
-import notShow from "../../../assets/notShow.svg";
 
 export default function PasswordInput({
   className = "",
@@ -25,11 +23,11 @@ export default function PasswordInput({
         onClick={toggleShowPassword}
         className="absolute inset-y-0 right-2 flex items-center justify-center p-1 focus:outline-none"
       >
-        <img
-          src={showPassword ? show : notShow}
-          alt={showPassword ? "Mostrar contraseña" : "Ocultar contraseña"}
-          className="w-5 h-5 text-gray-600"
-        />
+        {showPassword ? (
+          <span className="material-icons">visibility</span>
+        ) : (
+          <span className="material-icons">visibility_off</span>
+        )}
       </button>
     </div>
   );

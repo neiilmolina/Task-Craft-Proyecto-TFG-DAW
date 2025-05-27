@@ -16,6 +16,7 @@ export default function UserSettingsPage() {
   };
 
   const onClickLogout = async () => {
+    console.log("Llamando a logout");
     await logout();
     navigate("/login");
   };

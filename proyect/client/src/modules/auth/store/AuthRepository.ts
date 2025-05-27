@@ -30,7 +30,7 @@ export default class AuthRepository {
 
   async logout(): Promise<void> {
     try {
-      await this.api.post("/auth/logout", {
+      await this.api.post("/auth/logout",{}, {
         withCredentials: true,
       });
     } catch (error) {

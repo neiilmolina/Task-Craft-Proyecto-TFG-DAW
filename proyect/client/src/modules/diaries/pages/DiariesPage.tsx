@@ -22,7 +22,13 @@ export default function DiariesPage() {
   }, [user, getDiaries]);
   return (
     <DashboardPageLayout title="Diarios" loading={loading}>
-      <Button onClick={() =>{navigate("/diaries/addDiary")}}>Añadir diario</Button>
+      <Button
+        onClick={() => {
+          navigate("/diaries/addDiary");
+        }}
+      >
+        Añadir diario
+      </Button>
       {!diaries || diaries.length === 0 ? (
         <div>No hay diarios</div>
       ) : (

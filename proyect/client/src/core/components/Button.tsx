@@ -25,7 +25,8 @@ function Button({
         w-fit
         px-2
         py-1
-        h-8
+        h-fit
+        min-h-8
         rounded-xl
         transition-colors duration-200
         cursor-pointer

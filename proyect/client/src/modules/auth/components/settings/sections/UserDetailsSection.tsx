@@ -33,7 +33,15 @@ export default function UserDetailsSection({
     <Container className={className} {...rest}>
       <header className="flex flex-col gap-3">
         <h3>Detalles del perfil</h3>
-        <div>
+        <div className="flex flex-row gap-3 items-center">
+          <span
+            className="material-icons"
+            style={{
+              fontSize: "3rem",
+            }}
+          >
+            account_circle
+          </span>
           <Button className="">Subir foto de perfil</Button>
         </div>
       </header>

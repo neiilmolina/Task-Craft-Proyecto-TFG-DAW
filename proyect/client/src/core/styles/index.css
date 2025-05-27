@@ -29,7 +29,7 @@
     font-size: 18px;
     font-weight: bold;
   }
-  
+
   h4 {
     font-size: 16px;
     font-weight: bold;
@@ -67,6 +67,7 @@
 
   .section-input-text {
     display: flex;
+    justify-content: center;
     width: 100%;
     flex-direction: column;
     gap: 10px;
@@ -87,6 +88,25 @@
     align-items: center;
     width: 100%;
     gap: 10px;
+  }
+
+  .section-input-select label {
+    width: 45%;
+  }
+
+  @media (max-width: 768px) {
+    .section-input-datetime,
+    .section-input-text {
+      display: flex;
+      justify-content: flex-start;
+      width: 100%;
+    }
+
+    .section-input-select {
+      display: flex;
+      flex-direction: row;
+      align-items: start;
+    }
   }
 }
 

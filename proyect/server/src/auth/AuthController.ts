@@ -6,7 +6,7 @@ import { User } from "task-craft-models";
 import UsersRepository from "@/src/users/model/UsersRepository";
 
 const secretKey = process.env.JWT_SECRET as string;
-const accesCookie =  process.env.KEY_ACCESS_COOKIE as string;
+const accesCookie = process.env.KEY_ACCESS_COOKIE as string;
 
 export default class AuthController {
   private usersModel: UsersRepository;
@@ -58,11 +58,11 @@ export default class AuthController {
       // Guardar el token en una cookie
       res.cookie(accesCookie, token, {
         httpOnly: true, // Esto asegura que la cookie solo puede ser accesada por el servidor
-        secure: process.env.NODE_ENV === "production", // Asegura que la cookie solo se envíe sobre HTTPS en producción
+        // secure: process.env.NODE_ENV === "production", Asegura que la cookie solo se envíe sobre HTTPS en producción
         expires: new Date(Date.now() + 3600 * 1000), // Expiración en 1 hora
       });
 
-      res.status(200).json({ message: "Login exitoso"});
+      res.status(200).json({ message: "Login exitoso" });
     } catch (error: any) {
       console.error("Error en el login:", error);
       res.status(500).json({

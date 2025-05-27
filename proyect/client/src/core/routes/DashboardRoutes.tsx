@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import Menu from "../components/Menu";
-import routes from "./routes";
+import routes from "./routesDashboards";
 import NotFound from "../pages/NotFound";
 import UserSettingsPage from "../../modules/auth/pages/UserSettingsPage";
 

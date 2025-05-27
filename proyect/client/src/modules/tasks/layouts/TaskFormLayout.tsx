@@ -178,10 +178,12 @@ export default function TaskFormLayout({
       onSubmit={handleFormSubmit}
       className="
         flex flex-col
+        w-full
         min-h-screen
         p-20
         bg-grey
         gap-5 items-center justify-center
+        max-md:justify-start
       "
     >
       <div
@@ -211,6 +213,7 @@ export default function TaskFormLayout({
         className="
           flex flex-row
           gap-2
+          max-md:flex-start
         "
       >
         <div

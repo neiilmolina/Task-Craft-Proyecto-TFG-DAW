@@ -61,6 +61,14 @@ export const protectedThunk = createAsyncThunk<
   }
 });
 
-export const logoutThunk = createAsyncThunk("auth/logout", async () => {
-  await authRepository.logout();
+export const logoutThunk = createAsyncThunk<
+  void,
+  void,
+  { rejectValue: ReduxError }
+>("auth/logout", async (_, { rejectWithValue }) => {
+  try {
+    await authRepository.logout();
+  } catch (error) {
+    return handleThunkError(error, rejectWithValue, "Error al cerrar sesión");
+  }
 });

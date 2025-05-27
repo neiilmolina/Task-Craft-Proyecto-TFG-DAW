@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import routes from "../routes/routes";
+import routes from "../routes/routesDashboards";
 import { useState, useEffect } from "react";
 import { RootState } from "../../store";
 import { useSelector } from "react-redux";
@@ -79,11 +79,13 @@ function Menu() {
             onClick={toggleMenu}
             aria-label="Close menu"
             className="
-              absolute top-3 right-4
-              z-50 p-2.5
+              z-50
+              p-2.5
               text-sm font-bold
-              bg-primary rounded-full
-              transition-transform hover:scale-110
+              bg-primary
+              rounded-full
+              transition-transform
+              absolute top-3 right-4 hover:scale-110
               lg:hidden
             "
           >
@@ -103,8 +105,8 @@ function Menu() {
 
         <ul
           className="
-            w-full
             flex flex-col flex-1
+            w-full
             py-20
             gap-3
             lg:py-10
@@ -116,31 +118,51 @@ function Menu() {
                 to={`/dashboard/${route.path}`}
                 onClick={() => setIsMenuOpen(false)}
                 className="
-                  w-64 max-xl:hover:pr-8 max-lg:hover:pr-4
+                  flex flex-row
+                  gap-2
+                  w-28 max-xl:hover:pr-8 max-lg:hover:pr-4
                   py-2 px-3
                   text-[18px] text-black font-bold
                   transition-all
-                  duration-200 hover:bg-secondary/15 hover:rounded-lg hover:pr-20 hover:translate-x-2 hover:no-underline
+                  items-center duration-200 hover:bg-secondary/15 hover:rounded-lg hover:pr-20 hover:translate-x-2 hover:no-underline
                 "
               >
+                {route.icon && (
+                  <span
+                    className="
+                      material-icons
+                    "
+                  >
+                    {route.icon}
+                  </span>
+                )}
                 {route.name}
               </Link>
             </li>
           ))}
         </ul>
 
-        <footer className="w-full flex flex-col gap-2.5 border-t border-black/10">
+        <footer
+          className="
+            flex flex-col
+            w-full
+            border-t border-black/10
+            gap-2.5
+          "
+        >
           <Link
+            onClick={() => setIsMenuOpen(false)}
             to={"/dashboard/userSettings"}
             className="
-                  w-4/5
-                  max-xl:hover:pr-8 max-lg:hover:pr-4
-                  py-2 px-3
-                  text-[18px] text-black font-bold
-                  transition-all
-                  duration-200 hover:bg-secondary/15 hover:rounded-lg hover:pr-20 hover:no-underline
-                "
+            flex flex-row gap-2 items-end
+              w-4/5 max-xl:hover:pr-8 max-lg:hover:pr-4
+              py-2 px-3
+              text-[18px] text-black font-bold
+              transition-all
+              duration-200 hover:bg-secondary/15 hover:rounded-lg hover:pr-20 hover:no-underline
+            "
           >
+            <span className="material-icons">account_circle</span>
             {user?.userName}
           </Link>
         </footer>
