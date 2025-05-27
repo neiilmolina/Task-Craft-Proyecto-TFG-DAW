@@ -14,6 +14,7 @@ import {
   FormattedError,
   validateTaskCreate,
   validateTaskUpdate,
+  User,
 } from "task-craft-models";
 import { useDateTime } from "../../../core/hooks/useDateTime";
 import { filterErrors } from "../../../core/hooks/validations";
@@ -24,6 +25,8 @@ import { useNavigate } from "react-router-dom";
 import { CharacterCounter } from "../../../core/components/CharacterCounter";
 import useQueryParams from "../../../core/hooks/useQueryParams";
 import { Temporal } from "@js-temporal/polyfill";
+import useUsersActions from "../../users/hooks/useUserAction";
+import SelectUsers from "../../users/components/SelectUsers";
 
 const INPUT_WIDTH = "w-full";
 
@@ -84,6 +87,18 @@ export default function TaskFormLayout({
     handleTimeChange,
   } = useDateTime();
 
+  const [user, setUser] = useState<User | null>(null);
+  const { getUserById } = useUsersActions();
+
+  useEffect(() => {
+    if (user && initialData?.idUser) {
+      getUserById(initialData?.idUser).then((userDTO) => {
+        setUser(userDTO);
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, initialData?.idUser]);
+
   useEffect(() => {
     if (initialData?.activityDate) {
       const [initialDate, initialTime] = initialData.activityDate.split("T");
@@ -126,6 +141,7 @@ export default function TaskFormLayout({
       activityDate: datetime,
       idState: state?.idState ?? 0,
       idType: type?.idType ?? 0,
+      idUser: user?.idUser ?? "",
     };
 
     setFormData(newFormData);
@@ -314,21 +330,12 @@ export default function TaskFormLayout({
       {admin && (
         <div
           className="
-          section-input-text
+          section-input-select
           max-mdfull
         "
         >
-          <label>
-            idUsuario <CharacterCounter text={formData.title} maxLength={20} />
-          </label>
-          <Input
-            id="idUser"
-            name="idUser"
-            value={formData.idUser}
-            onChange={handleChange}
-            className={INPUT_WIDTH}
-            maxLength={20}
-          />
+          <label>Usuario</label>
+          <SelectUsers user={user} setUser={setUser} classNameButton="w-full" />
         </div>
       )}
       {idUserErrors.length > 0 &&

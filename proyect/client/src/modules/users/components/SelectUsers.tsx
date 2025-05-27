@@ -30,7 +30,7 @@ export default function SelectUsers({
     }
   };
 
-  const initialValue = "Selecciona un rol";
+  const initialValue = "Selecciona un usuario";
   return (
     <>
       {users.length > 0 && (
