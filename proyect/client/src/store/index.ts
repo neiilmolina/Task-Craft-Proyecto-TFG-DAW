@@ -4,6 +4,8 @@ import typesReducer from "../modules/types/store/redux/typesSlice";
 import statesReducer from "../modules/states/store/redux/statesSlice";
 import tasksReducer from "../modules/tasks/store/redux/tasksSlice";
 import diariesReducer from "../modules/diaries/store/redux/diariesSlice";
+import usersReducer from "../modules/users/store/redux/usesrSlice";
+import rolesReducer from "../modules/roles/store/redux/rolesSlice";
 
 export const store = configureStore({
   // Reducers that defines the structure of the global state
@@ -13,6 +15,8 @@ export const store = configureStore({
     states: statesReducer,
     tasks: tasksReducer,
     diaries: diariesReducer,
+    users: usersReducer,
+    roles: rolesReducer,
   },
   // Middleware for the synchronization with the database
   middleware: (getDefaultMiddleware) =>

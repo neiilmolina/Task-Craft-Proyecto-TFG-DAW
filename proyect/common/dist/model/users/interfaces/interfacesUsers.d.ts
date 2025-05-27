@@ -45,6 +45,10 @@ export interface UserReturn {
     urlImg?: string | null;
     idRole: number;
 }
+export interface UserFilter {
+    idRole?: number;
+    stringSearch?: string;
+}
 export interface UserToken extends User {
     iat: number;
     exp: number;

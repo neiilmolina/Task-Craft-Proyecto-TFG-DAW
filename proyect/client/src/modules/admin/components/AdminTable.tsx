@@ -40,9 +40,13 @@ export default function AdminTable({
               <tr key={index} className="hover:bg-gray-50">
                 {headers.map((header) => (
                   <td key={header} className="px-6 py-4 text-sm">
-                    {(item as any)[header] !== undefined
-                      ? String((item as any)[header])
-                      : ""}
+                    {(() => {
+                      const value = (item as any)[header];
+                      if (typeof value === "string" && value.length > 30) {
+                        return value.slice(0, 30) + "...";
+                      }
+                      return value !== undefined ? String(value) : "";
+                    })()}
                   </td>
                 ))}
                 <td className="px-6 py-4">

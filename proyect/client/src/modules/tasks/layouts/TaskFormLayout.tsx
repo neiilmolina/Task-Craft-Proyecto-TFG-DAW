@@ -171,42 +171,26 @@ export default function TaskFormLayout({
       setIdStateErrors(filterErrors(errors, "idState"));
       setIdTypeErrors(filterErrors(errors, "idType"));
       setIdUserErrors(filterErrors(errors, "idUser"));
-
-      if (action === "update") {
-        if (initialData?.activityDate !== newFormData.activityDate) {
-          try {
-            const taskDate = Temporal.PlainDateTime.from(
-              newFormData.activityDate
-            );
-
-            const now = Temporal.Now.plainDateTimeISO();
-
-            // Use compare
-            if (taskDate < now) {
-              setActivityDateErrors([
-                {
-                  field: "activityDate",
-                  message: "La fecha debe ser en el futuro",
-                  code: "future_date",
-                },
-              ]);
-            } else {
-              setActivityDateErrors([]);
-            }
-          } catch {
-            setActivityDateErrors([
-              {
-                field: "activityDate",
-                message: "Fecha inválida",
-                code: "invalid_date",
-              },
-            ]);
-          }
-        } else {
-          setActivityDateErrors([]);
-        }
-      }
       return;
+    }
+
+    if (initialData?.activityDate !== newFormData.activityDate) {
+      const taskDate = Temporal.PlainDateTime.from(newFormData.activityDate);
+
+      const now = Temporal.Now.plainDateTimeISO();
+
+      const comparison = Temporal.PlainDateTime.compare(taskDate, now) < 0;
+      // Use compare
+      if (comparison) {
+        setActivityDateErrors([
+          {
+            field: "activityDate",
+            message: "La fecha debe ser en el futuro",
+            code: "future_date",
+          },
+        ]);
+        return;
+      }
     }
 
     onSubmit(newFormData);

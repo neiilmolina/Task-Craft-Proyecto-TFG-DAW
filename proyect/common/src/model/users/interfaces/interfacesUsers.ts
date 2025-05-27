@@ -53,6 +53,11 @@ export interface UserReturn {
   idRole: number;
 }
 
+export interface UserFilter {
+  idRole?: number;
+  stringSearch?: string;
+}
+
 export interface UserToken extends User {
   iat: number;
   exp: number;
