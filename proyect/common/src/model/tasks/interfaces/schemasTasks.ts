@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { TaskCreate, TaskFilters, TaskUpdate } from "./interfacesTasks";
 import {
+  validateDateFormat,
   validateFutureDate,
   validatePastDate,
 } from "../../../validations/dateValidations";
@@ -31,7 +32,7 @@ export const TaskCreateSchema = z.object({
 export const TaskUpdateSchema = z.object({
   title: title.optional(),
   description: description.optional(),
-  activityDate: validateFutureDate("fecha").optional(),
+  activityDate: validateDateFormat("fecha").optional(),
   idState: idState.optional(),
   idType: idType.optional(),
   idUser: idUser.optional(),

@@ -14,6 +14,9 @@ import { Temporal } from "@js-temporal/polyfill";
 import Button from "../../../core/components/Button";
 import { isAllEmptyOrZero } from "../../../core/hooks/checkEmptyFields";
 import { getDatePhraseFromTemporal } from "../../../core/hooks/dateConversions";
+import useQueryParams from "../../../core/hooks/useQueryParams";
+import { CharacterCounter } from "../../../core/components/CharacterCounter";
+import Input from "../../../core/components/Input";
 
 const INPUT_WIDTH = "w-full";
 
@@ -34,6 +37,8 @@ export default function DiariesFormLayout({
   action,
   children,
 }: DiariesFormTemplateProps) {
+  const { useBooleanQueryParam } = useQueryParams();
+  const admin = useBooleanQueryParam("admin");
   const navigator = useNavigate();
   const [idUserErrors, setIdUserErrors] = useState([] as FormattedError[]);
   const [titleErrors, setTitleErrors] = useState([] as FormattedError[]);
@@ -143,6 +148,32 @@ export default function DiariesFormLayout({
           <ErrorLabel key={index} text={message} />
         ))}
 
+      {admin && (
+        <div
+          className="
+          section-input-text
+          max-mdfull
+        "
+        >
+          <label>
+            idUsuario <CharacterCounter text={formData.title} maxLength={20} />
+          </label>
+          <Input
+            id="idUser"
+            name="idUser"
+            value={formData.idUser}
+            onChange={handleChange}
+            className={INPUT_WIDTH}
+            maxLength={20}
+          />
+        </div>
+      )}
+
+      {idUserErrors.length > 0 &&
+        idUserErrors.map(({ message }, index) => (
+          <ErrorLabel key={index} text={message} />
+        ))}
+
       <div className="flex flex-row items-center justify-start gap-4 w-full">
         <Button
           type="button"
@@ -166,7 +197,7 @@ export default function DiariesFormLayout({
         descriptionErrors.map(({ message }, index) => (
           <ErrorLabel key={index} text={message} />
         ))}
-        
+
       <textarea
         placeholder="Añadir descripción..."
         id="description"
@@ -176,11 +207,6 @@ export default function DiariesFormLayout({
         className={`${INPUT_WIDTH} h-72 text-[16px] text-black focus:outline-none focus:ring-0`}
         maxLength={300}
       />
-
-      {idUserErrors.length > 0 &&
-        idUserErrors.map(({ message }, index) => (
-          <ErrorLabel key={index} text={message} />
-        ))}
     </form>
   );
 }

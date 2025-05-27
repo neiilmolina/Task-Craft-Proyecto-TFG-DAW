@@ -2,11 +2,13 @@
 type AdminTableProps = {
   list: object[];
   headers?: string[];
+  onClick: (id: string) => Promise<void>;
 };
 
 export default function AdminTable({
   list,
   headers = Object.keys(list[0]),
+  onClick,
 }: AdminTableProps) {
   if (!list || list.length === 0) {
     return <p className="text-gray-500 py-4">No hay datos para mostrar.</p>;
@@ -30,27 +32,27 @@ export default function AdminTable({
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-secondary">
-          {list.map((item, index) => (
-            <tr key={index} className="hover:bg-gray-50">
-              {headers.map((header) => (
-                <td key={header} className="px-6 py-4 text-sm">
-                  {(item as any)[header] !== undefined
-                    ? header.toLowerCase().includes("contraseña")
-                      ? String((item as any)[header]).substring(0, 10) + ".." // Acorta contraseñas
-                      : String((item as any)[header])
-                    : ""}
+          {list.map((item, index) => {
+            const firstKey = Object.keys(item)[0];
+            const id = (item as any)[firstKey];
+
+            return (
+              <tr key={index} className="hover:bg-gray-50">
+                {headers.map((header) => (
+                  <td key={header} className="px-6 py-4 text-sm">
+                    {(item as any)[header] !== undefined
+                      ? String((item as any)[header])
+                      : ""}
+                  </td>
+                ))}
+                <td className="px-6 py-4">
+                  <button onClick={() => onClick(String(id))}>
+                    <span className="material-icons">edit_square</span>
+                  </button>
                 </td>
-              ))}
-              <td className="px-6 py-4 flex flex-row gap-2 items-center">
-                <button>
-                  <span className="material-icons">delete</span>
-                </button>
-                <button>
-                  <span className="material-icons">edit_square</span>
-                </button>
-              </td>
-            </tr>
-          ))}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

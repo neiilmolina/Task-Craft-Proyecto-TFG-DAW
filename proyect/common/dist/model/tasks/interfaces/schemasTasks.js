@@ -28,7 +28,7 @@ exports.TaskCreateSchema = zod_1.z.object({
 exports.TaskUpdateSchema = zod_1.z.object({
     title: title.optional(),
     description: description.optional(),
-    activityDate: (0, dateValidations_1.validateFutureDate)("fecha").optional(),
+    activityDate: (0, dateValidations_1.validateDateFormat)("fecha").optional(),
     idState: idState.optional(),
     idType: idType.optional(),
     idUser: idUser.optional(),

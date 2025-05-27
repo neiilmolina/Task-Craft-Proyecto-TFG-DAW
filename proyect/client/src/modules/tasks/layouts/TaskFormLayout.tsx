@@ -22,6 +22,8 @@ import { isAllEmptyOrZero } from "../../../core/hooks/checkEmptyFields";
 import Button from "../../../core/components/Button";
 import { useNavigate } from "react-router-dom";
 import { CharacterCounter } from "../../../core/components/CharacterCounter";
+import useQueryParams from "../../../core/hooks/useQueryParams";
+import { Temporal } from "@js-temporal/polyfill";
 
 const INPUT_WIDTH = "w-full";
 
@@ -42,6 +44,8 @@ export default function TaskFormLayout({
   action,
   children,
 }: TaskFormTemplateProps) {
+  const { useBooleanQueryParam } = useQueryParams();
+  const admin = useBooleanQueryParam("admin");
   const navigator = useNavigate();
   const [titleErrors, setTitleErrors] = useState([] as FormattedError[]);
   const [descriptionErrors, setDescriptionErrors] = useState(
@@ -167,6 +171,41 @@ export default function TaskFormLayout({
       setIdStateErrors(filterErrors(errors, "idState"));
       setIdTypeErrors(filterErrors(errors, "idType"));
       setIdUserErrors(filterErrors(errors, "idUser"));
+
+      if (action === "update") {
+        if (initialData?.activityDate !== newFormData.activityDate) {
+          try {
+            const taskDate = Temporal.PlainDateTime.from(
+              newFormData.activityDate
+            );
+
+            const now = Temporal.Now.plainDateTimeISO();
+
+            // Use compare
+            if (taskDate < now) {
+              setActivityDateErrors([
+                {
+                  field: "activityDate",
+                  message: "La fecha debe ser en el futuro",
+                  code: "future_date",
+                },
+              ]);
+            } else {
+              setActivityDateErrors([]);
+            }
+          } catch {
+            setActivityDateErrors([
+              {
+                field: "activityDate",
+                message: "Fecha inválida",
+                code: "invalid_date",
+              },
+            ]);
+          }
+        } else {
+          setActivityDateErrors([]);
+        }
+      }
       return;
     }
 
@@ -193,8 +232,7 @@ export default function TaskFormLayout({
         "
       >
         <label>
-          Título {" "}
-          <CharacterCounter text={formData.title} maxLength={20} />
+          Título <CharacterCounter text={formData.title} maxLength={20} />
         </label>
         <Input
           id="title"
@@ -245,9 +283,8 @@ export default function TaskFormLayout({
         "
       >
         <label>
-          Descripción {" "}
-          <CharacterCounter text={formData.description} maxLength={50} 
-          />
+          Descripción{" "}
+          <CharacterCounter text={formData.description} maxLength={50} />
         </label>
         <TextArea
           name="description"
@@ -290,6 +327,26 @@ export default function TaskFormLayout({
           <ErrorLabel key={index} text={message} />
         ))}
 
+      {admin && (
+        <div
+          className="
+          section-input-text
+          max-mdfull
+        "
+        >
+          <label>
+            idUsuario <CharacterCounter text={formData.title} maxLength={20} />
+          </label>
+          <Input
+            id="idUser"
+            name="idUser"
+            value={formData.idUser}
+            onChange={handleChange}
+            className={INPUT_WIDTH}
+            maxLength={20}
+          />
+        </div>
+      )}
       {idUserErrors.length > 0 &&
         idUserErrors.map(({ message }, index) => (
           <ErrorLabel key={index} text={message} />

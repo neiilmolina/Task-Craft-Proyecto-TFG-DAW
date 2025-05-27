@@ -18,12 +18,9 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const loading = useSelector((state: RootState) => state.auth.loading);
 
   useEffect(() => {
-    console.log("Llamando protectedThunk");
     protectedAuth();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
-
-  console.log("Redux: isProtected =", isProtected, "| loading =", loading);
 
   if (loading || isProtected === null) {
     return <Spinner />;
