@@ -18,7 +18,7 @@ export default function Submenu({ routes, mainRoute }: SubmenuProps) {
         return (
           <li key={route.path}>
             <Link
-              className={`hover:no-underline ${isActive ? "text-black" : ""}`}
+              className={`hover:no-underline text-[22px] ${isActive ? "text-black" : ""}`}
               style={!isActive ? { color: "var(--color-greyDark)" } : {}}
               to={linkNavigation}
             >

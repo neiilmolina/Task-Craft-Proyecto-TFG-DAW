@@ -20,6 +20,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   useEffect(() => {
     console.log("Llamando protectedThunk");
     protectedAuth();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
   console.log("Redux: isProtected =", isProtected, "| loading =", loading);

@@ -6,17 +6,17 @@ import UserAdminPage from "../page/UserAdminPage";
 const routeAdmin: AppRoutes[] = [
   {
     path: "tasks",
-    name: "Task Admin",
+    name: "Task",
     Component: TaskAdminPage,
   },
   {
     path: "diaries",
-    name: "Diary Admin",
+    name: "Diary",
     Component: DiaryAdminPage,
   },
   {
     path: "users",
-    name: "User Admin",
+    name: "User",
     Component: UserAdminPage,
   },
 ];

@@ -189,6 +189,7 @@ export default function TaskFormLayout({
       <div
         className="
           section-input-text
+          max-mdfull
         "
       >
         <label>
