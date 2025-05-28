@@ -3,6 +3,7 @@ import routes from "../routes/routesDashboards";
 import { useState, useEffect } from "react";
 import { RootState } from "../../store";
 import { useSelector } from "react-redux";
+import Icon from "./Icon";
 
 const APP_NAME = "Task Craft";
 
@@ -108,7 +109,6 @@ function Menu() {
             flex flex-col flex-1
             w-full
             py-20
-            gap-3
             lg:py-10
           "
         >
@@ -128,13 +128,9 @@ function Menu() {
                 "
               >
                 {route.icon && (
-                  <span
-                    className="
-                      material-icons
-                    "
-                  >
-                    {route.icon}
-                  </span>
+                  <Icon
+                  name={route.icon}
+                  />
                 )}
                 {route.name}
               </Link>
