@@ -5,6 +5,7 @@ import {
   DiaryDTO,
   DiaryUpdate,
   FormattedError,
+  User,
   validateDiaryCreate,
   validateDiaryUpdate,
 } from "task-craft-models";
@@ -15,8 +16,8 @@ import Button from "../../../core/components/Button";
 import { isAllEmptyOrZero } from "../../../core/hooks/checkEmptyFields";
 import { getDatePhraseFromTemporal } from "../../../core/hooks/dateConversions";
 import useQueryParams from "../../../core/hooks/useQueryParams";
-import { CharacterCounter } from "../../../core/components/CharacterCounter";
-import Input from "../../../core/components/Input";
+import SearchableSelectUser from "../../users/components/SearchableSelectUser";
+import useUsersActions from "../../users/hooks/useUsersActions";
 
 const INPUT_WIDTH = "w-full";
 
@@ -59,6 +60,16 @@ export default function DiariesFormLayout({
 
   const nowDate = Temporal.Now.plainDateTimeISO();
 
+  const [user, setUser] = useState<User | null>(null);
+  const { getUserById } = useUsersActions();
+
+  useEffect(() => {
+    if (initialData?.idUser) {
+      getUserById(initialData.idUser).then(setUser);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialData?.idUser]);
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -78,6 +89,7 @@ export default function DiariesFormLayout({
       activityDate: initialData?.activityDate
         ? initialData.activityDate
         : nowDate.toString(),
+      idUser: user?.idUser ?? "",
     };
 
     setFormData(newFormData);
@@ -97,6 +109,8 @@ export default function DiariesFormLayout({
         initialData.title !== newFormData.title
           ? true
           : initialData.description !== newFormData.description
+          ? true
+          : initialData.idUser !== newFormData.idUser
           ? true
           : false;
 
@@ -138,6 +152,7 @@ export default function DiariesFormLayout({
         type="text"
         id="title"
         name="title"
+        autoFocus
         value={formData.title}
         onChange={handleChange}
         className={`${INPUT_WIDTH} font-bold text-3xl text-primary focus:outline-none focus:ring-0`}
@@ -151,24 +166,14 @@ export default function DiariesFormLayout({
       {admin && (
         <div
           className="
-          section-input-text
-          max-mdfull
-        "
+            w-full
+            flex flex-row items-center justify-start gap-4
+              "
         >
-          <label>
-            idUsuario <CharacterCounter text={formData.title} maxLength={20} />
-          </label>
-          <Input
-            id="idUser"
-            name="idUser"
-            value={formData.idUser}
-            onChange={handleChange}
-            className={INPUT_WIDTH}
-            maxLength={20}
-          />
+          <label>Usuario</label>
+          <SearchableSelectUser user={user} setUser={setUser} />
         </div>
       )}
-
       {idUserErrors.length > 0 &&
         idUserErrors.map(({ message }, index) => (
           <ErrorLabel key={index} text={message} />
@@ -187,7 +192,7 @@ export default function DiariesFormLayout({
         {children}
       </div>
 
-      <h2 className="text-greyDark items-center justify-start w-full">
+      <h2 className="text-greyDark items-center justify-start w-full cursor-default">
         {getDatePhraseFromTemporal({
           date: Temporal.PlainDateTime.from(nowDate),
         })}

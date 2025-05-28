@@ -22,6 +22,7 @@ export default function TaskAdd() {
   });
 
   const onSubmit = async (data: TaskCreate | TaskUpdate) => {
+    console.log("Submitting task data:", data);
     const parseData = data as TaskCreate;
     await createTask(parseData);
     navigator(-1);
@@ -35,7 +36,7 @@ export default function TaskAdd() {
       onSubmit={onSubmit}
       key={"Add"}
     >
-      <Button>Añadir</Button>
+      <Button type="submit">Añadir</Button>
     </TaskFormLayout>
   );
 }

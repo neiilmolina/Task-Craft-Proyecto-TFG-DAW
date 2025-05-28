@@ -11,7 +11,7 @@ import Button from "../../../core/components/Button";
 export default function TaskDetails() {
   const { id } = useParams<{ id: string }>();
 
-  const user = useSelector((state: RootState) => state.auth.user);
+  const user = useSelector((state: RootState) => (state.auth.user));
   const { getTaskById, updateTask, deleteTask } = useTasksActions();
 
   const [task, setTask] = useState<TaskDTO | null>(null);
@@ -24,7 +24,7 @@ export default function TaskDetails() {
     idState: 0,
     idType: 0,
     title: "",
-    idUser: user?.idUser ?? "",
+    idUser: "",
   });
 
   useEffect(() => {

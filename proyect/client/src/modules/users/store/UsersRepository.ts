@@ -42,11 +42,11 @@ export default class UsersRepository {
   }
 
   async addUser(taskCreate: UserCreate): Promise<void> {
-    await this.api.post(`${this.ENDPOINT}`, taskCreate);
+    await this.api.post(`${this.ENDPOINT}/create`, taskCreate);
   }
 
   async updateUser(id: string, taskUpdate: UserUpdate): Promise<void> {
-    await this.api.put(`${this.ENDPOINT}/${id}`, taskUpdate);
+    await this.api.put(`${this.ENDPOINT}/update/${id}`, taskUpdate);
   }
 
   async deleteUser(id: string): Promise<void> {

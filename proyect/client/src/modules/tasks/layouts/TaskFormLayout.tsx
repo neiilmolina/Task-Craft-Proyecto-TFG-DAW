@@ -25,8 +25,8 @@ import { useNavigate } from "react-router-dom";
 import { CharacterCounter } from "../../../core/components/CharacterCounter";
 import useQueryParams from "../../../core/hooks/useQueryParams";
 import { Temporal } from "@js-temporal/polyfill";
-import useUsersActions from "../../users/hooks/useUserAction";
-import SelectUsers from "../../users/components/SelectUsers";
+import useUsersActions from "../../users/hooks/useUsersActions";
+import SearchableSelectUser from "../../users/components/SearchableSelectUser";
 
 const INPUT_WIDTH = "w-full";
 
@@ -89,15 +89,13 @@ export default function TaskFormLayout({
 
   const [user, setUser] = useState<User | null>(null);
   const { getUserById } = useUsersActions();
-
+  
   useEffect(() => {
-    if (user && initialData?.idUser) {
-      getUserById(initialData?.idUser).then((userDTO) => {
-        setUser(userDTO);
-      });
+    if (initialData?.idUser) {
+      getUserById(initialData.idUser).then(setUser);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, initialData?.idUser]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialData?.idUser]);
 
   useEffect(() => {
     if (initialData?.activityDate) {
@@ -110,6 +108,7 @@ export default function TaskFormLayout({
 
   useEffect(() => {
     if (initialData && action === "update") {
+      console.log("initial data", initialData);
       setFormData((prev) => ({
         ...prev,
         title: initialData.title,
@@ -167,6 +166,8 @@ export default function TaskFormLayout({
           : initialData.state.idState !== newFormData.idState
           ? true
           : initialData.type.idType !== newFormData.idType
+          ? true
+          : initialData.idUser !== newFormData.idUser
           ? true
           : false;
 
@@ -335,7 +336,7 @@ export default function TaskFormLayout({
         "
         >
           <label>Usuario</label>
-          <SelectUsers user={user} setUser={setUser} classNameButton="w-full" />
+          <SearchableSelectUser user={user} setUser={setUser} />
         </div>
       )}
       {idUserErrors.length > 0 &&

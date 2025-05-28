@@ -15,6 +15,7 @@ import {
 } from "task-craft-models";
 import SelectRoles from "../../roles/components/SelectRoles";
 import { filterErrors } from "../../../core/hooks/validations";
+import PasswordInput from "../../auth/components/PasswordInput";
 
 type UserFormLayoutProps = {
   initialData?: User;
@@ -51,9 +52,15 @@ export default function UserFormLayout({
       setFormData({
         userName: initialData.userName ?? undefined,
         email: initialData.email,
-        urlImg: initialData.urlImg ?? null,
         idRole: initialData.role.idRole,
       });
+
+      if (initialData.urlImg) {
+        setFormData((prev) => ({
+          ...prev,
+          urlImg: initialData.urlImg,
+        }));
+      }
     }
   }, [initialData, action, setFormData]);
 
@@ -67,6 +74,8 @@ export default function UserFormLayout({
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if (!formData) return;
+
     const newFormData = {
       ...formData,
       idRole: role?.idRole ?? undefined,
@@ -78,6 +87,7 @@ export default function UserFormLayout({
 
     if (action === "create") {
       validateResult = validateUserCreate(newFormData as UserCreate);
+      console.log("Validation result for create:", validateResult);
     } else {
       validateResult = validateUserUpdate(newFormData as UserUpdate);
     }
@@ -145,8 +155,7 @@ export default function UserFormLayout({
       {action === "create" && (
         <div className="section-input-text">
           <label>Contraseña</label>
-          <Input
-            type="password"
+          <PasswordInput
             id="password"
             name="password"
             value={(formData as UserCreate).password ?? ""}
@@ -158,17 +167,6 @@ export default function UserFormLayout({
           ))}
         </div>
       )}
-
-      <div className="section-input-text">
-        <label>Imagen (URL)</label>
-        <Input
-          id="urlImg"
-          name="urlImg"
-          value={formData.urlImg ?? ""}
-          onChange={handleChange}
-          className="w-full"
-        />
-      </div>
 
       <div className="section-input-select">
         <label>Rol</label>

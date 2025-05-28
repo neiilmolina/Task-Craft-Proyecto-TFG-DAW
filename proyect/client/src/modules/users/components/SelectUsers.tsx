@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import SelectDialog from "../../../core/components/SelectDialog";
-import useUsersAction from "../hooks/useUserAction";
+import useUsersAction from "../hooks/useUsersActions";
 import { User } from "task-craft-models";
 
 export default function SelectUsers({
@@ -12,7 +12,7 @@ export default function SelectUsers({
   user: User | null;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }) {
-  const { getUsers } = useUsersAction();
+  const { getUsers, getUserById } = useUsersAction();
   const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
@@ -23,8 +23,8 @@ export default function SelectUsers({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleClose = (selectedId: string) => {
-    const foundUser = users.find((t) => t.idUser === selectedId);
+  const handleClose = async (selectedId: string) => {
+    const foundUser = await getUserById(selectedId);
     if (foundUser) {
       setUser(foundUser);
     }

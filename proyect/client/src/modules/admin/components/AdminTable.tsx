@@ -1,9 +1,15 @@
+import Icon from "../../../core/components/Icon";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type AdminTableProps = {
   list: object[];
   headers?: string[];
   onClick: (id: string) => Promise<void>;
 };
+
+function getNestedValue(obj: any, path: string): any {
+  return path.split(".").reduce((acc, key) => (acc ? acc[key] : undefined), obj);
+}
 
 export default function AdminTable({
   list,
@@ -41,7 +47,7 @@ export default function AdminTable({
                 {headers.map((header) => (
                   <td key={header} className="px-6 py-4 text-sm">
                     {(() => {
-                      const value = (item as any)[header];
+                      const value = getNestedValue(item, header);
                       if (typeof value === "string" && value.length > 30) {
                         return value.slice(0, 30) + "...";
                       }
@@ -50,8 +56,8 @@ export default function AdminTable({
                   </td>
                 ))}
                 <td className="px-6 py-4">
-                  <button onClick={() => onClick(String(id))}>
-                    <span className="material-icons">edit_square</span>
+                  <button className="cursor-pointer" onClick={() => onClick(String(id))}>
+                    <Icon name="edit_square"/>
                   </button>
                 </td>
               </tr>
