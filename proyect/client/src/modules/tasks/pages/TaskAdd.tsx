@@ -18,7 +18,7 @@ export default function TaskAdd() {
     idState: 0,
     idType: 0,
     title: "",
-    idUser: user?.idUser ?? "",
+    idUser: user?.idUser,
   });
 
   const onSubmit = async (data: TaskCreate | TaskUpdate) => {

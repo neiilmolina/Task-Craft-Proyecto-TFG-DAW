@@ -89,7 +89,7 @@ export default function DiariesFormLayout({
       activityDate: initialData?.activityDate
         ? initialData.activityDate
         : nowDate.toString(),
-      idUser: user?.idUser ?? "",
+      idUser: user?.idUser ?? initialData?.idUser ?? formData.idUser ?? "",
     };
 
     setFormData(newFormData);

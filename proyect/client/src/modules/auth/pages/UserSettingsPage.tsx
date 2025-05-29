@@ -16,6 +16,10 @@ export default function UserSettingsPage() {
   };
 
   const onClickLogout = async () => {
+    const confirmed = window.confirm(
+      "¿Estás seguro de que deseas cerrar sesión?"
+    );
+    if (!confirmed) return;
     await logout();
     navigate("/login");
   };
@@ -26,7 +30,7 @@ export default function UserSettingsPage() {
 
   return (
     <DashboardPageLayout title="Ajustes de Usuario">
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-5 lg:grid-rows-7">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-5 lg:grid-rows-7 overflow-hidden">
         <UserDetailsSection
           key={"user-details"}
           className="lg:col-span-3 lg:row-span-2 flex flex-col gap-5"

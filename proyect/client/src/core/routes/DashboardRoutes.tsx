@@ -8,20 +8,18 @@ import MainAdminPage from "../../modules/admin/page/MainAdminPage";
 import ProtectedRoute from "./ProtectedRoute";
 
 export default function DashboardRoutes() {
-
   return (
     <div
       className="
         flex flex-row
-        min-h-screen
-        w-screen
         bg-grey
-        position: relative
+        min-h-screen w-full relative
       "
     >
       <div
         className="
-          w-1/8
+        w-1/6
+        position: sticky
         "
       >
         <Menu />

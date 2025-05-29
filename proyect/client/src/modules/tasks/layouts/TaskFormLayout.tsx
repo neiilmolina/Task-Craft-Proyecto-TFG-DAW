@@ -140,9 +140,10 @@ export default function TaskFormLayout({
       activityDate: datetime,
       idState: state?.idState ?? 0,
       idType: type?.idType ?? 0,
-      idUser: user?.idUser ?? "",
+      idUser: user?.idUser ?? initialData?.idUser ?? formData.idUser ?? "",
     };
 
+    console.log("Submitting form data:", newFormData);
     setFormData(newFormData);
 
     let validate = null;

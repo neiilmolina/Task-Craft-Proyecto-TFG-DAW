@@ -61,18 +61,18 @@ function Menu() {
       {/* Menú lateral */}
       <nav
         className={`
-          flex flex-col
-          h-full
-          p-2.5
-          bg-primary
-          transition-all
-          justify-between gap-11 duration-300 ease-in-out
-          ${
-            isMenuOpen
-              ? "fixed inset-0 z-40 w-64 animate-slide-in-left"
-              : "hidden lg:block lg:w-full"
-          }
-        `}
+    flex flex-col
+    h-full
+    p-2.5
+    bg-primary
+    transition-all
+    justify-between gap-11 duration-300 ease-in-out
+    ${
+      isMenuOpen
+        ? "fixed inset-0 z-40 w-64 animate-slide-in-left lg:static lg:animate-none"
+        : "hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:w-64"
+    }
+  `}
       >
         {/* Botón de cierre (dentro del menú) */}
         {isMenuOpen && (
@@ -127,11 +127,7 @@ function Menu() {
                   items-center duration-200 hover:bg-secondary/15 hover:rounded-lg hover:pr-20 hover:translate-x-2 hover:no-underline
                 "
               >
-                {route.icon && (
-                  <Icon
-                  name={route.icon}
-                  />
-                )}
+                {route.icon && <Icon name={route.icon} />}
                 {route.name}
               </Link>
             </li>
