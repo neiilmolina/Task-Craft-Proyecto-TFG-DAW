@@ -69,9 +69,10 @@ function Menu() {
     justify-between gap-11 duration-300 ease-in-out
     ${
       isMenuOpen
-        ? "fixed inset-0 z-40 w-64 animate-slide-in-left lg:static lg:animate-none"
-        : "hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-40 lg:w-64"
+        ? "fixed inset-0 z-50 w-64 animate-slide-in-left lg:static lg:animate-none"
+        : "hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:w-64 lg:flex"
     }
+
   `}
       >
         {/* Botón de cierre (dentro del menú) */}

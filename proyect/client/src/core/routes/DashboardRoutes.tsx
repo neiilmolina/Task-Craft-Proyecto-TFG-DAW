@@ -19,18 +19,16 @@ export default function DashboardRoutes() {
       <div
         className="
         w-1/6
-        position: sticky
         "
       >
         <Menu />
       </div>
-
       <div
         className="
           py-4
           px-10
           flex-1
-          position: relative
+          w-full
         "
       >
         <Routes>
@@ -53,7 +51,7 @@ export default function DashboardRoutes() {
             }
           />
 
-          <Route path="" element={<NotFound />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
     </div>
