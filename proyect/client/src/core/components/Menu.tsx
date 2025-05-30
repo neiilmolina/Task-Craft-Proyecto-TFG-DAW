@@ -37,14 +37,13 @@ function Menu() {
             rounded-full
             transition-transform
             fixed top-4 left-4 hover:scale-110
-            lg:hidden
+            xl:hidden
           "
         >
           ☰
         </button>
       )}
 
-      {/* Fondo oscuro */}
       {isMenuOpen && (
         <div
           onClick={toggleMenu}
@@ -53,29 +52,27 @@ function Menu() {
             bg-black/50
             transition-opacity opacity-0 animate-fade-in
             fixed inset-0 duration-300
-            lg:hidden
+            xl:hidden
           "
         />
       )}
 
-      {/* Menú lateral */}
       <nav
         className={`
-    flex flex-col
-    h-full
-    p-2.5
-    bg-primary
-    transition-all
-    justify-between gap-11 duration-300 ease-in-out
-    ${
-      isMenuOpen
-        ? "fixed inset-0 z-50 w-64 animate-slide-in-left lg:static lg:animate-none"
-        : "hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:w-64 lg:flex"
-    }
+          flex flex-col
+          h-full
+          p-2.5
+          bg-primary
+          transition-all
+          justify-between gap-11 duration-300 ease-in-out
+          ${
+            isMenuOpen
+              ? "fixed inset-0 z-50 w-64 animate-slide-in-left xl:static xl:animate-none"
+              : "hidden xl:fixed xl:inset-y-0 xl:left-0 xl:z-50 xl:w-64 xl:flex"
+          }
 
-  `}
+        `}
       >
-        {/* Botón de cierre (dentro del menú) */}
         {isMenuOpen && (
           <button
             onClick={toggleMenu}
@@ -88,7 +85,7 @@ function Menu() {
               rounded-full
               transition-transform
               absolute top-3 right-4 hover:scale-110
-              lg:hidden
+              xl:hidden
             "
           >
             ✕
@@ -110,7 +107,7 @@ function Menu() {
             flex flex-col flex-1
             w-full
             py-20
-            lg:py-10
+            xl:py-10
           "
         >
           {routes.map((route) => (
@@ -121,7 +118,7 @@ function Menu() {
                 className="
                   flex flex-row
                   gap-2
-                  w-28 max-xl:hover:pr-8 max-lg:hover:pr-4
+                  w-32 max-xl:hover:pr-8
                   py-2 px-3
                   text-[18px] text-black font-bold
                   transition-all
@@ -148,14 +145,14 @@ function Menu() {
             to={"/dashboard/userSettings"}
             className="
             flex flex-row gap-2 items-end
-              w-4/5 max-xl:hover:pr-8 max-lg:hover:pr-4
+              w-4/5 max-xl:hover:pr-8
               py-2 px-3
               text-[18px] text-black font-bold
               transition-all
               duration-200 hover:bg-secondary/15 hover:rounded-lg hover:pr-20 hover:no-underline
             "
           >
-            <span className="material-icons">account_circle</span>
+            <Icon name="account_circle"/>
             {user?.userName}
           </Link>
         </footer>

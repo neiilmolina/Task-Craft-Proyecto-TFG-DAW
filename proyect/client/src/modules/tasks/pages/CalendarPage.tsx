@@ -79,7 +79,7 @@ export default function CalendarPage() {
           views={["month"]}
           style={{
             height: "100vh",
-            width: "80%",
+            width: "100v%",
             overflowX: "hidden",
             boxSizing: "border-box",
           }}

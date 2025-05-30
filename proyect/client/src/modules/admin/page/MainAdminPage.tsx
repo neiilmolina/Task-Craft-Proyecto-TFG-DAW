@@ -5,7 +5,7 @@ import routesAdmin from "../routes/routesAdmin";
 
 export default function MainAdminPage() {
   return (
-    <DashboardPageLayout className="w-full" title="Administración">
+    <DashboardPageLayout className="w-full pr-10 pl-15" title="Administración">
       <Submenu mainRoute="/dashboard/admin/" routes={routesAdmin} />
 
       <div className="flex flex-col gap-6 mt-5">

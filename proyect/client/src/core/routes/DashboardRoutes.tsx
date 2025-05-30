@@ -14,11 +14,14 @@ export default function DashboardRoutes() {
         flex flex-row
         bg-grey
         min-h-screen w-full relative
+        justify-start
       "
     >
       <div
         className="
-        w-1/6
+        w-1/5
+        max-xl:w-[10%]
+        max-md:w-1/5
         "
       >
         <Menu />
@@ -26,9 +29,9 @@ export default function DashboardRoutes() {
       <div
         className="
           py-4
-          px-10
+          px-8
           flex-1
-          w-full
+          max-xl:pl-0
         "
       >
         <Routes>
