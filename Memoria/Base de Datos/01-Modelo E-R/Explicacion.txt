@@ -5,7 +5,7 @@ Tablas:
 		email: Dirección de correo electrónico del usuario. Atributo único.
 		url_imagen: URL que lleva a la imagen del usuario. Atributo único.
 		contraseña: Contraseña del usuario.
-		es_admin: Booleano que indica si el usuario es administrador (True/False).
+		idRol: Clave foránea que hacer referencia al id de la tabla rol. Esto establece el rol del usuario (admin, user, etc.).
 
 	Tabla rol:
 		id: Clave primaria (Identificador único del rol).
@@ -57,6 +57,7 @@ Relaciones:
 Indices: 
 
 	1. Claves primarias
+		Tabla rol: Índice en id.
 		Tabla usuario: Índice en id.
 		Tabla tarea: Índice en id.
 		Tabla tipo: Índice en id.
