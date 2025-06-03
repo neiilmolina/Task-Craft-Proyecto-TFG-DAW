@@ -1,0 +1,77 @@
+TEMPORALIZACIÓN SEMANAL DEL PROYECTO  
+(Backend y Frontend)  
+Fecha: 14 de marzo – 5 de junio
+
+Semana 14 - 20 marzo
+- Inicio del backend.
+- Desarrollo del modelo, rutas, validaciones y lógica inicial de TAREAS.
+- Conexión con la base de datos y configuración de entorno.
+
+Semana 21 - 27 marzo
+- Continuación de TAREAS: edición, eliminación, validaciones más complejas.
+- Implementación de filtros por fecha, estado y búsqueda por nombre.
+
+Semana 28 marzo - 3 abril
+- Desarrollo de USUARIOS: creación y autenticación con JWT.
+- Creación de DIARIOS: modelo, controladores, y rutas principales.
+
+Semana 4 - 10 abril
+- Continuación de USUARIOS: validaciones, edición de perfil (no se va a hacer), y gestión de datos.
+- Continuación de DIARIOS: edición y eliminación, validaciones y relaciones con usuario.
+
+Semana 11 - 17 abril
+- Módulo de AMIGOS: modelo, controladores y rutas para solicitudes.
+- Funcionalidad de enviar, aceptar, rechazar y eliminar solicitudes de amistad.
+
+Semana 25 abril
+- Desarrollo de TAREAS COMPARTIDAS: asignación de tareas entre usuarios, validaciones y control de acceso.
+- Conexión entre módulo de amigos y tareas compartidas.
+
+Semana 26 abril - 2 mayo
+- Pantallas de inicio de sesión y registro con validaciones.
+- Conexión al backend para autenticación y persistencia de sesión.
+
+Semana 3 - 9 mayo
+- UI de TAREAS: listado principal, añadir tarea, mostrar estado, filtros.
+- Diseño adaptativo y conexión con API de tareas.
+- Detalle y edición de TAREAS.
+- Eliminación y actualización dinámica de la lista.
+
+Semana 10 - 16 mayo
+- Detalle y edición de TAREAS.
+- Eliminación y actualización dinámica de la lista.
+- Interfaz de DIARIOS: crear, editar y mostrar entradas vinculadas al usuario.
+
+Semana 17 - 23 mayo
+- Interfaz de DIARIOS: crear, editar y mostrar entradas vinculadas al usuario.
+
+Semana 24 - 30 mayo
+- Módulo de AMIGOS: visualización, solicitudes entrantes/salientes y acciones.
+- Conexión completa con la lógica de backend para gestión de amistades.
+
+Semana 31 mayo - 5 junio
+- Ajustes del perfil de usuario: modificación de datos, cierre de sesión.
+- Implementación de vista de calendario integrada con las tareas.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

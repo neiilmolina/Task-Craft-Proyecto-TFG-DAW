@@ -4,8 +4,9 @@ import { useState, useEffect } from "react";
 import { RootState } from "../../store";
 import { useSelector } from "react-redux";
 import Icon from "./Icon";
+import Logo from "../../icons/Logo";
 
-const APP_NAME = "Task Craft";
+const APP_NAME = "TASK-CRAFT";
 
 function Menu() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -95,10 +96,13 @@ function Menu() {
         <header
           className="
             w-full
+            flex flex-row items-center gap-2
             py-2 px-3
-            text-[18px] text-black font-bold
+            text-[20px] text-black font-bold
+            cursor-pointer
           "
         >
+          <Logo width={30} height={30} />
           {APP_NAME}
         </header>
 

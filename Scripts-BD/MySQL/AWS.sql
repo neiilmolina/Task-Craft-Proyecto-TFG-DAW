@@ -219,7 +219,7 @@ CREATE TABLE `tipos` (
 
 LOCK TABLES `tipos` WRITE;
 /*!40000 ALTER TABLE `tipos` DISABLE KEYS */;
-INSERT INTO `tipos` VALUES (1,'Evento','#FF0000','67ed2cd8-0a60-11f0-b542-066ddd4196f1'),(2,'Objetivo','#008000','67ed2cd8-0a60-11f0-b542-066ddd4196f1'),(3,'Estudio','#0000FF','67ed2cd8-0a60-11f0-b542-066ddd4196f1'),(4,'Trabajo','#FF0000','67ed2cd8-0a60-11f0-b542-066ddd4196f1');
+INSERT INTO `tipos` VALUES (1,'Evento','#FF0000',null),(2,'Objetivo','#008000',null),(3,'Estudio','#0000FF',null),(4,'Trabajo','#FF0000',null);
 /*!40000 ALTER TABLE `tipos` ENABLE KEYS */;
 UNLOCK TABLES;
 
