@@ -234,4 +234,3 @@
             • R8F6T3P1: Comprobar que el botón funcione
         ▪ R8F6T4: Comprobar si la solicitud se ha eliminado en la base de datos
             • R8F6T4P1: Comprobar que el botón funcione
-
