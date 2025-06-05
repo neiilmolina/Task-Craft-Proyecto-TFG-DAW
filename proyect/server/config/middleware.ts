@@ -1,17 +1,15 @@
 import { Request, Response, NextFunction } from "express";
 
-const origins = [
-  "http://localhost:5173",
-  "http://tfg-daw-frontend.s3-website.eu-north-1.amazonaws.com",
-];
-
 // Middleware para manejo de CORS
 export const corsMiddleware = (
   req: Request,
   res: Response,
   next: NextFunction
 ): void => {
-  res.setHeader("Access-Control-Allow-Origin", origins);
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    "http://tfg-daw-frontend.s3-website.eu-north-1.amazonaws.com"
+  );
   res.setHeader("Access-Control-Allow-Credentials", "true");
   res.setHeader(
     "Access-Control-Allow-Methods",
