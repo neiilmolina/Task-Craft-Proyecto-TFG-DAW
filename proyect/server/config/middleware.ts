@@ -10,12 +10,13 @@ export const corsMiddleware = (
   res: Response,
   next: NextFunction
 ): void => {
+  
   const origin = req.headers.origin as string;
 
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   }
-
+  
   res.setHeader("Access-Control-Allow-Credentials", "true");
   res.setHeader(
     "Access-Control-Allow-Methods",
