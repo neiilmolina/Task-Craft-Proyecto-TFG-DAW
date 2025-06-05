@@ -89,12 +89,12 @@ export default function TaskFormLayout({
 
   const [user, setUser] = useState<User | null>(null);
   const { getUserById } = useUsersActions();
-  
+
   useEffect(() => {
     if (initialData?.idUser) {
       getUserById(initialData.idUser).then(setUser);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialData?.idUser]);
 
   useEffect(() => {
@@ -311,10 +311,9 @@ export default function TaskFormLayout({
         <label>Categoría</label>
         <SelectTypes type={type} setType={setType} />
       </div>
-      {idTypeErrors.length > 0 &&
-        idTypeErrors.map(({ message }, index) => (
-          <ErrorLabel key={index} text={message} />
-        ))}
+      {idTypeErrors.length > 0 && (
+        <ErrorLabel text={"La categoría tiene que ser seleccionado"} />
+      )}
 
       <div
         className="
@@ -324,10 +323,9 @@ export default function TaskFormLayout({
         <label>Estado</label>
         <SelectStates state={state} setState={setState} />
       </div>
-      {idStateErrors.length > 0 &&
-        idStateErrors.map(({ message }, index) => (
-          <ErrorLabel key={index} text={message} />
-        ))}
+      {idStateErrors.length > 0 && (
+        <ErrorLabel text={"El estado tiene que ser seleccionado"} />
+      )}
 
       {admin && (
         <div

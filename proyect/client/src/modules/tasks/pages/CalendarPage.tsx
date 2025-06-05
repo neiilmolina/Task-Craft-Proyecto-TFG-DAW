@@ -47,14 +47,14 @@ export default function CalendarPage() {
     event: (props: any) => {
       return (
         <div
-          style={{
-            color: "black",
-            backgroundColor: props.event.color,
-            margin: 0,
-            outline: "none",
-            border: "none",
-            padding: "5px",
-          }}
+          // style={{
+          //   color: "black",
+          //   backgroundColor: props.event.color,
+          //   margin: 0,
+          //   outline: "none",
+          //   border: "none",
+          //   padding: "5px",
+          // }}
           onClick={() => navigate(`/tasks/detailsTask/${props.event.id}`)}
         >
           <p>{props.title}</p>
@@ -69,31 +69,27 @@ export default function CalendarPage() {
         Añadir tarea
       </Button>
 
-      {!tasks || tasks.length === 0 ? (
-        <div>No hay tareas</div>
-      ) : (
-        <Calendar
-          localizer={localizer}
-          startAccessor="start"
-          events={events}
-          views={["month"]}
-          style={{
-            height: "100vh",
-            width: "100v%",
-            overflowX: "hidden",
-            boxSizing: "border-box",
-          }}
-          components={components}
-          messages={{
-            month: "Mes",
-            week: "Semana",
-            day: "Día",
-            today: "Hoy",
-            previous: "Anterior",
-            next: "Siguiente",
-          }}
-        />
-      )}
+      <Calendar
+        localizer={localizer}
+        startAccessor="start"
+        events={events}
+        views={["month"]}
+        style={{
+          height: "100vh",
+          width: "100v%",
+          overflowX: "hidden",
+          boxSizing: "border-box",
+        }}
+        components={components}
+        messages={{
+          month: "Mes",
+          week: "Semana",
+          day: "Día",
+          today: "Hoy",
+          previous: "Anterior",
+          next: "Siguiente",
+        }}
+      />
     </DashboardPageLayout>
   );
 }
