@@ -58,7 +58,7 @@ export default class AuthController {
       // Guardar el token en una cookie
       res.cookie(accesCookie, token, {
         httpOnly: true, // Esto asegura que la cookie solo puede ser accesada por el servidor
-        secure: process.env.NODE_ENV === "production", // Asegura que la cookie solo se envíe sobre HTTPS en producción
+        // secure: process.env.NODE_ENV === "production", Asegura que la cookie solo se envíe sobre HTTPS en producción
         expires: new Date(Date.now() + 3600 * 1000), // Expiración en 1 hora
       });
 
