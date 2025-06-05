@@ -10,13 +10,12 @@ export const corsMiddleware = (
   res: Response,
   next: NextFunction
 ): void => {
-  
   const origin = req.headers.origin as string;
 
   if (allowedOrigins.includes(origin)) {
     res.setHeader("Access-Control-Allow-Origin", origin);
   }
-  
+
   res.setHeader("Access-Control-Allow-Credentials", "true");
   res.setHeader(
     "Access-Control-Allow-Methods",
@@ -33,4 +32,15 @@ export const corsMiddleware = (
   }
 
   next();
+};
+
+// Middleware para manejo de errores generales
+export const errorHandler = (
+  err: Error,
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
+  console.error("Error:", err);
+  res.status(500).json({ error: "Internal Server Error" });
 };
