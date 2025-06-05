@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userUpdateSchema = exports.userCreateSchema = void 0;
+exports.userFilterSchema = exports.userUpdateSchema = exports.userCreateSchema = void 0;
 exports.validateUserCreate = validateUserCreate;
 exports.validateUserUpdate = validateUserUpdate;
+exports.validateUserFilterSchema = validateUserFilterSchema;
 exports.validatePassword = validatePassword;
 const zod_1 = require("zod");
 const formatMessages_1 = require("../../../validations/formatMessages");
@@ -32,12 +33,20 @@ exports.userUpdateSchema = zod_1.z.object({
     urlImg: urlImg,
     idRol: idRol,
 });
+exports.userFilterSchema = zod_1.z.object({
+    idRol: idRol.optional(),
+    stringSearch: userName.optional(),
+});
 function validateUserCreate(input) {
     const result = exports.userCreateSchema.safeParse(input);
     return (0, formatMessages_1.formatZodMessages)(result);
 }
 function validateUserUpdate(input) {
     const result = exports.userUpdateSchema.safeParse(input);
+    return (0, formatMessages_1.formatZodMessages)(result);
+}
+function validateUserFilterSchema(input) {
+    const result = exports.userFilterSchema.safeParse(input);
     return (0, formatMessages_1.formatZodMessages)(result);
 }
 function validatePassword(input) {

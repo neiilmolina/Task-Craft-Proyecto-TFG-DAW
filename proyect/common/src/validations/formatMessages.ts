@@ -1,12 +1,12 @@
 import { z, ZodType, type SafeParseReturnType } from "zod";
 
-type FormattedError = {
+export type FormattedError = {
   field: string;
   message: string;
   code: string;
 };
 
-type FormatZodResult<TSchema extends ZodType<any, any, any>> =
+export type FormatZodResult<TSchema extends ZodType<any, any, any>> =
   | { success: true; data: z.infer<TSchema> }
   | { success: false; errors: FormattedError[] };
 

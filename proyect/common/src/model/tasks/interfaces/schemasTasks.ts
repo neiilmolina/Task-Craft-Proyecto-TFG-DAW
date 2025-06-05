@@ -1,7 +1,10 @@
 import { z } from "zod";
-import { Temporal } from "@js-temporal/polyfill";
-import { TaskCreate, TaskUpdate } from "./interfacesTasks";
-import { validateFutureDate } from "../../../validations/dateValidations";
+import { TaskCreate, TaskFilters, TaskUpdate } from "./interfacesTasks";
+import {
+  validateDateFormat,
+  validateFutureDate,
+  validatePastDate,
+} from "../../../validations/dateValidations";
 import { validateString } from "../../../validations/stringValidations";
 import { formatZodMessages } from "../../../validations/formatMessages";
 
@@ -29,10 +32,19 @@ export const TaskCreateSchema = z.object({
 export const TaskUpdateSchema = z.object({
   title: title.optional(),
   description: description.optional(),
-  activityDate: validateFutureDate("fecha").optional(),
+  activityDate: validateDateFormat("fecha").optional(),
   idState: idState.optional(),
   idType: idType.optional(),
   idUser: idUser.optional(),
+});
+
+export const TaskFiltersSchema = z.object({
+  idUser: idUser.optional(),
+  stateString: validateString("estado", 1).optional(),
+  typeString: validateString("tipo", 1).optional(),
+  title: title.optional(),
+  pastDate: validatePastDate("fecha pasada").optional(),
+  futureDate: validateFutureDate("fecha futura").optional(),
 });
 
 export const validateTaskCreate = (input: Partial<TaskCreate>) => {
@@ -43,5 +55,10 @@ export const validateTaskCreate = (input: Partial<TaskCreate>) => {
 // Método para validar los datos con safeParse en TaskUpdate
 export const validateTaskUpdate = (input: Partial<TaskUpdate>) => {
   const result = TaskUpdateSchema.safeParse(input);
+  return formatZodMessages(result);
+};
+
+export const validateTaskFilters = (input: Partial<TaskFilters>) => {
+  const result = TaskFiltersSchema.safeParse(input);
   return formatZodMessages(result);
 };

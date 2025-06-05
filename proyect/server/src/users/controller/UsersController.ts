@@ -10,7 +10,6 @@ import { UserCreate, UserUpdate } from "task-craft-models";
 import { randomUUID } from "crypto";
 import bcrypt from "bcryptjs";
 import { UUID_REGEX } from "@/src/core/constants";
-import { error } from "console";
 
 export default class UsersController {
   private usersRepository: UsersRepository;
@@ -109,6 +108,8 @@ export default class UsersController {
         return;
       }
 
+      console.log("userData", userData);
+
       const { password } = userData;
       const idUser = randomUUID();
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -124,7 +125,7 @@ export default class UsersController {
         userConPasswordEncriptado
       );
 
-      res.status(201).json(newUser); // Usa 201 para creación exitosa
+      res.status(201).json(newUser);
       return;
     } catch (error: any) {
       console.error("Error al crear el user:", error);

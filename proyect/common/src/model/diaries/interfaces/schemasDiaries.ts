@@ -1,14 +1,22 @@
 import { z } from "zod";
-import { Temporal } from "@js-temporal/polyfill";
-import { DiaryCreate, DiaryUpdate } from "./interfacesDiaries";
-import { validateFutureDate } from "../../../validations/dateValidations";
+import {
+  Diary,
+  DiaryCreate,
+  DiaryFilters,
+  DiaryUpdate,
+} from "./interfacesDiaries";
+import {
+  validateDateFormat,
+  validateFutureDate,
+  validatePastDate,
+} from "../../../validations/dateValidations";
 import { validateString } from "../../../validations/stringValidations";
 import { formatZodMessages } from "../../../validations/formatMessages";
 
 // Constantes para los tipos de validación
-const title = validateString("title", 1, 10);
+const title = validateString("title", 1);
 const description = validateString("descripcion", 1, 300);
-const activityDate = validateFutureDate("activityDate");
+const activityDate = validateDateFormat("fecha");
 
 const idUser = z.string().uuid();
 
@@ -24,8 +32,14 @@ export const DiaryCreateSchema = z.object({
 export const DiaryUpdateSchema = z.object({
   title: title.optional(),
   description: description.optional(),
-  activityDate: validateFutureDate("activityDate").optional(),
   idUser: idUser.optional(),
+});
+
+export const DiaryFiltersSchema = z.object({
+  idUser: idUser.optional(),
+  title: title.optional(),
+  pastDate: validatePastDate("fecha pasada").optional(),
+  futureDate: validateFutureDate("fecha futura").optional(),
 });
 
 export const validateDiaryCreate = (input: Partial<DiaryCreate>) => {
@@ -36,5 +50,10 @@ export const validateDiaryCreate = (input: Partial<DiaryCreate>) => {
 // Método para validar los datos con safeParse en DiaryUpdate
 export const validateDiaryUpdate = (input: Partial<DiaryUpdate>) => {
   const result = DiaryUpdateSchema.safeParse(input);
+  return formatZodMessages(result);
+};
+
+export const validateDiaryFilters = (input: Partial<DiaryFilters>) => {
+  const result = DiaryFiltersSchema.safeParse(input);
   return formatZodMessages(result);
 };

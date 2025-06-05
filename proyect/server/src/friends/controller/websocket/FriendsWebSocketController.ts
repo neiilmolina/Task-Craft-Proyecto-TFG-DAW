@@ -1,19 +1,22 @@
 import { Socket } from "socket.io";
 import jwt from "jsonwebtoken";
 import FriendsRepository from "@/src/friends/model/FriendsRepository";
-import {
-  FriendCreate,
-  FriendFilters,
-} from "task-craft-models";
+import { FriendCreate, FriendFilters } from "task-craft-models";
 import IFriendsDAO from "@/src/friends/model/dao/IFriendsDAO";
 import { randomUUID } from "crypto";
-import {
-  validateFriendCreate,
-  validateFriendFilters,
-} from "task-craft-models";
+import { validateFriendCreate, validateFriendFilters } from "task-craft-models";
 import { UUID_REGEX } from "@/src/core/constants";
 
 const secretKey = process.env.JWT_SECRET as string;
+
+const SOCKET_EVENTS_NAMES = {
+  SEND_FRIEND_REQUEST: "send_friend_request",
+  ACCEPT_FRIEND_REQUEST: "accept_friend_request",
+  DISCONNECT: "disconnect",
+  DELETE_FRIEND_REQUEST: "delete_friend_request",
+  GET_FRIEND_REQUESTS: "get_friend_requests",
+  AUTH_ERROR: "auth_error",
+};
 
 export default class FriendsWebSocketController {
   private friendsRepository: FriendsRepository;
@@ -28,7 +31,10 @@ export default class FriendsWebSocketController {
       this.socket.handshake.headers.cookie?.match(/access_token=([^;]+)/)?.[1];
 
     if (!token) {
-      this.socket.emit("auth_error", "Token no proporcionado");
+      this.socket.emit(
+        SOCKET_EVENTS_NAMES.AUTH_ERROR,
+        "Token no proporcionado"
+      );
       this.socket.disconnect();
       return;
     }
@@ -42,71 +48,101 @@ export default class FriendsWebSocketController {
 
       this.registerEvents();
     } catch (error) {
-      this.socket.emit("auth_error", "Token inválido o expirado");
+      this.socket.emit(
+        SOCKET_EVENTS_NAMES.AUTH_ERROR,
+        "Token inválido o expirado"
+      );
       this.socket.disconnect();
     }
   }
 
   private registerEvents(): void {
-    this.socket.on("send_friend_request", this.handleSendFriendRequest);
-    this.socket.on("accept_friend_request", this.handleAcceptFriendRequest);
-    this.socket.on("disconnect", this.handleDisconnect);
-    this.socket.on("delete_friend_request", this.handleDeleteFriendRequest);
-    this.socket.on("get_friend_requests", this.getFriendRequests);
+    this.socket.on(
+      SOCKET_EVENTS_NAMES.SEND_FRIEND_REQUEST,
+      this.handleSendFriendRequest
+    );
+    this.socket.on(
+      SOCKET_EVENTS_NAMES.ACCEPT_FRIEND_REQUEST,
+      this.handleAcceptFriendRequest
+    );
+    this.socket.on(SOCKET_EVENTS_NAMES.DISCONNECT, this.handleDisconnect);
+    this.socket.on(
+      SOCKET_EVENTS_NAMES.DELETE_FRIEND_REQUEST,
+      this.handleDeleteFriendRequest
+    );
+    this.socket.on(
+      SOCKET_EVENTS_NAMES.GET_FRIEND_REQUESTS,
+      this.getFriendRequests
+    );
   }
 
   private getFriendRequests = async (filters?: FriendFilters) => {
+    const SOCKET_EVENTS_NAMES = {
+      EMIT: "friend_requests",
+      ERROR: "friend_requests_error",
+    };
+
     try {
       // Validación de filtros
       if (filters) {
         const result = validateFriendFilters(filters);
         console.log("Resultado validación", result);
-  
+
         if (!result || !result.success) {
           const errorMessages = result?.errors
             ?.map((error) => error.message)
             .join(", ");
           console.error("Errores de validación:", errorMessages);
-          this.socket.emit("friend_requests_error", {
-            message: `Filtro inválido: ${errorMessages}`,
+          this.socket.emit(SOCKET_EVENTS_NAMES.ERROR, {
+            message: "Filtros inválidos:",
+            details: result.errors.map((error) => ({
+              field: error.field,
+              message: error.message,
+            })),
           });
           return;
         }
       }
-  
+
       // Obtener solicitudes de amistad
       const friendRequests = await this.friendsRepository.getAll(filters || {});
       console.log("Solicitudes de amistad:", friendRequests);
-  
+
       // Si no hay solicitudes, lanzar un error
       if (!friendRequests || friendRequests.length === 0) {
         throw new Error("No se encontraron solicitudes de amistad");
       }
-  
+
       // Emitir las solicitudes de amistad
-      this.socket.emit("friend_requests", friendRequests);
+      this.socket.emit(SOCKET_EVENTS_NAMES.EMIT, friendRequests);
     } catch (error) {
       // Manejo de errores
-      const errorMessage = error instanceof Error ? error.message : "Error desconocido";
+      const errorMessage =
+        error instanceof Error ? error.message : "Error desconocido";
       console.log("Error:", errorMessage);
-      
+
       if (error instanceof Error && error.stack) {
         console.error("Stack trace:", error.stack);
       }
-  
+
       // Enviar el error al cliente
-      this.socket.emit("friend_requests_error", {
-        message: errorMessage,
+      this.socket.emit(SOCKET_EVENTS_NAMES.ERROR, {
+        message: "Error al mostrar las solicitudes de amistad",
+        error: errorMessage,
       });
     }
   };
-  
 
   private handleSendFriendRequest = async (idSecondUser: string) => {
+    const SOCKET_EVENTS_NAMES = {
+      EMIT: "friend_request_sent",
+      ERROR: "friend_request_sent_error",
+    };
+
     try {
       const firstUser = this.socket.data.user?.idUser;
       if (!firstUser) {
-        throw new Error("El primer usuario no está disponible.");
+        throw new Error("El id del usuario no está disponible.");
       }
 
       const data: FriendCreate = {
@@ -117,13 +153,17 @@ export default class FriendsWebSocketController {
 
       // Realizar la validación
       const result = validateFriendCreate(data);
-      console.log("Validation result:", result);
+      console.log("Resultado de la validación:", result);
 
-      if (!result.success) {
-        const errorMessages = result.errors
-          ?.map((error) => error.message)
-          .join(", ");
-        throw new Error(errorMessages);
+      if (!result || !result.success) {
+        this.socket.emit(SOCKET_EVENTS_NAMES.ERROR, {
+          message: "Error al crear la solicitud de amistad",
+          details: result.errors.map((error) => ({
+            field: error.field,
+            message: error.message,
+          })),
+        });
+        return;
       }
 
       // Generar un id para la amistad
@@ -141,42 +181,60 @@ export default class FriendsWebSocketController {
       }
 
       // Emitir el resultado exitoso
-      this.socket.emit("friend_request_sent", { success: true, friend });
+      this.socket.emit(SOCKET_EVENTS_NAMES.EMIT, { success: true, friend });
     } catch (error) {
-      this.socket.emit("error", {
+      // Emitir el error al cliente
+      this.socket.emit(SOCKET_EVENTS_NAMES.ERROR, {
         message: "Error al enviar solicitud de amistad",
-        error,
+        error: error instanceof Error ? error.message : "Error desconocido",
       });
     }
   };
 
   private handleAcceptFriendRequest = async (friendId: string) => {
+    const SOCKET_EVENTS_NAMES = {
+      EMIT: "friend_request_accepted",
+      ERROR: "friend_request_accepted_error",
+    };
+
     try {
       if (!UUID_REGEX.test(friendId))
         throw new Error("El ID de la amistad debe ser válido");
-      const result = await this.friendsRepository.update(friendId);
 
+      const result = await this.friendsRepository.update(friendId);
       if (!result) throw new Error("Error al actualizar la amistad");
-      this.socket.emit("friend_request_accepted", { success: true, result });
+
+      // Emitir el resultado exitoso
+      this.socket.emit(SOCKET_EVENTS_NAMES.EMIT, { success: true, result });
     } catch (error) {
-      this.socket.emit("error", {
+      // Emitir el error al cliente
+      this.socket.emit(SOCKET_EVENTS_NAMES.ERROR, {
         message: "Error al aceptar solicitud de amistad",
-        error,
+        error: error instanceof Error ? error.message : "Error desconocido",
       });
     }
   };
 
   private handleDeleteFriendRequest = async (friendId: string) => {
+    const SOCKET_EVENTS_NAMES = {
+      EMIT: "friend_request_deleted",
+      ERROR: "friend_request_deleted_error",
+    };
+
     try {
       if (!UUID_REGEX.test(friendId))
         throw new Error("El ID de la amistad debe ser válido");
+
       const result = await this.friendsRepository.delete(friendId);
       if (!result) throw new Error("Error al eliminar la amistad");
-      this.socket.emit("friend_request_deleted", { success: true, result });
+
+      // Emitir el resultado exitoso
+      this.socket.emit(SOCKET_EVENTS_NAMES.EMIT, { success: true, result });
     } catch (error) {
-      this.socket.emit("error", {
+      // Emitir el error al cliente
+      this.socket.emit(SOCKET_EVENTS_NAMES.ERROR, {
         message: "Error al eliminar solicitud de amistad",
-        error,
+        error: error instanceof Error ? error.message : "Error desconocido",
       });
     }
   };

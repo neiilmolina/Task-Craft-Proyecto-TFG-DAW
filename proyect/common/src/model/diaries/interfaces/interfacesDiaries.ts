@@ -16,6 +16,14 @@ export interface Diary {
   idUser: string;
 }
 
+export interface DiaryDTO {
+  idDiary: string;
+  title: string;
+  description: string;
+  activityDate: string;
+  idUser: string;
+}
+
 export interface DiaryCreate {
   title: string;
   description: string;
@@ -26,7 +34,6 @@ export interface DiaryCreate {
 export interface DiaryUpdate {
   title?: string;
   description?: string;
-  activityDate?: string;
   idUser?: string;
 }
 
@@ -36,4 +43,11 @@ export interface DiaryReturn {
   description: string;
   activityDate: Temporal.PlainDateTime;
   idUser: string;
+}
+
+export interface DiaryFilters {
+  idUser?: string;
+  futureDate?: string;
+  pastDate?: string;
+  title?: string;
 }

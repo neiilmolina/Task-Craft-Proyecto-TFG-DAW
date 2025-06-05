@@ -1,5 +1,11 @@
 import connection from "@/config/mysql";
-import { Task, TaskCreate, TaskUpdate, TaskReturn } from "task-craft-models";
+import {
+  Task,
+  TaskCreate,
+  TaskUpdate,
+  TaskReturn,
+  TaskFilters,
+} from "task-craft-models";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import ITaskDAO from "@/src/tasks/model/dao/ITasksDAO";
 import { Temporal } from "@js-temporal/polyfill";
@@ -20,8 +26,11 @@ const FIELDS = {
 };
 
 export default class TaskMysqlDAO implements ITaskDAO {
-  async getAll(idUser?: string): Promise<Task[]> {
+  async getAll(tasksFilters: TaskFilters): Promise<Task[]> {
     return new Promise<Task[]>((resolve, reject) => {
+      const { idUser, stateString, typeString, title, futureDate, pastDate } =
+        tasksFilters || {};
+
       let query = `
         SELECT 
           t.${FIELDS.idTask}, 
@@ -38,18 +47,43 @@ export default class TaskMysqlDAO implements ITaskDAO {
         JOIN estados e ON t.${FIELDS.idState} = e.idEstado
         JOIN tipos ty ON t.${FIELDS.idType} = ty.idTipo
         JOIN usuarios u ON t.${FIELDS.idUser} = u.idUsuario
+        WHERE 1=1
       `;
 
-      const conditions: string[] = [];
       const params: any[] = [];
 
       if (idUser) {
-        conditions.push(`t.${FIELDS.idUser} = ?`);
+        query += ` AND t.${FIELDS.idUser} = ?`;
         params.push(idUser);
       }
 
-      if (conditions.length > 0) {
-        query += ` WHERE ` + conditions.join(" AND ");
+      if (stateString) {
+        query += ` AND e.estado LIKE ?`;
+        params.push(`${stateString}`);
+      }
+
+      if (typeString) {
+        query += ` AND ty.tipo LIKE ?`;
+        params.push(`${typeString}`);
+      }
+
+      if (title) {
+        query += ` AND t.${FIELDS.title} LIKE ?`;
+        params.push(`%${title}%`);
+      }
+
+      if (futureDate && pastDate) {
+        query += ` AND t.${FIELDS.activityDate} BETWEEN ? AND ?`;
+        params.push(pastDate.replace("T", " "), futureDate.replace("T", " "));
+      } else {
+        if (pastDate) {
+          query += ` AND t.${FIELDS.activityDate} BETWEEN ? AND CURDATE()`;
+          params.push(pastDate.replace("T", " "));
+        }
+        if (futureDate) {
+          query += ` AND t.${FIELDS.activityDate} BETWEEN CURDATE() AND ?`;
+          params.push(futureDate.replace("T", " "));
+        }
       }
 
       connection.query(query, params, (err: any, results: RowDataPacket[]) => {
@@ -63,26 +97,26 @@ export default class TaskMysqlDAO implements ITaskDAO {
           );
         }
 
-        const tasks: Task[] = results.map((row: RowDataPacket) => {
-          try {
-            return buildTaskFromFields({
+        try {
+          const tasks: Task[] = results.map((row: RowDataPacket) =>
+            buildTaskFromFields({
               idTask: row[FIELDS.idTask],
               title: row[FIELDS.title],
               description: row[FIELDS.description],
               activityDate: row[FIELDS.activityDate],
-              idState: row[FIELDS.idState],
-              state: row[FIELDS.state],
-              idType: row[FIELDS.idType],
-              type: row[FIELDS.type],
-              color: row[FIELDS.color],
-              idUser: row[FIELDS.idUser],
-            });
-          } catch (err) {
-            throw err;
-          }
-        });
+              idState: row.idEstado,
+              state: row.estado,
+              idType: row.idTipo,
+              type: row.tipo,
+              color: row.color,
+              idUser: row.idUsuario,
+            })
+          );
 
-        resolve(tasks);
+          resolve(tasks);
+        } catch (err) {
+          reject(err);
+        }
       });
     });
   }
@@ -184,14 +218,18 @@ export default class TaskMysqlDAO implements ITaskDAO {
           task.activityDate.replace("T", "T")
         );
 
-        resolve({
+        const newTask = {
           idTask: idTask,
           title: task.title,
           description: task.description,
-          activityDate: activityDate, // Usar Temporal.PlainDateTime para el campo de fecha
+          activityDate: formattedDate, // Usar Temporal.PlainDateTime para el campo de fecha
           idState: task.idState,
           idType: task.idType,
           idUser: task.idUser,
+        };
+        resolve({
+          ...newTask,
+          activityDate: activityDate,
         });
       });
     });

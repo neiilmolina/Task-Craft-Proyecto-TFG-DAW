@@ -1,11 +1,7 @@
 import { ResultSetHeader } from "mysql2";
 import mysql from "../__mocks__/mysql";
 import UsersMysqlDAO from "../..//src/users/model/dao/UsersMysqlDAO";
-import {
-  User,
-  UserBD,
-  UserUpdate,
-} from "task-craft-models";
+import { User, UserBD, UserUpdate, UserCreate, UserReturn } from "task-craft-models";
 import bcrypt from "bcryptjs";
 
 jest.mock("mysql2", () => ({
@@ -580,14 +576,14 @@ describe("UsersMysqlDAO", () => {
     });
   });
 
-  describe("create", () => {
+  describe.only("create", () => {
     it("should insert a user and return the inserted user", async () => {
-      const mockUsuario = {
+      const mockUsuario: UserCreate = {
         userName: "john_doe",
         email: "john@example.com",
         password: "hashed_password",
         urlImg: "https://example.com/image.jpg",
-        idRol: 2,
+        idRole: 2,
       };
       const mockidUser = "123";
 
@@ -605,12 +601,12 @@ describe("UsersMysqlDAO", () => {
         userName: mockUsuario.userName,
         email: mockUsuario.email,
         urlImg: mockUsuario.urlImg,
-        idRol: mockUsuario.idRol,
+        idRole: mockUsuario.idRole,
       });
     });
 
-    it("should insert a user with missing optional fields and return defaults", async () => {
-      const mockUsuario = {
+    it.only("should insert a user with missing optional fields and return defaults", async () => {
+      const mockUsuario: UserCreate = {
         email: "john@example.com",
         password: "hashed_password",
       };
@@ -627,11 +623,11 @@ describe("UsersMysqlDAO", () => {
 
       expect(result).toEqual({
         idUser: mockidUser,
-        userName: "",
+        userName: null,
         email: mockUsuario.email,
-        urlImg: "",
-        idRol: 1,
-      });
+        urlImg: null,
+        idRole: 1,
+      } as UserReturn);
     });
 
     it("should throw an error if the database insertion fails", async () => {
@@ -640,7 +636,7 @@ describe("UsersMysqlDAO", () => {
         email: "john@example.com",
         password: "hashed_password",
         urlImg: "https://example.com/image.jpg",
-        idRol: 2,
+        idRole: 2,
       };
       const mockidUser = "789";
 

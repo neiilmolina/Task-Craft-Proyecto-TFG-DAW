@@ -22,14 +22,18 @@ export interface User {
     role: Role;
 }
 export interface UserCreate {
-    userName?: string | null;
+    userName?: string;
     email: string;
     password: string;
     urlImg?: string | null;
     idRole?: number;
 }
+export interface UserLogin {
+    email: string;
+    password: string;
+}
 export interface UserUpdate {
-    userName?: string | null;
+    userName?: string;
     email?: string;
     urlImg?: string | null;
     idRole?: number;
@@ -40,4 +44,12 @@ export interface UserReturn {
     email: string;
     urlImg?: string | null;
     idRole: number;
+}
+export interface UserFilter {
+    idRole?: number;
+    stringSearch?: string;
+}
+export interface UserToken extends User {
+    iat: number;
+    exp: number;
 }

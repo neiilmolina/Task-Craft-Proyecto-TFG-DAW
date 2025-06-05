@@ -18,6 +18,8 @@ import IDiariesDAO from "@/src/diaries/model/dao/IDiariesDAO";
 import createDiariesRoute from "@/src/diaries/controller/routesDiaries";
 import IFriendsDAO from "@/src/friends/model/dao/IFriendsDAO";
 import createFriendsRoute from "@/src/friends/controller/http/routesFriends";
+import createFriendsHasTasksRoutes from "@/src/friends_has_tasks/controller/http/routesFriendsHasTasks";
+import IFriendsHasTasksDAO from "@/src/friends_has_tasks/model/dao/IFriendsHasTasksDAO";
 
 dotenv.config();
 
@@ -28,13 +30,13 @@ const createApp = (
   usersDAO: IUsersDAO,
   tasksDAO: ITaskDAO,
   diariesDAO: IDiariesDAO,
-  friendsDAO: IFriendsDAO
+  friendsDAO: IFriendsDAO,
+  friendsHasTasksDAO: IFriendsHasTasksDAO
 ) => {
   const app = express();
   app.use(json());
-  app.use(cookieParser());
   app.disable("x-powered-by");
-
+  app.use(cookieParser()); 
   // Usar el middleware de CORS
   app.use(corsMiddleware);
 
@@ -52,6 +54,7 @@ const createApp = (
   app.use("/tasks", createTasksRoute(tasksDAO));
   app.use("/diaries", createDiariesRoute(diariesDAO));
   app.use("/friends", createFriendsRoute(friendsDAO));
+  app.use("/friendsHasTasks", createFriendsHasTasksRoutes(friendsHasTasksDAO));
 
   // Usar el middleware de manejo de errores al final de todas las rutas
   app.use(errorHandler);

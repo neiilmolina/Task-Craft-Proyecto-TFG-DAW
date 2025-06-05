@@ -22,30 +22,30 @@ export default class FriendHasTasksMysqlDAO implements IFriendHasTasksDAO {
     return new Promise((resolve, reject) => {
       let query = `
         SELECT 
-          aht.${FIELDS.idFriendHasTasks} AS idFriendHasTasks,
+          aht.${FIELDS.idFriendHasTasks} AS idFriendHasTask,
           aht.${FIELDS.friendHasTaskRequestState} AS friendHasTaskRequestState,
   
-          creador.idUsuario AS creatorUser_idUser,
-          creador.nombreUsuario AS creatorUser_userName,
-          creador.email AS creatorUser_email,
-          creador.urlImagen AS creatorUser_urlImg,
+          creador.idUsuario AS idUserCreator,
+          creador.nombreUsuario AS userNameCreator,
+          creador.email AS emailCreator,
+          creador.urlImagen AS urlImgCreator,
   
-          asignado.idUsuario AS secondUser_idUser,
-          asignado.nombreUsuario AS secondUser_userName,
-          asignado.email AS secondUser_email,
-          asignado.urlImagen AS secondUser_urlImg,
+          asignado.idUsuario AS idUserAssigned,
+          asignado.nombreUsuario AS userNameAssigned,
+          asignado.email AS emailAssigned,
+          asignado.urlImagen AS urlImgAssigned,
   
-          t.idTarea AS task_idTask,
-          t.titulo AS task_title,
-          t.descripcion AS task_description,
-          t.fechaActividad AS task_activityDate,
+          t.idTarea AS idTask,
+          t.titulo AS title,
+          t.descripcion AS description,
+          t.fechaActividad AS activityDate,
   
-          e.idEstado AS task_state_idState,
-          e.estado AS task_state_state,
+          e.idEstado AS idState,
+          e.estado AS state,
   
-          ty.idTipo AS task_type_idType,
-          ty.tipo AS task_type_type,
-          ty.color AS task_type_color
+          ty.idTipo AS idType,
+          ty.tipo AS type,
+          ty.color AS color
   
         FROM ${TABLE_NAME} aht
         INNER JOIN tareas t ON aht.idTarea = t.idTarea
@@ -53,61 +53,71 @@ export default class FriendHasTasksMysqlDAO implements IFriendHasTasksDAO {
         INNER JOIN usuarios asignado ON aht.idAmigo = asignado.idUsuario
         INNER JOIN estados e ON t.idEstado = e.idEstado
         INNER JOIN tipos ty ON t.idTipo = ty.idTipo
+        WHERE 1 = 1
       `;
 
-      const conditions: string[] = [];
       const params: any[] = [];
 
-      if (filters.idCreatorUser) {
-        conditions.push(`t.idUsuario = ?`);
-        params.push(filters.idCreatorUser);
-      }
+      if (
+        filters.idCreatorUser &&
+        filters.idAssignedUser &&
+        filters.idCreatorUser === filters.idAssignedUser
+      ) {
+        query += ` AND (t.idUsuario = ? OR aht.idAmigo = ?)`;
+        params.push(filters.idCreatorUser, filters.idAssignedUser);
+      } else {
+        if (filters.idCreatorUser) {
+          query += `t.idUsuario = ?`;
+          params.push(filters.idCreatorUser);
+        }
 
-      if (filters.idAssignedUser) {
-        conditions.push(`aht.idAmigo = ?`);
-        params.push(filters.idAssignedUser);
+        if (filters.idAssignedUser) {
+          query += `aht.idAmigo = ?`;
+          params.push(filters.idAssignedUser);
+        }
       }
 
       if (typeof filters.friendHasTaskRequestState === "boolean") {
-        conditions.push(`aht.${FIELDS.friendHasTaskRequestState} = ?`);
+        query += `aht.${FIELDS.friendHasTaskRequestState} = ?`;
         params.push(filters.friendHasTaskRequestState);
-      }
-
-      if (conditions.length > 0) {
-        query += " WHERE " + conditions.join(" AND ");
       }
 
       connection.query(query, params, (err, results: RowDataPacket[]) => {
         if (err) return reject(err);
+        if (!Array.isArray(results)) {
+          return reject(
+            new Error("Expected array of results but got something else.")
+          );
+        }
         let data: FriendHasTasks[];
 
         try {
           data = results.map((row) => ({
-            idFriendHasTasks: row.idFriendHasTasks,
+            idFriendHasTasks: row.idFriendHasTask,
             friendHasTaskRequestState: row.friendHasTaskRequestState,
             creatorUser: {
-              idUser: row.creatorUser_idUser,
-              userName: row.creatorUser_userName,
-              email: row.creatorUser_email,
-              urlImg: row.creatorUser_urlImg,
+              idUser: row.idUserCreator,
+              userName: row.userNameCreator,
+              email: row.emailCreator,
+              urlImg: row.urlImgCreator,
             },
             assignedUser: {
-              idUser: row.secondUser_idUser,
-              userName: row.secondUser_userName,
-              email: row.secondUser_email,
-              urlImg: row.secondUser_urlImg,
+              idUser: row.idUserAssigned,
+              userName: row.userNameAssigned,
+              email: row.emailAssigned,
+              urlImg: row.urlImgAssigned,
             },
             task: buildTaskFromFields({
-              idTask: row.task_idTask,
-              title: row.task_title,
-              description: row.task_description,
-              activityDate: row.task_activityDate,
-              idState: row.task_state_idState,
-              state: row.task_state_state,
-              idType: row.task_type_idType,
-              type: row.task_type_type,
-              color: row.task_type_color,
-              idUser: row.creatorUser_idUser,
+              idTask: row.idTask,
+              title: row.title,
+              description: row.description,
+              activityDate: row.activityDate,
+              idState: row.idState,
+              state: row.state,
+              idType: row.idType,
+              type: row.type,
+              color: row.color,
+              idUser: row.idUserCreator,
             }),
           }));
         } catch (err) {
@@ -122,30 +132,30 @@ export default class FriendHasTasksMysqlDAO implements IFriendHasTasksDAO {
     return new Promise((resolve, reject) => {
       const query = `
         SELECT 
-          aht.${FIELDS.idFriendHasTasks} AS idFriendHasTasks,
+          aht.${FIELDS.idFriendHasTasks} AS idFriendHasTask,
           aht.${FIELDS.friendHasTaskRequestState} AS friendHasTaskRequestState,
   
-          creador.idUsuario AS creatorUser_idUser,
-          creador.nombreUsuario AS creatorUser_userName,
-          creador.email AS creatorUser_email,
-          creador.urlImagen AS creatorUser_urlImg,
+          creador.idUsuario AS idUserCreator,
+          creador.nombreUsuario AS userNameCreator,
+          creador.email AS emailCreator,
+          creador.urlImagen AS urlImgCreator,
   
-          asignado.idUsuario AS secondUser_idUser,
-          asignado.nombreUsuario AS secondUser_userName,
-          asignado.email AS secondUser_email,
-          asignado.urlImagen AS secondUser_urlImg,
+          asignado.idUsuario AS idUserAssigned,
+          asignado.nombreUsuario AS userNameAssigned,
+          asignado.email AS emailAssigned,
+          asignado.urlImagen AS urlImgAssigned,
   
-          t.idTarea AS task_idTask,
-          t.titulo AS task_title,
-          t.descripcion AS task_description,
-          t.fechaActividad AS task_activityDate,
+          t.idTarea AS idTask,
+          t.titulo AS title,
+          t.descripcion AS description,
+          t.fechaActividad AS activityDate,
   
-          e.idEstado AS task_state_idState,
-          e.estado AS task_state_state,
+          e.idEstado AS idState,
+          e.estado AS state,
   
-          ty.idTipo AS task_type_idType,
-          ty.tipo AS task_type_type,
-          ty.color AS task_type_color
+          ty.idTipo AS idType,
+          ty.tipo AS type,
+          ty.color AS color
   
         FROM ${TABLE_NAME} aht
         INNER JOIN tareas t ON aht.idTarea = t.idTarea
@@ -167,31 +177,31 @@ export default class FriendHasTasksMysqlDAO implements IFriendHasTasksDAO {
           const row = results[0];
 
           const data: FriendHasTasks = {
-            idFriendHasTasks: row.idFriendHasTasks,
+            idFriendHasTasks: row.idFriendHasTask,
             friendHasTaskRequestState: row.friendHasTaskRequestState,
             creatorUser: {
-              idUser: row.creatorUser_idUser,
-              userName: row.creatorUser_userName,
-              email: row.creatorUser_email,
-              urlImg: row.creatorUser_urlImg,
+              idUser: row.idUserCreator,
+              userName: row.userNameCreator,
+              email: row.emailCreator,
+              urlImg: row.urlImgCreator,
             },
             assignedUser: {
-              idUser: row.secondUser_idUser,
-              userName: row.secondUser_userName,
-              email: row.secondUser_email,
-              urlImg: row.secondUser_urlImg,
+              idUser: row.idUserAssigned,
+              userName: row.userNameAssigned,
+              email: row.emailAssigned,
+              urlImg: row.urlImgAssigned,
             },
             task: buildTaskFromFields({
-              idTask: row.task_idTask,
-              title: row.task_title,
-              description: row.task_description,
-              activityDate: row.task_activityDate,
-              idState: row.task_state_idState,
-              state: row.task_state_state,
-              idType: row.task_type_idType,
-              type: row.task_type_type,
-              color: row.task_type_color,
-              idUser: row.creatorUser_idUser,
+              idTask: row.idTask,
+              title: row.title,
+              description: row.description,
+              activityDate: row.activityDate,
+              idState: row.idState,
+              state: row.state,
+              idType: row.idType,
+              type: row.type,
+              color: row.color,
+              idUser: row.idUserCreator,
             }),
           };
 

@@ -1,6 +1,6 @@
 import { State } from "../../../model/states/interfaces/interfacesStates";
 import { Temporal } from "@js-temporal/polyfill";
-interface TypeTask {
+export interface TypeTask {
     idType: number;
     type: string;
     color: string;
@@ -22,6 +22,15 @@ export interface Task {
     title: string;
     description: string;
     activityDate: Temporal.PlainDateTime;
+    state: State;
+    type: TypeTask;
+    idUser: string;
+}
+export interface TaskDTO {
+    idTask: string;
+    title: string;
+    description: string;
+    activityDate: string;
     state: State;
     type: TypeTask;
     idUser: string;
@@ -51,4 +60,11 @@ export interface TaskReturn {
     idType: number;
     idUser: string;
 }
-export {};
+export interface TaskFilters {
+    idUser?: string;
+    stateString?: string;
+    typeString?: string;
+    title?: string;
+    pastDate?: string;
+    futureDate?: string;
+}

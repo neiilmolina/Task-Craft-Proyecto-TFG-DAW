@@ -1,0 +1,384 @@
+@startuml TaskCraftClassDiagram
+
+' Use skinparam to style the diagram
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classFontSize 14
+skinparam classFontColor black
+skinparam classBackgroundColor #E0FFFF
+skinparam classBorderColor #2E8BC0
+skinparam packageBackgroundColor #EEEEFF
+
+' Main packages for modules
+package "Users" {
+  class UsersRepository {
+    -usersDAO: IUsersDAO
+    +getAll(idRol?: number, stringSearch?: string): Promise<User[]>
+    +getByCredentials(email: string, password: string): Promise<User | null>
+    +getById(id: string): Promise<User | null>
+    +create(idUsuario: string, usuario: UserCreate): Promise<UserReturn | null>
+    +update(id: string, usuario: UserUpdate): Promise<UserReturn | null>
+    +updatePassword(id: string, password: string): Promise<Boolean>
+    +delete(id: string): Promise<boolean>
+  }
+  
+  interface "IUsersDAO" <<interface>> {
+    +getAll(idRol?: number, stringSearch?: string): Promise<User[]>
+    +getById(id: string): Promise<User | null>
+    +getByCredentials(email: string, password: string): Promise<User | null>
+    +create(idUser: string, user: UserCreate): Promise<UserReturn | null>
+    +update(id: string, user: UserUpdate): Promise<UserReturn | null>
+    +updatePassword(id: string, password: string): Promise<Boolean>
+    +delete(id: string): Promise<boolean>
+  }
+  
+  class UsersMysqlDAO {
+    +getAll(idRol?: number, stringSearch?: string): Promise<User[]>
+    +getById(id: string): Promise<User | null>
+    +getByCredentials(email: string, password: string): Promise<User | null>
+    +create(idUser: string, user: UserCreate): Promise<UserReturn | null>
+    +update(id: string, user: UserUpdate): Promise<UserReturn | null>
+    +updatePassword(id: string, password: string): Promise<Boolean>
+    +delete(id: string): Promise<boolean>
+  }
+  
+  class UsersController {
+    -usersRepository: UsersRepository
+    +getUsers(): RequestHandler
+    +getUserById(): RequestHandler
+    +createUser(): RequestHandler
+    +updateUser(): RequestHandler
+    +deleteUser(): RequestHandler
+  }
+  
+  UsersRepository --> "1" IUsersDAO : uses
+  UsersMysqlDAO ..|> IUsersDAO : implements
+  UsersController --> "1" UsersRepository : uses
+}
+
+package "Tasks" {
+  class TasksRepository {
+    -tasksDAO: ITasksDAO
+    +getAll(filters: TaskFilters): Promise<Task[]>
+    +getById(id: string): Promise<Task | null>
+    +create(idTask: string, task: TaskCreate): Promise<TaskReturn | null>
+    +update(id: string, task: TaskUpdate): Promise<TaskReturn | null>
+    +delete(id: string): Promise<boolean>
+  }
+  
+  interface "ITasksDAO" <<interface>> {
+    +getAll(filters: TaskFilters): Promise<Task[]>
+    +getById(id: string): Promise<Task | null>
+    +create(idTask: string, task: TaskCreate): Promise<TaskReturn | null>
+    +update(id: string, task: TaskUpdate): Promise<TaskReturn | null>
+    +delete(id: string): Promise<boolean>
+  }
+  
+  class TasksMysqlDAO {
+    +getAll(filters: TaskFilters): Promise<Task[]>
+    +getById(id: string): Promise<Task | null>
+    +create(idTask: string, task: TaskCreate): Promise<TaskReturn | null>
+    +update(id: string, task: TaskUpdate): Promise<TaskReturn | null>
+    +delete(id: string): Promise<boolean>
+  }
+  
+  class TasksController {
+    -tasksRepository: TasksRepository
+    +getTasks(): RequestHandler
+    +getTaskById(): RequestHandler
+    +createTask(): RequestHandler
+    +updateTask(): RequestHandler
+    +deleteTask(): RequestHandler
+  }
+  
+  TasksRepository --> "1" ITasksDAO : uses
+  TasksMysqlDAO ..|> ITasksDAO : implements
+  TasksController --> "1" TasksRepository : uses
+}
+
+package "Friends" {
+  class FriendsRepository {
+    -friendsDAO: IFriendsDAO
+    +getAll(idUser: string): Promise<Friend[]>
+    +getById(idFriend: string): Promise<Friend | null>
+    +create(idFriend: string, friend: FriendCreate): Promise<FriendReturn | null>
+    +delete(idFriend: string): Promise<boolean>
+  }
+  
+  interface "IFriendsDAO" <<interface>> {
+    +getAll(idUser: string): Promise<Friend[]>
+    +getById(idFriend: string): Promise<Friend | null>
+    +create(idFriend: string, friend: FriendCreate): Promise<FriendReturn | null>
+    +delete(idFriend: string): Promise<boolean>
+  }
+  
+  class FriendsMysqlDAO {
+    +getAll(idUser: string): Promise<Friend[]>
+    +getById(idFriend: string): Promise<Friend | null>
+    +create(idFriend: string, friend: FriendCreate): Promise<FriendReturn | null>
+    +delete(idFriend: string): Promise<boolean>
+  }
+  
+  class FriendsHTTPController {
+    -friendsRepository: FriendsRepository
+    +getFriends(): RequestHandler
+    +getFriendById(): RequestHandler
+    +createFriend(): RequestHandler
+    +deleteFriend(): RequestHandler
+  }
+  
+  class FriendsWebSocketController {
+    -friendsRepository: FriendsRepository
+    +handleConnection()
+    +handleDisconnection()
+    +notifyFriendCreated()
+    +notifyFriendDeleted()
+  }
+  
+  FriendsRepository --> "1" IFriendsDAO : uses
+  FriendsMysqlDAO ..|> IFriendsDAO : implements
+  FriendsHTTPController --> "1" FriendsRepository : uses
+  FriendsWebSocketController --> "1" FriendsRepository : uses
+}
+
+package "Friends_has_tasks" {
+  class FriendsHasTasksRepository {
+    -friendsHasTasksDAO: IFriendsHasTasksDAO
+    +getAll(filters: FriendHasTasksFilters): Promise<FriendHasTasks[]>
+    +getById(idFriendHasTask: string): Promise<FriendHasTasks | null>
+    +create(idFriendHasTask: string, shareTaskReq: FriendHasTasksCreate): Promise<FriendHasTasksReturn | null>
+    +update(idFriendHasTask: string): Promise<FriendHasTasksReturn | null>
+    +delete(idFriendHasTask: string): Promise<boolean>
+  }
+  
+  interface "IFriendsHasTasksDAO" <<interface>> {
+    +getAll(filters: FriendHasTasksFilters): Promise<FriendHasTasks[]>
+    +getById(idFriendHasTask: string): Promise<FriendHasTasks | null>
+    +create(idFriendHasTask: string, shareTaskReq: FriendHasTasksCreate): Promise<FriendHasTasksReturn | null>
+    +update(idFriendHasTask: string): Promise<FriendHasTasksReturn | null>
+    +delete(idFriendHasTask: string): Promise<boolean>
+  }
+  
+  class FriendsHasTasksMysqlDAO {
+    +getAll(filters: FriendHasTasksFilters): Promise<FriendHasTasks[]>
+    +getById(idFriendHasTask: string): Promise<FriendHasTasks | null>
+    +create(idFriendHasTask: string, shareTaskReq: FriendHasTasksCreate): Promise<FriendHasTasksReturn | null>
+    +update(idFriendHasTask: string): Promise<FriendHasTasksReturn | null>
+    +delete(idFriendHasTask: string): Promise<boolean>
+  }
+  
+  class FriendsHasTasksHTTPController {
+    -friendsHasTasksRepository: FriendsHasTasksRepository
+    +getFriendsHasTasks(): RequestHandler
+    +getFriendHasTaskById(): RequestHandler
+    +createFriendHasTask(): RequestHandler
+    +updateFriendHasTask(): RequestHandler
+    +deleteFriendHasTask(): RequestHandler
+  }
+  
+  class FriendsHasTasksWebSocketsController {
+    -friendsHasTasksRepository: FriendsHasTasksRepository
+    +handleConnection()
+    +handleDisconnection()
+    +notifyTaskShared()
+    +notifyTaskAccepted()
+    +notifyTaskDeleted()
+  }
+  
+  FriendsHasTasksRepository --> "1" IFriendsHasTasksDAO : uses
+  FriendsHasTasksMysqlDAO ..|> IFriendsHasTasksDAO : implements
+  FriendsHasTasksHTTPController --> "1" FriendsHasTasksRepository : uses
+  FriendsHasTasksWebSocketsController --> "1" FriendsHasTasksRepository : uses
+}
+
+package "Roles" {
+  class RolesRepository {
+    -rolesDAO: IRolesDAO
+    +getAll(): Promise<Role[]>
+    +getById(idRole: number): Promise<Role | null>
+    +create(role: RoleCreate): Promise<RoleReturn | null>
+    +update(idRole: number, role: RoleUpdate): Promise<RoleReturn | null>
+    +delete(idRole: number): Promise<boolean>
+  }
+  
+  interface "IRolesDAO" <<interface>> {
+    +getAll(): Promise<Role[]>
+    +getById(idRole: number): Promise<Role | null>
+    +create(role: RoleCreate): Promise<RoleReturn | null>
+    +update(idRole: number, role: RoleUpdate): Promise<RoleReturn | null>
+    +delete(idRole: number): Promise<boolean>
+  }
+  
+  class RolesMysqlDAO {
+    +getAll(): Promise<Role[]>
+    +getById(idRole: number): Promise<Role | null>
+    +create(role: RoleCreate): Promise<RoleReturn | null>
+    +update(idRole: number, role: RoleUpdate): Promise<RoleReturn | null>
+    +delete(idRole: number): Promise<boolean>
+  }
+  
+  class RolesController {
+    -rolesRepository: RolesRepository
+    +getRoles(): RequestHandler
+    +getRoleById(): RequestHandler
+    +createRole(): RequestHandler
+    +updateRole(): RequestHandler
+    +deleteRole(): RequestHandler
+  }
+  
+  RolesRepository --> "1" IRolesDAO : uses
+  RolesMysqlDAO ..|> IRolesDAO : implements
+  RolesController --> "1" RolesRepository : uses
+}
+
+package "States" {
+  class StatesRepository {
+    -statesDAO: IStatesDAO
+    +getAll(): Promise<State[]>
+    +getById(idState: number): Promise<State | null>
+  }
+  
+  interface "IStatesDAO" <<interface>> {
+    +getAll(): Promise<State[]>
+    +getById(idState: number): Promise<State | null>
+  }
+  
+  class StatesMysqlDAO {
+    +getAll(): Promise<State[]>
+    +getById(idState: number): Promise<State | null>
+  }
+  
+  class StatesController {
+    -statesRepository: StatesRepository
+    +getStates(): RequestHandler
+    +getStateById(): RequestHandler
+  }
+  
+  StatesRepository --> "1" IStatesDAO : uses
+  StatesMysqlDAO ..|> IStatesDAO : implements
+  StatesController --> "1" StatesRepository : uses
+}
+
+package "Types" {
+  class TypesRepository {
+    -typesDAO: ITypesDAO
+    +getAll(): Promise<Type[]>
+    +getById(idType: number): Promise<Type | null>
+  }
+  
+  interface "ITypesDAO" <<interface>> {
+    +getAll(): Promise<Type[]>
+    +getById(idType: number): Promise<Type | null>
+  }
+  
+  class TypesMysqlDAO {
+    +getAll(): Promise<Type[]>
+    +getById(idType: number): Promise<Type | null>
+  }
+  
+  class TypesController {
+    -typesRepository: TypesRepository
+    +getTypes(): RequestHandler
+    +getTypeById(): RequestHandler
+  }
+  
+  TypesRepository --> "1" ITypesDAO : uses
+  TypesMysqlDAO ..|> ITypesDAO : implements
+  TypesController --> "1" TypesRepository : uses
+}
+
+package "Diaries" {
+  class DiariesRepository {
+    -diariesDAO: IDiariesDAO
+    +getAll(idUser: string): Promise<Diary[]>
+    +getById(idDiary: string): Promise<Diary | null>
+    +create(idDiary: string, diary: DiaryCreate): Promise<DiaryReturn | null>
+    +update(idDiary: string, diary: DiaryUpdate): Promise<DiaryReturn | null>
+    +delete(idDiary: string): Promise<boolean>
+  }
+  
+  interface "IDiariesDAO" <<interface>> {
+    +getAll(idUser: string): Promise<Diary[]>
+    +getById(idDiary: string): Promise<Diary | null>
+    +create(idDiary: string, diary: DiaryCreate): Promise<DiaryReturn | null>
+    +update(idDiary: string, diary: DiaryUpdate): Promise<DiaryReturn | null>
+    +delete(idDiary: string): Promise<boolean>
+  }
+  
+  class DiariesMysqlDAO {
+    +getAll(idUser: string): Promise<Diary[]>
+    +getById(idDiary: string): Promise<Diary | null>
+    +create(idDiary: string, diary: DiaryCreate): Promise<DiaryReturn | null>
+    +update(idDiary: string, diary: DiaryUpdate): Promise<DiaryReturn | null>
+    +delete(idDiary: string): Promise<boolean>
+  }
+  
+  class DiariesController {
+    -diariesRepository: DiariesRepository
+    +getDiaries(): RequestHandler
+    +getDiaryById(): RequestHandler
+    +createDiary(): RequestHandler
+    +updateDiary(): RequestHandler
+    +deleteDiary(): RequestHandler
+  }
+  
+  DiariesRepository --> "1" IDiariesDAO : uses
+  DiariesMysqlDAO ..|> IDiariesDAO : implements
+  DiariesController --> "1" DiariesRepository : uses
+}
+
+package "Auth" {
+  class AuthController {
+    -usersRepository: UsersRepository
+    +login(): RequestHandler
+    +register(): RequestHandler
+    +checkAuthentication(): RequestHandler
+  }
+  
+  class authMiddleware {
+    +verifyToken(): RequestHandler
+  }
+  
+  AuthController --> UsersRepository : uses
+}
+
+' Relationships between modules
+UsersRepository "1" <-- "n" DiariesRepository : has
+UsersRepository "1" <-- "n" TasksRepository : creates
+UsersRepository "1" <-- "n" FriendsRepository : has
+UsersRepository "1" <-- "1" RolesRepository : has
+TasksRepository "1" <-- "n" FriendsHasTasksRepository : shared with
+FriendsRepository "1" <-- "n" FriendsHasTasksRepository : shared to
+TypesRepository "1" <-- "n" TasksRepository : categorizes
+StatesRepository "1" <-- "n" TasksRepository : tracks
+
+' Core connections
+package "Core" {
+  class Socket {
+    +io: Server
+    +setup()
+    +emit()
+    +on()
+  }
+  
+  class Constants {
+    +UUID_REGEX
+    +DATE_REGEX
+  }
+  
+  class FormatDate {
+    +formatDate(date: Date): string
+  }
+}
+
+' Core connections
+Socket <-- FriendsWebSocketController : uses
+Socket <-- FriendsHasTasksWebSocketsController : uses
+Constants <-- UsersController : uses
+Constants <-- TasksController : uses
+Constants <-- DiariesController : uses
+FormatDate <-- TasksController : uses
+FormatDate <-- DiariesController : uses
+
+@enduml
+

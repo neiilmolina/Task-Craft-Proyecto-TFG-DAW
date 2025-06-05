@@ -33,6 +33,11 @@ export const userUpdateSchema = z.object({
   idRol: idRol,
 });
 
+export const userFilterSchema = z.object({
+  idRol: idRol.optional(),
+  stringSearch: userName.optional(),
+})
+
 export function validateUserCreate(input: Partial<UserCreate>) {
   const result = userCreateSchema.safeParse(input);
   return formatZodMessages(result);
@@ -40,6 +45,11 @@ export function validateUserCreate(input: Partial<UserCreate>) {
 
 export function validateUserUpdate(input: Partial<UserUpdate>) {
   const result = userUpdateSchema.safeParse(input);
+  return formatZodMessages(result);
+}
+
+export function validateUserFilterSchema(input: Partial<UserUpdate>) {
+  const result = userFilterSchema.safeParse(input);
   return formatZodMessages(result);
 }
 

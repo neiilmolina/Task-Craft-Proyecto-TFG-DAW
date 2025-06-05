@@ -1,14 +1,11 @@
-import {
-  TaskCreate,
-  TaskUpdate,
-} from "task-craft-models";
+import { TaskCreate, TaskFilters, TaskUpdate } from "task-craft-models";
 import ITasksDAO from "@/src/tasks/model/dao/ITasksDAO";
 
 export default class TasksRepository {
   constructor(private tasksDAO: ITasksDAO) {}
 
-  getAll(idUser?: string) {
-    return this.tasksDAO.getAll(idUser);
+  getAll(tasksFilters?: TaskFilters) {
+    return this.tasksDAO.getAll(tasksFilters);
   }
   getById(idTask: string) {
     return this.tasksDAO.getById(idTask);

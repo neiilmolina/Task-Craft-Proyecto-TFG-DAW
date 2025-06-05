@@ -1,0 +1,8 @@
+{
+    "watch": [
+        "src",
+        "server-mysql.ts"
+    ],
+    "ext": "ts,tsx",
+    "exec": "tsx server-mysql.ts"
+}

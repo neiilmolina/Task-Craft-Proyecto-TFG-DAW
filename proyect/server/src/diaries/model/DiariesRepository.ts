@@ -1,14 +1,11 @@
-import {
-  DiaryCreate,
-  DiaryUpdate,
-} from "task-craft-models";
+import { DiaryCreate, DiaryFilters, DiaryUpdate } from "task-craft-models";
 import IDiariesDAO from "@/src/diaries/model/dao/IDiariesDAO";
 
 export default class DiariesRepository {
   constructor(private diariesDAO: IDiariesDAO) {}
 
-  getAll(idUser?: string) {
-    return this.diariesDAO.getAll(idUser);
+  getAll(diaryFilters?: DiaryFilters) {
+    return this.diariesDAO.getAll(diaryFilters);
   }
   getById(idDiary: string) {
     return this.diariesDAO.getById(idDiary);

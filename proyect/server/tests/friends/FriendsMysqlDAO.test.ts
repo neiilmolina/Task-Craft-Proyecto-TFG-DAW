@@ -1,5 +1,5 @@
-import mysql from "@/tests/__mocks__/mysql";
-import IFriendsDAO from "@/src/friends/model/dao/IFriendsDAO";
+import mysql from "../__mocks__/mysql";
+import IFriendsDAO from "../../src/friends/model/dao/IFriendsDAO";
 import {
   Friend,
   FriendBD,
@@ -7,13 +7,13 @@ import {
   FriendReturn,
 } from "task-craft-models";
 
-import FriendsMysqlDAO from "@/src/friends/model/dao/FriendsMysqlDAO";
+import FriendsMysqlDAO from "../../src/friends/model/dao/FriendsMysqlDAO";
 
 jest.mock("mysql2", () => ({
   createConnection: mysql.createConnection,
 }));
 
-describe("TaskMysqlDAO", () => {
+describe("FriendsMysqlDAO", () => {
   let friendsDAO: IFriendsDAO;
   let mockConnection: any;
 
@@ -385,12 +385,12 @@ describe("TaskMysqlDAO", () => {
 
     it.only("should handle filtering friends when idFirstUser and idSecondUser are the same (OR logic)", async () => {
       const idUser = "u1";
-    
+
       // Simula que el usuario aparece como firstUser o secondUser
       const filteredResults = mockResultsList.filter(
         (row) => row.idUser1 === idUser || row.idUser2 === idUser
       );
-    
+
       mockConnection.query.mockImplementation(
         (
           sql: string,
@@ -405,12 +405,12 @@ describe("TaskMysqlDAO", () => {
           }
         }
       );
-    
+
       const friends = await friendsDAO.getAll({
         idFirstUser: idUser,
         idSecondUser: idUser, // Al ser iguales, se aplica lógica de OR
       });
-    
+
       const expectedResults = filteredResults.map((row) => ({
         idFriend: row.idFriend,
         firstUser: {
@@ -427,10 +427,9 @@ describe("TaskMysqlDAO", () => {
         },
         friendRequestState: row.friendRequestState,
       }));
-    
+
       expect(friends).toEqual(expectedResults);
     });
-    
   });
 
   describe("getById", () => {

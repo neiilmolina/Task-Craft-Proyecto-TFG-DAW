@@ -16,8 +16,8 @@ const friendCreateSchema = z.object({
 });
 
 const friendFiltersSchema = z.object({
+  idCreatorUser: uuid.optional(),
   idAssignedUser: uuid.optional(),
-  idTask: uuid.optional(),
   friendHasTaskRequestState: z
     .preprocess((val) => {
       if (val === "true") return true;

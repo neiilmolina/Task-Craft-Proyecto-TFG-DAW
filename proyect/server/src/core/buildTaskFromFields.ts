@@ -1,5 +1,7 @@
 import { Temporal } from "@js-temporal/polyfill";
+import { format } from "path";
 import { Task } from "task-craft-models";
+import { formatDate } from "./formatDate";
 
 export function buildTaskFromFields({
   idTask,
@@ -24,22 +26,12 @@ export function buildTaskFromFields({
   color: string;
   idUser: string;
 }): Task {
-  let dateFormatted;
-
-  if (activityDate instanceof Date) {
-    const isoString = activityDate.toISOString().replace("Z", "");
-    dateFormatted = Temporal.PlainDateTime.from(isoString);
-  } else if (typeof activityDate === "string") {
-    dateFormatted = Temporal.PlainDateTime.from(activityDate.replace(" ", "T"));
-  } else {
-    throw new Error("❌ Tipo de fecha inesperado: " + typeof activityDate);
-  }
-
+  console.log(activityDate);
   return {
     idTask,
     title,
     description,
-    activityDate: dateFormatted,
+    activityDate: formatDate(activityDate),
     state: {
       idState,
       state,

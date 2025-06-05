@@ -35,36 +35,17 @@ export declare const userUpdateSchema: z.ZodObject<{
     urlImg?: string | undefined;
     idRol?: number | undefined;
 }>;
-export declare function validateUserCreate(input: Partial<UserCreate>): {
-    success: false;
-    errors: {
-        field: string;
-        message: string;
-        code: string;
-    }[];
-} | {
-    success: true;
-    data: any;
-};
-export declare function validateUserUpdate(input: Partial<UserUpdate>): {
-    success: false;
-    errors: {
-        field: string;
-        message: string;
-        code: string;
-    }[];
-} | {
-    success: true;
-    data: any;
-};
-export declare function validatePassword(input: string): {
-    success: false;
-    errors: {
-        field: string;
-        message: string;
-        code: string;
-    }[];
-} | {
-    success: true;
-    data: any;
-};
+export declare const userFilterSchema: z.ZodObject<{
+    idRol: z.ZodOptional<z.ZodOptional<z.ZodNumber>>;
+    stringSearch: z.ZodOptional<z.ZodString>;
+}, "strip", z.ZodTypeAny, {
+    idRol?: number | undefined;
+    stringSearch?: string | undefined;
+}, {
+    idRol?: number | undefined;
+    stringSearch?: string | undefined;
+}>;
+export declare function validateUserCreate(input: Partial<UserCreate>): import("../../../validations/formatMessages").FormatZodResult<z.ZodType<any, z.ZodTypeDef, any>>;
+export declare function validateUserUpdate(input: Partial<UserUpdate>): import("../../../validations/formatMessages").FormatZodResult<z.ZodType<any, z.ZodTypeDef, any>>;
+export declare function validateUserFilterSchema(input: Partial<UserUpdate>): import("../../../validations/formatMessages").FormatZodResult<z.ZodType<any, z.ZodTypeDef, any>>;
+export declare function validatePassword(input: string): import("../../../validations/formatMessages").FormatZodResult<z.ZodType<any, z.ZodTypeDef, any>>;

@@ -11,8 +11,8 @@ const friendCreateSchema = zod_1.z.object({
     friendHasTaskRequestState: request,
 });
 const friendFiltersSchema = zod_1.z.object({
+    idCreatorUser: uuid.optional(),
     idAssignedUser: uuid.optional(),
-    idTask: uuid.optional(),
     friendHasTaskRequestState: zod_1.z
         .preprocess((val) => {
         if (val === "true")

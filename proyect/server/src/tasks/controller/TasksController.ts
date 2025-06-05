@@ -1,11 +1,15 @@
 import ITasksDAO from "@/src/tasks/model/dao/ITasksDAO";
 import { RequestHandler } from "express";
-import { TaskCreate, TaskUpdate } from "task-craft-models";
+import {
+  TaskCreate,
+  TaskFilters,
+  TaskUpdate,
+  validateTaskFilters,
+} from "task-craft-models";
 import { UUID_REGEX } from "@/src/core/constants";
 import { randomUUID } from "crypto";
 import TasksRepository from "@/src/tasks/model/TasksRepository";
 import { validateTaskCreate, validateTaskUpdate } from "task-craft-models";
-import { Temporal } from "@js-temporal/polyfill";
 
 export default class TasksController {
   private tasksRepository: TasksRepository;
@@ -16,14 +20,20 @@ export default class TasksController {
 
   getTasks: RequestHandler = async (req, res) => {
     try {
-      const idUser = (req.query.idUser as string) ?? undefined;
-
-      if (idUser && !UUID_REGEX.test(idUser)) {
-        res.status(400).json({ error: "El ID del user debe ser válido" });
+      const tasksFilters = (req.query as TaskFilters) ?? undefined;
+      const result = validateTaskFilters(tasksFilters);
+      if (!result.success) {
+        res.status(400).json({
+          error: "Error de validación en los filtros de tareas",
+          details: result.errors?.map((error) => ({
+            field: error.field,
+            message: error.message,
+          })),
+        });
         return;
       }
 
-      const tasks = await this.tasksRepository.getAll(idUser);
+      const tasks = await this.tasksRepository.getAll(tasksFilters);
 
       if (!tasks) {
         res.status(404).json({ error: "No se encontraron tareas" });
@@ -98,6 +108,7 @@ export default class TasksController {
   updateTask: RequestHandler = async (req, res) => {
     try {
       const idTask = req.params.idTask;
+      console.log(idTask);
 
       // Verificación de UUID
       if (!UUID_REGEX.test(idTask)) {
@@ -106,9 +117,11 @@ export default class TasksController {
       }
 
       const taskData: TaskUpdate = req.body;
+      console.log(taskData);
 
       // Validación de datos de la tarea
       const result = validateTaskUpdate(taskData);
+      console.log(result);
       if (!result.success) {
         res.status(400).json({
           error: "Error de validación",
@@ -133,6 +146,7 @@ export default class TasksController {
       res.status(200).json(taskUpdate);
     } catch (error) {
       res.status(500).json({ error: "Error interno del servidor" });
+      console.log(error);
     }
   };
 
