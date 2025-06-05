@@ -3,7 +3,7 @@
   "version": "1.0.1",
   "main": "index.js",
   "scripts": {
-    "build": "npx tsc",
+    "build": "tsup server-mysql.ts --out-dir dist --target=node20 --format cjs",
     "start": "ts-node -r tsconfig-paths/register ./server-mysql.ts",
     "dev": "nodemon",
     "test": "jest",
@@ -46,6 +46,7 @@
     "ts-jest": "^29.2.6",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
+    "tsup": "^8.5.0",
     "tsx": "^4.19.3",
     "typescript": "^5.7.3"
   }

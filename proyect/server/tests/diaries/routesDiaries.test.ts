@@ -301,7 +301,6 @@ describe("Diaries Routes", () => {
       const mockDiaryData: DiaryUpdate = {
         title: "Diario actualizada",
         description: "Descripción actualizada",
-        activityDate: futureDateDiary,
         idUser: "bb89888b-2921-453f-b8c2-49dc2668595f",
       };
 

@@ -1,5 +1,5 @@
 import IStatesDAO from "@/src/states/model/dao/IStatesDAO";
-import { State, StateNoId } from "../interfaces/interfacesStates";
+import { State, StateNoId } from "task-craft-models";
 import connection from "@/config/mysql";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 const TABLE_NAME = "estados";

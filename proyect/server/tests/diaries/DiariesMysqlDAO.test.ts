@@ -497,7 +497,6 @@ describe("DiariesMysqlDAO", () => {
     const diaryInput: DiaryUpdate = {
       title: "Diario actualizada",
       description: "Nueva descripción",
-      activityDate: "2025-04-15T09:30:00",
       idUser: "user-999",
     };
 
