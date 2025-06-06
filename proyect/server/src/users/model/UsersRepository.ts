@@ -35,6 +35,10 @@ export default class UsersRepository {
     return this.usersDAO.updateEmail(id, email);
   }
 
+  async updateUserName(id: string, userName: string) {
+    return this.usersDAO.updateUserName(id, userName);
+  }
+
   async delete(id: string) {
     return this.usersDAO.delete(id);
   }

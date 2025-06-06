@@ -285,6 +285,41 @@ export default class UsersMysqlDAO implements IUsersDAO {
     });
   }
 
+  updateUserName(id: string, userName: string): Promise<Boolean> {
+    return new Promise<Boolean>((resolve, reject) => {
+      const query = `UPDATE ${TABLE_NAME} SET
+      ${FIELDS.userName} = ?
+      WHERE ${FIELDS.idUser} = ?`;
+
+      connection.query(query, [userName, id], (err: any, results: any) => {
+        if (err) {
+          // Preservar las propiedades específicas del error de MySQL
+          if (err.code === "ER_DUP_ENTRY") {
+            const duplicateError = new Error(
+              `Database update error: ${err.message}`
+            );
+            (duplicateError as any).code = err.code;
+            (duplicateError as any).errno = err.errno;
+            (duplicateError as any).sqlState = err.sqlState;
+            return reject(duplicateError);
+          }
+
+          // Para otros errores, mantener el comportamiento actual
+          return reject(new Error(`Database update error: ${err.message}`));
+        }
+
+        const resultSet = results as ResultSetHeader;
+
+        if (resultSet.affectedRows === 0) {
+          return reject(new Error("User not found"));
+        }
+
+        // Resolver con el resultado
+        resolve(true);
+      });
+    });
+  }
+
   async delete(id: string): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
       const query = `DELETE FROM ${TABLE_NAME} WHERE ${FIELDS.idUser} = ?`;

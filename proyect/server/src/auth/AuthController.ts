@@ -2,7 +2,12 @@ import { Request, RequestHandler, Response } from "express";
 import jwt from "jsonwebtoken";
 import IUsersDAO from "@/src/users/model/dao/IUsersDAO";
 import UsersController from "@/src/users/controller/UsersController";
-import { User, validateEmail, validatePassword } from "task-craft-models";
+import {
+  User,
+  validateEmail,
+  validatePassword,
+  validateUserName,
+} from "task-craft-models";
 import UsersRepository from "@/src/users/model/UsersRepository";
 import { UUID_REGEX } from "../core/constants";
 import bcrypt from "bcryptjs";
@@ -237,6 +242,91 @@ export default class AuthController {
     } catch (error: any) {
       if (error.message === "User not found") {
         res.status(404).json({ error: "El user no se ha encontrado" });
+      } else {
+        console.error("Error al actualizar el user:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+      }
+    }
+  }
+
+  async changeUserName(req: any, res: Response): Promise<void> {
+    try {
+      const user: User | null = req.session?.user ?? null;
+      const idUser = user?.idUser;
+      const actualUserName = user?.userName;
+      const userName: string = req.body.userName;
+
+      const result = validateUserName(userName);
+
+      if (!idUser) {
+        res.status(400).json({ error: "No hay user autenticado" });
+        return;
+      }
+
+      if (userName === actualUserName) {
+        res.status(400).json({
+          error: "El nombre de usuario no ha cambiado",
+        });
+        return;
+      }
+
+      if (!UUID_REGEX.test(idUser)) {
+        res.status(400).json({ error: "El ID del user debe ser válido" });
+        return;
+      }
+
+      if (!result.success) {
+        res.status(400).json({
+          error: "Error de validación",
+          details: result.errors?.map((error) => ({
+            field: error.field,
+            message: error.message,
+          })),
+        });
+        return;
+      }
+
+      const userUpdate = await this.usersRepository.updateUserName(
+        idUser,
+        userName
+      );
+
+      if (!userUpdate) {
+        res.status(404).json({ error: "El user no se ha encontrado" });
+        return;
+      }
+
+      // Resto del código para actualizar el token...
+      const token = req.cookies[accesCookie];
+
+      if (!token) {
+        res.status(401).json({ error: "Token inválido o expirado" });
+        return;
+      }
+
+      const decoded = jwt.verify(token, secretKey) as any;
+      const { exp, iat, ...rest } = decoded;
+
+      const newToken = jwt.sign({ ...rest, userName: userName }, secretKey, {
+        expiresIn: "1h",
+      });
+
+      res.cookie(accesCookie, newToken, {
+        httpOnly: true,
+        expires: new Date(Date.now() + 3600 * 1000),
+      });
+
+      res.status(200).json({
+        message: "Nombre de usuario actualizado con éxito",
+      });
+    } catch (error: any) {
+      if (error.message === "User not found") {
+        res.status(404).json({ error: "El user no se ha encontrado" });
+      } else if (
+        error.code === "ER_DUP_ENTRY" &&
+        error.message.includes("nombreUsuario")
+      ) {
+        res.status(409).json({ error: "El nombre de usuario ya está en uso." });
       } else {
         console.error("Error al actualizar el user:", error);
         res.status(500).json({ error: "Error interno del servidor" });

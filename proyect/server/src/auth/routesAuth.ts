@@ -27,6 +27,9 @@ const createAuthRoute = (usuariosDAO: IUsersDAO) => {
   router.patch("/changeEmail", (req, res) =>
     authController.changeEmail(req, res)
   );
+  router.patch("/changeUserName", (req, res) =>
+    authController.changeUserName(req, res)
+  );
 
   return router;
 };
