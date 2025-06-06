@@ -237,6 +237,11 @@ export default class AuthController {
     } catch (error: any) {
       if (error.message === "User not found") {
         res.status(404).json({ error: "El user no se ha encontrado" });
+      } else if (
+        error.code === "ER_DUP_ENTRY" &&
+        error.message.includes("email")
+      ) {
+        res.status(409).json({ error: "El email ya está en uso." });
       } else {
         console.error("Error al actualizar el user:", error);
         res.status(500).json({ error: "Error interno del servidor" });

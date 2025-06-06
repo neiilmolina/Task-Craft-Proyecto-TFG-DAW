@@ -265,12 +265,22 @@ export default class UsersMysqlDAO implements IUsersDAO {
   updateEmail(id: string, email: string): Promise<Boolean> {
     return new Promise<Boolean>((resolve, reject) => {
       const query = `UPDATE ${TABLE_NAME} SET
-      ${FIELDS.email} = ?
-      WHERE ${FIELDS.idUser} = ?`;
+        ${FIELDS.email} = ?
+        WHERE ${FIELDS.idUser} = ?`;
 
       connection.query(query, [email, id], (err: any, results: any) => {
         if (err) {
-          return reject(new Error(`Database update error:  + ${err.message}`)); // Lanza un error con mensaje detallado
+          if (err.code === "ER_DUP_ENTRY") {
+            const duplicateError = new Error(
+              `Database update error: ${err.message}`
+            );
+            (duplicateError as any).code = err.code;
+            (duplicateError as any).errno = err.errno;
+            (duplicateError as any).sqlState = err.sqlState;
+            return reject(duplicateError);
+          }
+
+          return reject(new Error(`Database update error: ${err.message}`));
         }
 
         const resultSet = results as ResultSetHeader;
@@ -279,7 +289,6 @@ export default class UsersMysqlDAO implements IUsersDAO {
           return reject(new Error("User not found"));
         }
 
-        // Resolver con el resultado
         resolve(true);
       });
     });
