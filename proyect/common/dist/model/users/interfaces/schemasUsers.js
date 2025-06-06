@@ -5,6 +5,8 @@ exports.validateUserCreate = validateUserCreate;
 exports.validateUserUpdate = validateUserUpdate;
 exports.validateUserFilterSchema = validateUserFilterSchema;
 exports.validatePassword = validatePassword;
+exports.validateEmail = validateEmail;
+exports.validateUserName = validateUserName;
 const zod_1 = require("zod");
 const formatMessages_1 = require("../../../validations/formatMessages");
 const passwordSchema = zod_1.z
@@ -51,5 +53,13 @@ function validateUserFilterSchema(input) {
 }
 function validatePassword(input) {
     const result = passwordSchema.safeParse(input);
+    return (0, formatMessages_1.formatZodMessages)(result);
+}
+function validateEmail(input) {
+    const result = email.safeParse(input);
+    return (0, formatMessages_1.formatZodMessages)(result);
+}
+function validateUserName(input) {
+    const result = userName.safeParse(input);
     return (0, formatMessages_1.formatZodMessages)(result);
 }

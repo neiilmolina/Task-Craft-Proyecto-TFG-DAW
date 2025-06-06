@@ -2,7 +2,7 @@ import { Request, RequestHandler, Response } from "express";
 import jwt from "jsonwebtoken";
 import IUsersDAO from "@/src/users/model/dao/IUsersDAO";
 import UsersController from "@/src/users/controller/UsersController";
-import { User, validatePassword } from "task-craft-models";
+import { User, validateEmail, validatePassword } from "task-craft-models";
 import UsersRepository from "@/src/users/model/UsersRepository";
 import { UUID_REGEX } from "../core/constants";
 import bcrypt from "bcryptjs";
@@ -181,6 +181,58 @@ export default class AuthController {
       res.status(200).json({
         message:
           "Contraseña actualizada con éxito. Por seguridad, vuelve a iniciar sesión.",
+      });
+    } catch (error: any) {
+      if (error.message === "User not found") {
+        res.status(404).json({ error: "El user no se ha encontrado" });
+      } else {
+        console.error("Error al actualizar el user:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+      }
+    }
+  }
+
+  async changeEmail(req: any, res: Response): Promise<void> {
+    try {
+      const user: User | null = req.session?.user ?? null;
+      const idUser = user?.idUser;
+      const email: string = req.body.email;
+
+      const result = validateEmail(email);
+
+      if (!idUser) {
+        res.status(400).json({ error: "No hay user autenticado" });
+        return;
+      }
+
+      if (!UUID_REGEX.test(idUser)) {
+        res.status(400).json({ error: "El ID del user debe ser válido" });
+        return;
+      }
+
+      if (!result.success) {
+        res.status(400).json({
+          error: "Error de validación",
+          details: result.errors?.map((error) => ({
+            field: error.field,
+            message: error.message,
+          })),
+        });
+        return;
+      }
+
+      const userUpdate = await this.usersRepository.updateEmail(idUser, email);
+
+      if (!userUpdate) {
+        res.status(404).json({ error: "El user no se ha encontrado" });
+        return;
+      }
+
+      res.clearCookie(accesCookie);
+
+      res.status(200).json({
+        message:
+          "Correo actualizado con éxito. Por seguridad, vuelve a iniciar sesión.",
       });
     } catch (error: any) {
       if (error.message === "User not found") {

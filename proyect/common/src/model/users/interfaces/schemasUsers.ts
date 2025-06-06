@@ -57,3 +57,13 @@ export function validatePassword(input: string) {
   const result = passwordSchema.safeParse(input);
   return formatZodMessages(result);
 }
+
+export function validateEmail(input: string) {
+  const result = email.safeParse(input);
+  return formatZodMessages(result);
+}
+
+export function validateUserName(input: string) {
+  const result = userName.safeParse(input);
+  return formatZodMessages(result);
+}

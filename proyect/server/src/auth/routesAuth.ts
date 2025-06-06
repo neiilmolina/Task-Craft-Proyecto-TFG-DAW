@@ -18,10 +18,15 @@ const createAuthRoute = (usuariosDAO: IUsersDAO) => {
   });
 
   router.post("/logout", (req, res) => authController.logout(req, res));
-  
+
   router.get("/protected", (req, res) => authController.protected(req, res));
   router.post("/refresh", (req, res) => authController.refreshToken(req, res));
-  router.patch("/changePassword", (req, res) => authController.changePassword(req, res));
+  router.patch("/changePassword", (req, res) =>
+    authController.changePassword(req, res)
+  );
+  router.patch("/changeEmail", (req, res) =>
+    authController.changeEmail(req, res)
+  );
 
   return router;
 };

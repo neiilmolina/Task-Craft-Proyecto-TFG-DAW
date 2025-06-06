@@ -262,6 +262,29 @@ export default class UsersMysqlDAO implements IUsersDAO {
     });
   }
 
+  updateEmail(id: string, email: string): Promise<Boolean> {
+    return new Promise<Boolean>((resolve, reject) => {
+      const query = `UPDATE ${TABLE_NAME} SET
+      ${FIELDS.email} = ?
+      WHERE ${FIELDS.idUser} = ?`;
+
+      connection.query(query, [email, id], (err: any, results: any) => {
+        if (err) {
+          return reject(new Error(`Database update error:  + ${err.message}`)); // Lanza un error con mensaje detallado
+        }
+
+        const resultSet = results as ResultSetHeader;
+
+        if (resultSet.affectedRows === 0) {
+          return reject(new Error("User not found"));
+        }
+
+        // Resolver con el resultado
+        resolve(true);
+      });
+    });
+  }
+
   async delete(id: string): Promise<boolean> {
     return new Promise<boolean>((resolve, reject) => {
       const query = `DELETE FROM ${TABLE_NAME} WHERE ${FIELDS.idUser} = ?`;
