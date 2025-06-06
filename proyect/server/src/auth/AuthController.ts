@@ -2,18 +2,20 @@ import { Request, RequestHandler, Response } from "express";
 import jwt from "jsonwebtoken";
 import IUsersDAO from "@/src/users/model/dao/IUsersDAO";
 import UsersController from "@/src/users/controller/UsersController";
-import { User } from "task-craft-models";
+import { User, validatePassword } from "task-craft-models";
 import UsersRepository from "@/src/users/model/UsersRepository";
+import { UUID_REGEX } from "../core/constants";
+import bcrypt from "bcryptjs";
 
 const secretKey = process.env.JWT_SECRET as string;
 const accesCookie = process.env.KEY_ACCESS_COOKIE as string;
 
 export default class AuthController {
-  private usersModel: UsersRepository;
+  private usersRepository: UsersRepository;
   private usersController: UsersController;
 
   constructor(usersDAO: IUsersDAO) {
-    this.usersModel = new UsersRepository(usersDAO);
+    this.usersRepository = new UsersRepository(usersDAO);
     this.usersController = new UsersController(usersDAO);
   }
 
@@ -42,7 +44,7 @@ export default class AuthController {
         return;
       }
 
-      const user = await this.usersModel.getByCredentials(email, password);
+      const user = await this.usersRepository.getByCredentials(email, password);
       console.log("user", user);
       if (!user) {
         res
@@ -92,7 +94,7 @@ export default class AuthController {
       }
 
       if (user.role.idRole !== 2) {
-        res.status(403).json({ error: "Acceso denegado" }); // Mejor usar 403 si está autenticado pero no autorizado
+        res.status(403).json({ error: "Acceso denegado" });
         return;
       }
 
@@ -130,6 +132,63 @@ export default class AuthController {
     } catch (error: any) {
       console.error("Error al actualizar el token:", error);
       res.status(500).json({ error: "Error al refrescar el token" });
+    }
+  }
+
+  async changePassword(req: any, res: Response): Promise<void> {
+    try {
+      const user: User | null = req.session?.user ?? null;
+      const idUser = user?.idUser;
+      const password: string = req.body.password;
+
+      const result = validatePassword(password);
+
+      if (!idUser) {
+        res.status(400).json({ error: "No hay user autenticado" });
+        return;
+      }
+
+      if (!UUID_REGEX.test(idUser)) {
+        res.status(400).json({ error: "El ID del user debe ser válido" });
+        return;
+      }
+
+      if (!result.success) {
+        res.status(400).json({
+          error: "Error de validación",
+          details: result.errors?.map((error) => ({
+            field: error.field,
+            message: error.message,
+          })),
+        });
+        return;
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const userUpdate = await this.usersRepository.updatePassword(
+        idUser,
+        hashedPassword
+      );
+
+      if (!userUpdate) {
+        res.status(404).json({ error: "El user no se ha encontrado" });
+        return;
+      }
+
+      // Limpiar la cookie para cerrar sesión
+      res.clearCookie(accesCookie);
+
+      res.status(200).json({
+        message:
+          "Contraseña actualizada con éxito. Por seguridad, vuelve a iniciar sesión.",
+      });
+    } catch (error: any) {
+      if (error.message === "User not found") {
+        res.status(404).json({ error: "El user no se ha encontrado" });
+      } else {
+        console.error("Error al actualizar el user:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+      }
     }
   }
 }
