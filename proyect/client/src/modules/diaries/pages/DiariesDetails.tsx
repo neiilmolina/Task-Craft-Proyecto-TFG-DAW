@@ -31,6 +31,7 @@ export default function DiariesDetails() {
     if (user && id) {
       getDiaryById(id).then((diaryDTO) => {
         setDiary(diaryDTO);
+        console.log(diaryDTO);
         setLoading(false);
       });
     }

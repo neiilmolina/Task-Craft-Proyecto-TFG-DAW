@@ -54,6 +54,7 @@ export default function DiariesFormLayout({
         title: initialData.title,
         description: initialData.description,
         idUser: initialData.idUser,
+        activityDate: initialData.activityDate,
       }));
     }
   }, [initialData, action, setFormData]);
@@ -194,7 +195,9 @@ export default function DiariesFormLayout({
 
       <h2 className="text-greyDark items-center justify-start w-full cursor-default">
         {getDatePhraseFromTemporal({
-          date: Temporal.PlainDateTime.from(nowDate),
+          date: Temporal.PlainDateTime.from(
+            initialData?.activityDate ?? nowDate
+          ),
         })}
       </h2>
 
