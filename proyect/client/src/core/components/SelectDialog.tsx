@@ -2,16 +2,16 @@ import React, { useState, ReactNode } from "react";
 import Select from "./Select";
 import Button from "./Button";
 import useOpenElement from "../hooks/useOpenElement";
+import Icon from "./Icon";
 
 function SelectDialog({
-  classNameButton,
   selectionMessage,
   displayMap,
   children,
   onClose,
   initialValue,
 }: {
-  classNameButton: string;
+  classNameButton?: string;
   selectionMessage: string;
   displayMap: Record<string, string>;
   children: ReactNode;
@@ -28,7 +28,7 @@ function SelectDialog({
 
   const handleAccept = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    console.log(selectedOption)
+    console.log(selectedOption);
     if (selectedOption === "") {
       window.alert("Opción no válida");
       return;
@@ -52,10 +52,11 @@ function SelectDialog({
     <>
       <button
         onClick={handleOpenDialog}
-        className={`px-4 py-2 bg-gray-300 rounded hover:bg-gray-400 ${classNameButton}`}
+        className={`flex flex-row gap-2 items-center justify-center`}
         type="button"
       >
         {showValue}
+        <Icon name="arrow_drop_down"/>
       </button>
 
       {isOpen && (
@@ -76,7 +77,9 @@ function SelectDialog({
                 <Button onClick={handleCancel} type="button" color="error">
                   Cancelar
                 </Button>
-                <Button onClick={handleAccept} type="button">Aceptar</Button>
+                <Button onClick={handleAccept} type="button">
+                  Aceptar
+                </Button>
               </div>
             </div>
           </div>
