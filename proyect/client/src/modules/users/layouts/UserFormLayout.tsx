@@ -40,6 +40,7 @@ export default function UserFormLayout({
   const [emailErrors, setEmailErrors] = useState<FormattedError[]>([]);
   const [passwordErrors, setPasswordErrors] = useState<FormattedError[]>([]);
   const [idRoleErrors, setIdRoleErrors] = useState<FormattedError[]>([]);
+  const [serverErrors, setServerErrors] = useState<FormattedError[]>([]);
 
   const [role, setRole] = useState<Role | null>(
     initialData?.role
@@ -71,7 +72,7 @@ export default function UserFormLayout({
     });
   };
 
-  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!formData) return;
@@ -101,7 +102,28 @@ export default function UserFormLayout({
       return;
     }
 
-    onSubmit(newFormData);
+    try {
+      await onSubmit(newFormData);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      if (error?.isAxiosError) {
+        setServerErrors([
+          {
+            code: "invalid_credentials",
+            message: error.data?.error,
+            field: "server",
+          },
+        ]);
+      } else {
+        setServerErrors([
+          {
+            code: "unknown_error",
+            message: "Ha ocurrido un error desconocido",
+            field: "server",
+          },
+        ]);
+      }
+    }
   };
 
   return (
@@ -171,10 +193,15 @@ export default function UserFormLayout({
       <div className="section-input-select">
         <label>Rol</label>
         <SelectRoles role={role} setRole={setRole} />
-        {idRoleErrors.map(({ message }, index) => (
+        {idRoleErrors.length > 0 && (
+          <ErrorLabel text="Se tiene que escoger un rol" />
+        )}
+      </div>
+
+      {serverErrors.length > 0 &&
+        serverErrors.map(({ message }, index) => (
           <ErrorLabel key={index} text={message} />
         ))}
-      </div>
 
       <div className="flex flex-row justify-between gap-10">
         <Button
