@@ -72,3 +72,18 @@ export const logoutThunk = createAsyncThunk<
     return handleThunkError(error, rejectWithValue, "Error al cerrar sesión");
   }
 });
+
+export const changePasswordThunk = createAsyncThunk(
+  "auth/changePassword",
+  async (newPassword: string, { rejectWithValue }) => {
+    try {
+      await authRepository.changePassword(newPassword);
+    } catch (error) {
+      return handleThunkError(
+        error,
+        rejectWithValue,
+        "Error al cambiar la contraseña"
+      );
+    }
+  }
+);

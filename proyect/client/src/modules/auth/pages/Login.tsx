@@ -15,7 +15,7 @@ export default function Login() {
   const [errors, setErrors] = useState([] as FormattedError[]);
 
   const { login, getAuthenticatedUser } = useAuthActions();
-  const success = useQueryParam("message");
+  const message = useQueryParam("message");
 
   const changeScreen: ChangeScreen = {
     text: "¿No tienes cuenta?",
@@ -78,8 +78,8 @@ export default function Login() {
       onSubmit={onSubmit}
     >
       <>
-        {success && (
-          <label className="text-correct font-bold">Usuario Registrado</label>
+        {message && (
+          <label className="text-correct font-bold">{message}</label>
         )}
         <Input
           className={INPUT_WIDTH}

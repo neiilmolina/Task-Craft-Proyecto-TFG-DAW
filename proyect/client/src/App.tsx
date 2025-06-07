@@ -13,6 +13,7 @@ import Spinner from "./core/components/Spinner";
 import DiariesRoutes from "./modules/diaries/routes/DiariesRoutes";
 import Unauthorized from "./core/pages/Unauthorized";
 import UsersRoutes from "./modules/users/routes/UsersRoutes";
+import AuthRoutes from "./modules/auth/routes/AuthRoutes";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -66,6 +67,15 @@ function App() {
           element={
             <PrivateRoute user={user}>
               <UsersRoutes />
+            </PrivateRoute>
+          }
+        />
+ 
+        <Route
+          path="/auth/*"
+          element={
+            <PrivateRoute user={user}>
+              <AuthRoutes />
             </PrivateRoute>
           }
         />

@@ -86,7 +86,7 @@ export default function Register() {
 
     try {
       await register(userData);
-      navigate("/login?message=success");
+      navigate("/login?message=Usuario Registrado");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       if (error?.isAxiosError) {

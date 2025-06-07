@@ -30,9 +30,13 @@ export default class AuthRepository {
 
   async logout(): Promise<void> {
     try {
-      await this.api.post("/auth/logout",{}, {
-        withCredentials: true,
-      });
+      await this.api.post(
+        "/auth/logout",
+        {},
+        {
+          withCredentials: true,
+        }
+      );
     } catch (error) {
       console.error("Error at logout:", error);
       throw error;
@@ -58,6 +62,24 @@ export default class AuthRepository {
       return response.data;
     } catch (error) {
       console.error("Error at refresh token:", error);
+      throw error;
+    }
+  }
+
+  async changePassword(newPassword: string): Promise<unknown> {
+    try {
+      const response = await this.api.patch(
+        "/auth/changePassword",
+        { password: newPassword },
+        {
+          withCredentials: true,
+        }
+      );
+
+      console.log("Change password response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error at change password:", error);
       throw error;
     }
   }
