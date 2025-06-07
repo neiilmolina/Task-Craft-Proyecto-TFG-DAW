@@ -30,6 +30,7 @@ const createAuthRoute = (usuariosDAO: IUsersDAO) => {
   router.patch("/changeUserName", (req, res) =>
     authController.changeUserName(req, res)
   );
+  router.delete("/", authController.delete);
 
   return router;
 };

@@ -338,4 +338,34 @@ export default class AuthController {
       }
     }
   }
+
+  delete = async (req: any, res: Response): Promise<void> => {
+    try {
+      const user: User | null = req.session?.user ?? null;
+      const idUser = user?.idUser;
+
+      if (!idUser) {
+        res.status(400).json({ error: "ID de user es requerido" });
+        return;
+      }
+
+      if (!UUID_REGEX.test(idUser)) {
+        res.status(400).json({ error: "El ID del user debe ser válido" });
+        return;
+      }
+
+      const deletedUser = await this.usersRepository.delete(idUser);
+
+      if (!deletedUser) {
+        res.status(404).json({ error: "User no encontrado" });
+        return;
+      }
+
+      res.clearCookie(accesCookie);
+      res.status(200).json(deletedUser);
+    } catch (error) {
+      console.error("Error al eliminar el user:", error);
+      res.status(500).json({ error: "Error interno del servidor" });
+    }
+  };
 }
