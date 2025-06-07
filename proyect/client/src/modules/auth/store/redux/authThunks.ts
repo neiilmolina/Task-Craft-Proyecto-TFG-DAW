@@ -87,3 +87,18 @@ export const changePasswordThunk = createAsyncThunk(
     }
   }
 );
+
+export const changeEmailThunk = createAsyncThunk(
+  "auth/changeEmail",
+  async (email: string, { rejectWithValue }) => {
+    try {
+      await authRepository.changeEmail(email);
+    } catch (error) {
+      return handleThunkError(
+        error,
+        rejectWithValue,
+        "Error al cambiar el email"
+      );
+    }
+  }
+);

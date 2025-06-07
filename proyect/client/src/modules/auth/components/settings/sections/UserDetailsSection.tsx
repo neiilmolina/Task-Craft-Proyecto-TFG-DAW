@@ -4,6 +4,7 @@ import Container from "../../../../../core/components/Container";
 import { RootState } from "../../../../../store";
 import UserDetailsSectionInfo from "../cards/UserDetailsSectionInfo";
 import { UserDetailsSectionInfoProps } from "../../../interfaces/AuthSettings";
+import { useNavigate } from "react-router-dom";
 
 interface UserDetailsSection extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
@@ -14,8 +15,14 @@ export default function UserDetailsSection({
   ...rest
 }: UserDetailsSection) {
   const user = useSelector((state: RootState) => state.auth.user);
+  const navigate = useNavigate();
+  
   const onClick = async () => {
     alert("Opción no disponible");
+  };
+
+  const onClickChangeEmail = async () => {
+    navigate("/auth/changeEmail");
   };
   const userDetailsSectionInfo: UserDetailsSectionInfoProps[] = [
     {
@@ -26,7 +33,7 @@ export default function UserDetailsSection({
     {
       title: "Email",
       info: user?.email ?? "email",
-      onClick: onClick,
+      onClick: onClickChangeEmail,
     },
   ];
   return (

@@ -83,4 +83,18 @@ export default class AuthRepository {
       throw error;
     }
   }
+  
+  async changeEmail(email: string): Promise<unknown> {
+    try {
+      const response = await this.api.patch("/auth/changeEmail", email, {
+        withCredentials: true,
+      });
+
+      console.log("Change password response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error at change password:", error);
+      throw error;
+    }
+  }
 }

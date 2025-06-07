@@ -6,6 +6,7 @@ import {
   getAuthenticatedUserThunk,
   protectedThunk,
   changePasswordThunk,
+  changeEmailThunk,
 } from "../store/redux/authThunks";
 import { UserCreate, UserLogin } from "task-craft-models";
 
@@ -33,6 +34,10 @@ const useAuthActions = () => {
     await dispatch(changePasswordThunk(newPassword)).unwrap();
   };
 
+  const changeEmail = async (email: string) => {
+    await dispatch(changeEmailThunk(email)).unwrap();
+  };
+
   return {
     login,
     register,
@@ -40,6 +45,7 @@ const useAuthActions = () => {
     getAuthenticatedUser,
     protectedAuth,
     changePassword,
+    changeEmail,
   };
 };
 

@@ -1,23 +1,23 @@
 import { useState } from "react";
-import PasswordInput from "../components/PasswordInput";
+import Input from "../../../core/components/Input";
 import { TemplateAuthSettings } from "../layouts/TemplateAuthSettings";
 import {
   checkAllEmptyFields,
   filterErrors,
 } from "../../../core/hooks/validations";
-import { FormattedError, validatePassword } from "task-craft-models";
+import { FormattedError } from "task-craft-models";
 import ErrorLabel from "../../../core/components/ErrorLabel";
 import useAuthActions from "../hooks/useAuthActions";
+import { validateEmail } from "task-craft-models";
 import { useNavigate } from "react-router-dom";
-
-export default function AuthUpdatePassword() {
+export function AuthUpdateEmail() {
   const [formData, setFormData] = useState({
-    password: "",
-    password_confirm: "",
+    email: "",
+    confirm_email: "",
   });
-  const [passwordErrors, setPasswordErrors] = useState([] as FormattedError[]);
+  const [emailErrors, setEmailErrors] = useState([] as FormattedError[]);
   const [serverErrors, setServerErrors] = useState([] as FormattedError[]);
-  const { changePassword } = useAuthActions();
+  const { changeEmail } = useAuthActions();
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -26,6 +26,7 @@ export default function AuthUpdatePassword() {
       [e.target.name]: e.target.value,
     });
   };
+
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (checkAllEmptyFields(formData)) {
@@ -39,33 +40,33 @@ export default function AuthUpdatePassword() {
       return;
     }
 
-    if (formData.password !== formData.password_confirm) {
-      setPasswordErrors([
+    if (formData.email !== formData.confirm_email) {
+      setEmailErrors([
         {
-          code: "passwords_dont_match",
-          message: "Las contraseñas no coinciden",
-          field: "password",
+          code: "emails_dont_match",
+          message: "Los emails no coinciden",
+          field: "email",
         },
       ]);
       return;
     }
 
-    const validation = validatePassword(formData.password);
+    const validation = validateEmail(formData.email);
 
     if (!validation.success) {
       const errors = validation.errors;
-      setPasswordErrors(filterErrors(errors, "password"));
+      setEmailErrors(filterErrors(errors, "email"));
       return;
     }
 
     try {
       const confirmed = window.confirm(
-        "¿Estás seguro de que deseas cambiar la contraseña de tu cuenta?"
+        "¿Estás seguro de que deseas cambiar el email?"
       );
       if (!confirmed) return;
-      await changePassword(formData.password);
+      await changeEmail(formData.email);
       navigate(
-        "/login?message=Contraseña actualizada correctamente, por favor inicia sesión de nuevo"
+        "/login?message=Email actualizado correctamente, por favor inicia sesión con tu nuevo email."
       );
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -81,25 +82,22 @@ export default function AuthUpdatePassword() {
       }
     }
   };
-
   return (
     <TemplateAuthSettings onSubmit={onSubmit}>
-      <PasswordInput
-        placeholder="Pon la nueva contraseña"
-        id="password"
-        name="password"
+      <Input
+        placeholder="Nuevo email"
+        id="email"
+        name="email"
         onChange={handleChange}
       />
-      <PasswordInput
-        placeholder="Confirmar contraseña"
-        id="password_confirm"
-        name="password_confirm"
-        // required
+      <Input
+        placeholder="confirmar nuevo email"
+        id="confirm_email"
+        name="confirm_email"
         onChange={handleChange}
       />
-
-      {passwordErrors.length > 0 &&
-        passwordErrors.map(({ message }, index) => (
+      {emailErrors.length > 0 &&
+        emailErrors.map(({ message }, index) => (
           <ErrorLabel key={index} text={message} />
         ))}
 
