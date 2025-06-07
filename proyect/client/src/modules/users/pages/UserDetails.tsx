@@ -44,6 +44,7 @@ export default function UserDetails() {
 
   const onClickDelete = async () => {
     if (!id) return;
+    if (id === user?.idUser) return alert("No puedes eliminarte a ti mismo.");
     const confirmed = window.confirm(
       "¿Estás seguro de que deseas eliminar este usuario?"
     );
