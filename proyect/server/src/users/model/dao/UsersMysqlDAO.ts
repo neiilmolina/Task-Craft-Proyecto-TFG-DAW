@@ -216,6 +216,8 @@ export default class UsersMysqlDAO implements IUsersDAO {
         [user.userName, user.email, user.urlImg, user.idRole, id],
         (err: any, results: any) => {
           if (err) {
+            if (err.code === "ER_DUP_ENTRY") return reject(err);
+
             return reject(
               new Error(`Database update error:  + ${err.message}`)
             );

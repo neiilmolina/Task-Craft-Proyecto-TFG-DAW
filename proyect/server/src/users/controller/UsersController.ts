@@ -173,8 +173,15 @@ export default class UsersController {
       }
 
       res.status(200).json(userUpdate);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error al actualizar el user:", error);
+      if (error.sqlMessage.includes("email")) {
+        res.status(409).json({ error: "El email ya está en uso." });
+        return;
+      } else if (error.sqlMessage.includes("nombreUsuario")) {
+        res.status(409).json({ error: "El nombre de usuario ya está en uso." });
+        return;
+      }
       res.status(500).json({ error: "Error interno del servidor" });
     }
   };
