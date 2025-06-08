@@ -12,7 +12,8 @@ import { useNavigate } from "react-router-dom";
 
 export default function AuthUpdatePassword() {
   const [formData, setFormData] = useState({
-    password: "",
+    actualPassword: "",
+    newPassword: "",
     password_confirm: "",
   });
   const [passwordErrors, setPasswordErrors] = useState([] as FormattedError[]);
@@ -39,7 +40,7 @@ export default function AuthUpdatePassword() {
       return;
     }
 
-    if (formData.password !== formData.password_confirm) {
+    if (formData.newPassword !== formData.password_confirm) {
       setPasswordErrors([
         {
           code: "passwords_dont_match",
@@ -50,7 +51,7 @@ export default function AuthUpdatePassword() {
       return;
     }
 
-    const validation = validatePassword(formData.password);
+    const validation = validatePassword(formData.newPassword);
 
     if (!validation.success) {
       const errors = validation.errors;
@@ -63,7 +64,10 @@ export default function AuthUpdatePassword() {
         "¿Estás seguro de que deseas cambiar la contraseña de tu cuenta?"
       );
       if (!confirmed) return;
-      await changePassword(formData.password);
+      await changePassword({
+        newPassword: formData.newPassword,
+        actualPassword: formData.actualPassword,
+      });
       navigate(
         "/login?message=Contraseña actualizada correctamente, por favor inicia sesión de nuevo"
       );
@@ -85,9 +89,15 @@ export default function AuthUpdatePassword() {
   return (
     <TemplateAuthSettings onSubmit={onSubmit}>
       <PasswordInput
+        placeholder="Pon la contraseña actual"
+        id="actualPassword"
+        name="actualPassword"
+        onChange={handleChange}
+      />
+      <PasswordInput
         placeholder="Pon la nueva contraseña"
-        id="password"
-        name="password"
+        id="newPassword"
+        name="newPassword"
         onChange={handleChange}
       />
       <PasswordInput

@@ -11,13 +11,13 @@ export default function UserSettingsPage() {
   const navigate = useNavigate();
   const { logout } = useAuthActions();
 
-  const onClick = async () => {
-    alert("Función no implementada");
-  };
-
   const onClickChangePassword = async () => {
     navigate("/auth/changePassword");
   }
+
+  const onClickDeleteAccount = async () => {
+    navigate("/auth/delete");
+  };
 
   const onClickLogout = async () => {
     const confirmed = window.confirm(
@@ -66,7 +66,7 @@ export default function UserSettingsPage() {
           buttonName="Eliminar Cuenta"
           buttonColor="error"
           className="lg:col-span-2 lg:row-span-2 lg:col-start-4 lg:row-start-3"
-          onClick={onClick}
+          onClick={onClickDeleteAccount}
         />
 
         {Number(user?.role.idRole) === 2 && (

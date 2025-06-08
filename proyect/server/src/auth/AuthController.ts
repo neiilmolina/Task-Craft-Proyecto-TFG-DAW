@@ -144,12 +144,29 @@ export default class AuthController {
     try {
       const user: User | null = req.session?.user ?? null;
       const idUser = user?.idUser;
-      const password: string = req.body.password;
+      const newPassword: string = req.body.newPassword;
+      const actualPassword: string = req.body.actualPassword;
+      const sessionEmail = user?.email;
 
-      const result = validatePassword(password);
-
-      if (!idUser) {
+      if (!idUser || !sessionEmail) {
         res.status(400).json({ error: "No hay user autenticado" });
+        return;
+      }
+
+      if (actualPassword === newPassword) {
+        res.status(400).json({
+          error: "La contraseña actual y la nueva no deben de ser iguales",
+        });
+        return;
+      }
+
+      const userCredentials = await this.usersRepository.getByCredentials(
+        sessionEmail,
+        actualPassword
+      );
+
+      if (!userCredentials) {
+        res.status(404).json({ error: "Contraseña incorrecta" });
         return;
       }
 
@@ -157,6 +174,7 @@ export default class AuthController {
         res.status(400).json({ error: "El ID del user debe ser válido" });
         return;
       }
+      const result = validatePassword(newPassword);
 
       if (!result.success) {
         res.status(400).json({
@@ -169,7 +187,7 @@ export default class AuthController {
         return;
       }
 
-      const hashedPassword = await bcrypt.hash(password, 10);
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
       const userUpdate = await this.usersRepository.updatePassword(
         idUser,
         hashedPassword
@@ -180,7 +198,6 @@ export default class AuthController {
         return;
       }
 
-      // Limpiar la cookie para cerrar sesión
       res.clearCookie(accesCookie);
 
       res.status(200).json({
@@ -201,9 +218,10 @@ export default class AuthController {
     try {
       const user: User | null = req.session?.user ?? null;
       const idUser = user?.idUser;
-      const email: string = req.body.email;
+      const sessionEmail = user?.email;
 
-      const result = validateEmail(email);
+      const newEmail: string = req.body.newEmail;
+      const actualEmail: string = req.body.actualEmail;
 
       if (!idUser) {
         res.status(400).json({ error: "No hay user autenticado" });
@@ -214,6 +232,22 @@ export default class AuthController {
         res.status(400).json({ error: "El ID del user debe ser válido" });
         return;
       }
+
+      if (sessionEmail !== actualEmail) {
+        res.status(400).json({
+          error: "No has introducido tu correo actual",
+        });
+        return;
+      }
+
+      if (newEmail === sessionEmail) {
+        res.status(400).json({
+          error: "Introduce un correo distinto al actual",
+        });
+        return;
+      }
+
+      const result = validateEmail(newEmail);
 
       if (!result.success) {
         res.status(400).json({
@@ -226,7 +260,10 @@ export default class AuthController {
         return;
       }
 
-      const userUpdate = await this.usersRepository.updateEmail(idUser, email);
+      const userUpdate = await this.usersRepository.updateEmail(
+        idUser,
+        newEmail
+      );
 
       if (!userUpdate) {
         res.status(404).json({ error: "El user no se ha encontrado" });
@@ -258,19 +295,26 @@ export default class AuthController {
     try {
       const user: User | null = req.session?.user ?? null;
       const idUser = user?.idUser;
-      const actualUserName = user?.userName;
-      const userName: string = req.body.userName;
+      const sessionUserName = user?.userName;
 
-      const result = validateUserName(userName);
+      const newUserName: string = req.body.newUserName;
+      const actualUserName: string = req.body.actualUserName;
 
       if (!idUser) {
         res.status(400).json({ error: "No hay user autenticado" });
         return;
       }
 
-      if (userName === actualUserName) {
+      if (actualUserName !== sessionUserName) {
         res.status(400).json({
-          error: "El nombre de usuario no ha cambiado",
+          error: "No has introducido tu nombre de usuario actual",
+        });
+        return;
+      }
+
+      if (newUserName === sessionUserName) {
+        res.status(400).json({
+          error: "Introduce un nombre de usuario distinto al actual",
         });
         return;
       }
@@ -279,6 +323,7 @@ export default class AuthController {
         res.status(400).json({ error: "El ID del user debe ser válido" });
         return;
       }
+      const result = validateUserName(newUserName);
 
       if (!result.success) {
         res.status(400).json({
@@ -293,7 +338,7 @@ export default class AuthController {
 
       const userUpdate = await this.usersRepository.updateUserName(
         idUser,
-        userName
+        newUserName
       );
 
       if (!userUpdate) {
@@ -312,7 +357,7 @@ export default class AuthController {
       const decoded = jwt.verify(token, secretKey) as any;
       const { exp, iat, ...rest } = decoded;
 
-      const newToken = jwt.sign({ ...rest, userName: userName }, secretKey, {
+      const newToken = jwt.sign({ ...rest, userName: newUserName }, secretKey, {
         expiresIn: "1h",
       });
 
@@ -343,6 +388,33 @@ export default class AuthController {
     try {
       const user: User | null = req.session?.user ?? null;
       const idUser = user?.idUser;
+      const sessionEmail = user?.email;
+
+      const { email, password }: { email: string; password: string } = req.body;
+
+      if (sessionEmail !== email) {
+        res.status(404).json({ error: "Estas utilizando otras credenciales" });
+        return;
+      }
+
+      if (!email || !password) {
+        res
+          .status(400)
+          .json({ error: "El email y la contraseña son obligatorios" });
+        return;
+      }
+
+      const userCredentials = await this.usersRepository.getByCredentials(
+        email,
+        password
+      );
+
+      if (!userCredentials) {
+        res
+          .status(404)
+          .json({ error: "Usuario no encontrado o credenciales incorrectas" });
+        return;
+      }
 
       if (!idUser) {
         res.status(400).json({ error: "ID de user es requerido" });

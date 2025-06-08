@@ -66,11 +66,20 @@ export default class AuthRepository {
     }
   }
 
-  async changePassword(newPassword: string): Promise<unknown> {
+  async changePassword({
+    newPassword,
+    actualPassword,
+  }: {
+    newPassword: string;
+    actualPassword: string;
+  }): Promise<unknown> {
     try {
       const response = await this.api.patch(
         "/auth/changePassword",
-        { password: newPassword },
+        {
+          newPassword: newPassword,
+          actualPassword: actualPassword,
+        },
         {
           withCredentials: true,
         }
@@ -83,17 +92,62 @@ export default class AuthRepository {
       throw error;
     }
   }
-  
-  async changeEmail(email: string): Promise<unknown> {
+
+  async changeEmail({
+    newEmail,
+    actualEmail,
+  }: {
+    newEmail: string;
+    actualEmail: string;
+  }): Promise<unknown> {
     try {
-      const response = await this.api.patch("/auth/changeEmail", email, {
+      const response = await this.api.patch(
+        "/auth/changeEmail",
+        { newEmail, actualEmail },
+        {
+          withCredentials: true,
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error("Error at change email:", error);
+      throw error;
+    }
+  }
+
+  async changeUserName({
+    newUserName,
+    actualUserName,
+  }: {
+    newUserName: string;
+    actualUserName: string;
+  }): Promise<unknown> {
+    try {
+      const response = await this.api.patch(
+        "/auth/changeUserName",
+        { newUserName, actualUserName },
+        {
+          withCredentials: true,
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error("Error at change email:", error);
+      throw error;
+    }
+  }
+
+  async deleteUser(creedentials: UserLogin): Promise<unknown> {
+    try {
+      const response = await this.api.post("/auth/delete", creedentials, {
         withCredentials: true,
       });
 
-      console.log("Change password response:", response.data);
       return response.data;
     } catch (error) {
-      console.error("Error at change password:", error);
+      console.error("Error at deleting user:", error);
       throw error;
     }
   }

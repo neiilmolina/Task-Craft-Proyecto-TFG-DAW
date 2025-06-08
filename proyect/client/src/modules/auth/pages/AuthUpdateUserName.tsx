@@ -3,21 +3,23 @@ import Input from "../../../core/components/Input";
 import { TemplateAuthSettings } from "../layouts/TemplateAuthSettings";
 import {
   checkAllEmptyFields,
+  filterErrors,
 } from "../../../core/hooks/validations";
-import { FormattedError } from "task-craft-models";
+import { FormattedError, validateUserName } from "task-craft-models";
 import ErrorLabel from "../../../core/components/ErrorLabel";
 import useAuthActions from "../hooks/useAuthActions";
 import { useNavigate } from "react-router-dom";
 
-export default function AuthUpdateEmail() {
+export default function AuthUpdateUserName() {
   const [formData, setFormData] = useState({
-    actualEmail: "",
-    newEmail: "",
-    confirm_email: "",
+    actualUserName: "",
+    newUserName: "",
+    confirm_userName: "",
   });
-  const [emailErrors, setEmailErrors] = useState([] as FormattedError[]);
+
+  const [userNameErrors, setUserNameErrors] = useState([] as FormattedError[]);
   const [serverErrors, setServerErrors] = useState([] as FormattedError[]);
-  const { changeEmail } = useAuthActions();
+  const { changeUserName, getAuthenticatedUser } = useAuthActions();
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,42 +42,37 @@ export default function AuthUpdateEmail() {
       return;
     }
 
-    if (formData.newEmail !== formData.confirm_email) {
-      setEmailErrors([
+    if (formData.newUserName !== formData.confirm_userName) {
+      setUserNameErrors([
         {
-          code: "emails_dont_match",
-          message: "Los emails no coinciden",
-          field: "email",
+          code: "userNames_dont_match",
+          message: "Los userNames no coinciden",
+          field: "userName",
         },
       ]);
       return;
     }
 
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const validation = validateUserName(formData.newUserName);
 
-    if (!emailRegex.test(formData.newEmail)) {
-      setEmailErrors([
-        {
-          code: "invalid_email",
-          message: "El email no tiene un formato válido",
-          field: "email",
-        },
-      ]);
+    if (!validation.success) {
+      const errors = validation.errors;
+      setUserNameErrors(filterErrors(errors, "userName,"));
       return;
     }
 
     try {
       const confirmed = window.confirm(
-        "¿Estás seguro de que deseas cambiar el email?"
+        "¿Estás seguro de que deseas cambiar el userName?"
       );
       if (!confirmed) return;
-      await changeEmail({
-        newEmail: formData.newEmail,
-        actualEmail: formData.actualEmail,
+      await changeUserName({
+        newUserName: formData.newUserName,
+        actualUserName: formData.actualUserName,
       });
-      navigate(
-        "/login?message=Email actualizado correctamente, por favor inicia sesión con tu nuevo email."
-      );
+
+      await getAuthenticatedUser();
+      navigate("/dashboard/userSettings");
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -93,25 +90,25 @@ export default function AuthUpdateEmail() {
   return (
     <TemplateAuthSettings onSubmit={onSubmit}>
       <Input
-        placeholder="Email actual"
-        id="actualEmail"
-        name="actualEmail"
+        placeholder="Nombre de usuario actual"
+        id="actualUserName"
+        name="actualUserName"
         onChange={handleChange}
       />
       <Input
-        placeholder="Nuevo email"
-        id="newEmail"
-        name="newEmail"
+        placeholder="Nuevo nombre de usuario"
+        id="newUserName"
+        name="newUserName"
         onChange={handleChange}
       />
       <Input
-        placeholder="confirmar nuevo email"
-        id="confirm_email"
-        name="confirm_email"
+        placeholder="Confirmar nombre de usuario"
+        id="confirm_userName"
+        name="confirm_userName"
         onChange={handleChange}
       />
-      {emailErrors.length > 0 &&
-        emailErrors.map(({ message }, index) => (
+      {userNameErrors.length > 0 &&
+        userNameErrors.map(({ message }, index) => (
           <ErrorLabel key={index} text={message} />
         ))}
 

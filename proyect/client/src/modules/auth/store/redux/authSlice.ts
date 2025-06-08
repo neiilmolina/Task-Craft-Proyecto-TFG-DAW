@@ -7,6 +7,8 @@ import {
   protectedThunk,
   changePasswordThunk,
   changeEmailThunk,
+  changeUserNameThunk,
+  deleteThunk,
 } from "./authThunks";
 import { UserToken } from "task-craft-models";
 import { ReduxError } from "../../../../core/interfaces/interfaceErrors";
@@ -122,7 +124,35 @@ const authSlice = createSlice({
       .addCase(changeEmailThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as ReduxError;
-      });
+      })
+      // changeUserName
+      .addCase(changeUserNameThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(changeUserNameThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload as UserToken;
+        state.isProtected = null;
+      })
+      .addCase(changeUserNameThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as ReduxError;
+      })
+      // delete
+      .addCase(deleteThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteThunk.fulfilled, (state) => {
+        state.loading = false;
+        state.user = null;
+        state.isProtected = null;
+      })
+      .addCase(deleteThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as ReduxError;
+      })
   },
 });
 
