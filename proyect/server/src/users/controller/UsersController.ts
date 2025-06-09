@@ -173,55 +173,18 @@ export default class UsersController {
       }
 
       res.status(200).json(userUpdate);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error al actualizar el user:", error);
+      if (error.sqlMessage.includes("email")) {
+        res.status(409).json({ error: "El email ya está en uso." });
+        return;
+      } else if (error.sqlMessage.includes("nombreUsuario")) {
+        res.status(409).json({ error: "El nombre de usuario ya está en uso." });
+        return;
+      }
       res.status(500).json({ error: "Error interno del servidor" });
     }
   };
-
-  // updateUserPassword: RequestHandler = async (req, res) => {
-  //   try {
-  //     const idUser = req.params.idUser;
-  //     const password: string = req.body.password;
-  //     const result = validatePassword(password);
-
-  //     if (!UUID_REGEX.test(idUser)) {
-  //       res.status(400).json({ error: "El ID del user debe ser válido" });
-  //       return;
-  //     }
-
-  //     if (!result.success) {
-  //         res.status(400).json({
-  //   error: "Error de validación",
-  //   details: result.errors?.map((error) => ({
-  //     field: error.field,
-  //     message: error.message,
-  //   })),
-  // });
-  //       return;
-  //     }
-
-  //     const hashedPassword = await bcrypt.hash(password, 10);
-  //     const userUpdate = await this.usersRepository.updatePassword(
-  //       idUser,
-  //       hashedPassword
-  //     );
-
-  //     if (!userUpdate) {
-  //       res.status(404).json({ error: "El user no se ha encontrado" });
-  //       return;
-  //     }
-
-  //     res.status(200).json(userUpdate);
-  //   } catch (error: any) {
-  //     if (error.message === "User not found") {
-  //       res.status(404).json({ error: "El user no se ha encontrado" });
-  //     } else {
-  //       console.error("Error al actualizar el user:", error);
-  //       res.status(500).json({ error: "Error interno del servidor" });
-  //     }
-  //   }
-  // };
 
   deleteUser: RequestHandler = async (req, res) => {
     try {

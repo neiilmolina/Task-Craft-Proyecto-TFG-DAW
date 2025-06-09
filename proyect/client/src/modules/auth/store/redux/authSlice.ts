@@ -5,6 +5,10 @@ import {
   logoutThunk,
   getAuthenticatedUserThunk,
   protectedThunk,
+  changePasswordThunk,
+  changeEmailThunk,
+  changeUserNameThunk,
+  deleteThunk,
 } from "./authThunks";
 import { UserToken } from "task-craft-models";
 import { ReduxError } from "../../../../core/interfaces/interfaceErrors";
@@ -87,12 +91,68 @@ const authSlice = createSlice({
       .addCase(logoutThunk.fulfilled, (state) => {
         state.loading = false;
         state.user = null;
-        state.isProtected = null; 
+        state.isProtected = null;
       })
       .addCase(logoutThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as ReduxError;
-      });
+      })
+      // changePassword
+      .addCase(changePasswordThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(changePasswordThunk.fulfilled, (state) => {
+        state.loading = false;
+        state.user = null;
+        state.isProtected = null;
+      })
+      .addCase(changePasswordThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as ReduxError;
+      })
+      // changeEmail
+      .addCase(changeEmailThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(changeEmailThunk.fulfilled, (state) => {
+        state.loading = false;
+        state.user = null;
+        state.isProtected = null;
+      })
+      .addCase(changeEmailThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as ReduxError;
+      })
+      // changeUserName
+      .addCase(changeUserNameThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(changeUserNameThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload as UserToken;
+        state.isProtected = null;
+      })
+      .addCase(changeUserNameThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as ReduxError;
+      })
+      // delete
+      .addCase(deleteThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteThunk.fulfilled, (state) => {
+        state.loading = false;
+        state.user = null;
+        state.isProtected = null;
+      })
+      .addCase(deleteThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as ReduxError;
+      })
   },
 });
 

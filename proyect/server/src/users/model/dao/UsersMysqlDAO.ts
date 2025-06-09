@@ -216,6 +216,8 @@ export default class UsersMysqlDAO implements IUsersDAO {
         [user.userName, user.email, user.urlImg, user.idRole, id],
         (err: any, results: any) => {
           if (err) {
+            if (err.code === "ER_DUP_ENTRY") return reject(err);
+
             return reject(
               new Error(`Database update error:  + ${err.message}`)
             );
@@ -248,6 +250,73 @@ export default class UsersMysqlDAO implements IUsersDAO {
       connection.query(query, [password, id], (err: any, results: any) => {
         if (err) {
           return reject(new Error(`Database update error:  + ${err.message}`)); // Lanza un error con mensaje detallado
+        }
+
+        const resultSet = results as ResultSetHeader;
+
+        if (resultSet.affectedRows === 0) {
+          return reject(new Error("User not found"));
+        }
+
+        // Resolver con el resultado
+        resolve(true);
+      });
+    });
+  }
+
+  updateEmail(id: string, email: string): Promise<Boolean> {
+    return new Promise<Boolean>((resolve, reject) => {
+      const query = `UPDATE ${TABLE_NAME} SET
+        ${FIELDS.email} = ?
+        WHERE ${FIELDS.idUser} = ?`;
+
+      connection.query(query, [email, id], (err: any, results: any) => {
+        if (err) {
+          if (err.code === "ER_DUP_ENTRY") {
+            const duplicateError = new Error(
+              `Database update error: ${err.message}`
+            );
+            (duplicateError as any).code = err.code;
+            (duplicateError as any).errno = err.errno;
+            (duplicateError as any).sqlState = err.sqlState;
+            return reject(duplicateError);
+          }
+
+          return reject(new Error(`Database update error: ${err.message}`));
+        }
+
+        const resultSet = results as ResultSetHeader;
+
+        if (resultSet.affectedRows === 0) {
+          return reject(new Error("User not found"));
+        }
+
+        resolve(true);
+      });
+    });
+  }
+
+  updateUserName(id: string, userName: string): Promise<Boolean> {
+    return new Promise<Boolean>((resolve, reject) => {
+      const query = `UPDATE ${TABLE_NAME} SET
+      ${FIELDS.userName} = ?
+      WHERE ${FIELDS.idUser} = ?`;
+
+      connection.query(query, [userName, id], (err: any, results: any) => {
+        if (err) {
+          // Preservar las propiedades específicas del error de MySQL
+          if (err.code === "ER_DUP_ENTRY") {
+            const duplicateError = new Error(
+              `Database update error: ${err.message}`
+            );
+            (duplicateError as any).code = err.code;
+            (duplicateError as any).errno = err.errno;
+            (duplicateError as any).sqlState = err.sqlState;
+            return reject(duplicateError);
+          }
+
+          // Para otros errores, mantener el comportamiento actual
+          return reject(new Error(`Database update error: ${err.message}`));
         }
 
         const resultSet = results as ResultSetHeader;

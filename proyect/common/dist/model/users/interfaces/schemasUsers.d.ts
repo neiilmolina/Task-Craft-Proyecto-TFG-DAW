@@ -49,3 +49,5 @@ export declare function validateUserCreate(input: Partial<UserCreate>): import("
 export declare function validateUserUpdate(input: Partial<UserUpdate>): import("../../../validations/formatMessages").FormatZodResult<z.ZodType<any, z.ZodTypeDef, any>>;
 export declare function validateUserFilterSchema(input: Partial<UserUpdate>): import("../../../validations/formatMessages").FormatZodResult<z.ZodType<any, z.ZodTypeDef, any>>;
 export declare function validatePassword(input: string): import("../../../validations/formatMessages").FormatZodResult<z.ZodType<any, z.ZodTypeDef, any>>;
+export declare function validateEmail(input: string): import("../../../validations/formatMessages").FormatZodResult<z.ZodType<any, z.ZodTypeDef, any>>;
+export declare function validateUserName(input: string): import("../../../validations/formatMessages").FormatZodResult<z.ZodType<any, z.ZodTypeDef, any>>;

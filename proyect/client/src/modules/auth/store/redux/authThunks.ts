@@ -72,3 +72,80 @@ export const logoutThunk = createAsyncThunk<
     return handleThunkError(error, rejectWithValue, "Error al cerrar sesión");
   }
 });
+
+export const changePasswordThunk = createAsyncThunk(
+  "auth/changePassword",
+  async (
+    {
+      newPassword,
+      actualPassword,
+    }: {
+      newPassword: string;
+      actualPassword: string;
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      await authRepository.changePassword({
+        newPassword,
+        actualPassword,
+      });
+    } catch (error) {
+      return handleThunkError(
+        error,
+        rejectWithValue,
+        "Error al cambiar la contraseña"
+      );
+    }
+  }
+);
+
+export const changeEmailThunk = createAsyncThunk(
+  "auth/changeEmail",
+  async (
+    { newEmail, actualEmail }: { newEmail: string; actualEmail: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      await authRepository.changeEmail({ newEmail, actualEmail });
+    } catch (error) {
+      return handleThunkError(
+        error,
+        rejectWithValue,
+        "Error al cambiar el email"
+      );
+    }
+  }
+);
+
+export const changeUserNameThunk = createAsyncThunk(
+  "auth/changeUserName",
+  async (
+    {
+      newUserName,
+      actualUserName,
+    }: { newUserName: string; actualUserName: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      await authRepository.changeUserName({ newUserName, actualUserName });
+    } catch (error) {
+      return handleThunkError(
+        error,
+        rejectWithValue,
+        "Error al cambiar el email"
+      );
+    }
+  }
+);
+
+export const deleteThunk = createAsyncThunk(
+  "auth/delete",
+  async (credentials: UserLogin, { rejectWithValue }) => {
+    try {
+      await authRepository.deleteUser(credentials);
+    } catch (error) {
+      return handleThunkError(error, rejectWithValue, "Credenciales inválidas");
+    }
+  }
+);

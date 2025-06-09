@@ -30,9 +30,13 @@ export default class AuthRepository {
 
   async logout(): Promise<void> {
     try {
-      await this.api.post("/auth/logout",{}, {
-        withCredentials: true,
-      });
+      await this.api.post(
+        "/auth/logout",
+        {},
+        {
+          withCredentials: true,
+        }
+      );
     } catch (error) {
       console.error("Error at logout:", error);
       throw error;
@@ -58,6 +62,92 @@ export default class AuthRepository {
       return response.data;
     } catch (error) {
       console.error("Error at refresh token:", error);
+      throw error;
+    }
+  }
+
+  async changePassword({
+    newPassword,
+    actualPassword,
+  }: {
+    newPassword: string;
+    actualPassword: string;
+  }): Promise<unknown> {
+    try {
+      const response = await this.api.patch(
+        "/auth/changePassword",
+        {
+          newPassword: newPassword,
+          actualPassword: actualPassword,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+
+      console.log("Change password response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error at change password:", error);
+      throw error;
+    }
+  }
+
+  async changeEmail({
+    newEmail,
+    actualEmail,
+  }: {
+    newEmail: string;
+    actualEmail: string;
+  }): Promise<unknown> {
+    try {
+      const response = await this.api.patch(
+        "/auth/changeEmail",
+        { newEmail, actualEmail },
+        {
+          withCredentials: true,
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error("Error at change email:", error);
+      throw error;
+    }
+  }
+
+  async changeUserName({
+    newUserName,
+    actualUserName,
+  }: {
+    newUserName: string;
+    actualUserName: string;
+  }): Promise<unknown> {
+    try {
+      const response = await this.api.patch(
+        "/auth/changeUserName",
+        { newUserName, actualUserName },
+        {
+          withCredentials: true,
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error("Error at change email:", error);
+      throw error;
+    }
+  }
+
+  async deleteUser(creedentials: UserLogin): Promise<unknown> {
+    try {
+      const response = await this.api.post("/auth/delete", creedentials, {
+        withCredentials: true,
+      });
+
+      return response.data;
+    } catch (error) {
+      console.error("Error at deleting user:", error);
       throw error;
     }
   }

@@ -11,8 +11,12 @@ export default function UserSettingsPage() {
   const navigate = useNavigate();
   const { logout } = useAuthActions();
 
-  const onClick = async () => {
-    alert("Función no implementada");
+  const onClickChangePassword = async () => {
+    navigate("/auth/changePassword");
+  }
+
+  const onClickDeleteAccount = async () => {
+    navigate("/auth/delete");
   };
 
   const onClickLogout = async () => {
@@ -52,7 +56,7 @@ export default function UserSettingsPage() {
           explication="Para cambiar tu contraseña, haz clic en el botón 'Cambiar contraseña'. Sigue las instrucciones que aparecerán para actualizarla de manera rápida y segura."
           buttonName="Cambiar contraseña"
           className="lg:col-span-2 lg:row-span-2 lg:col-start-4 lg:row-start-1"
-          onClick={onClick}
+          onClick={onClickChangePassword}
         />
 
         <SettingsUserCard
@@ -62,7 +66,7 @@ export default function UserSettingsPage() {
           buttonName="Eliminar Cuenta"
           buttonColor="error"
           className="lg:col-span-2 lg:row-span-2 lg:col-start-4 lg:row-start-3"
-          onClick={onClick}
+          onClick={onClickDeleteAccount}
         />
 
         {Number(user?.role.idRole) === 2 && (

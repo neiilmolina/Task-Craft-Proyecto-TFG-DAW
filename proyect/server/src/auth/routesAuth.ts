@@ -21,6 +21,16 @@ const createAuthRoute = (usuariosDAO: IUsersDAO) => {
 
   router.get("/protected", (req, res) => authController.protected(req, res));
   router.post("/refresh", (req, res) => authController.refreshToken(req, res));
+  router.patch("/changePassword", (req, res) =>
+    authController.changePassword(req, res)
+  );
+  router.patch("/changeEmail", (req, res) =>
+    authController.changeEmail(req, res)
+  );
+  router.patch("/changeUserName", (req, res) =>
+    authController.changeUserName(req, res)
+  );
+  router.post("/delete", authController.delete);
 
   return router;
 };
