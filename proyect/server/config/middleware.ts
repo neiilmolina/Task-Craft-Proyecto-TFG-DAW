@@ -27,25 +27,13 @@ export const corsMiddleware = (
   );
 
   if (req.method === "OPTIONS") {
-    res.sendStatus(200); // Responder a las solicitudes preflight
+    res.sendStatus(200);
     return;
   }
 
-  next(); // Continuar con la ejecución del siguiente middleware
+  next();
 };
 
-// Middleware para manejo de errores generales
-export const errorHandler = (
-  err: Error,
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
-  console.error("Error:", err);
-  res.status(500).json({ error: "Internal Server Error" });
-};
-
-// Middleware para manejo de errores generales
 export const errorHandler = (
   err: Error,
   req: Request,
