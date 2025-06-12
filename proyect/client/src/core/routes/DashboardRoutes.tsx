@@ -46,7 +46,7 @@ export default function DashboardRoutes() {
           ))}
           <Route path="userSettings" element={<UserSettingsPage />} />
           <Route
-            path="admin"
+            path="admin/*"
             element={
               <ProtectedRoute>
                 <MainAdminPage />
